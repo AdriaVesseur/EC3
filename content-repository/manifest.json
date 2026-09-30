@@ -11,7 +11,7 @@
       "version": "1.0.0",
       "installPath": "content/cars/ec3_car_template",
       "required": false,
-      "download": "https://github.com/AdriaVesseur/EC3/releases/download/REPLACE-ME/ec3-car-template.zip",
+      "download": "https://github.com/AdriaVesseur/EC3/releases/download/EC3Test/Test2.zip",
       "size": 1,
       "sha256": "97f834b1064997c0caf309d0e3bee7811b1e5cde55db59013add1028c3ebb195",
       "description": "PLANTILLA: sustituye enlace, size, SHA256 y files con los datos del ZIP real. No es instalable todavía.",
