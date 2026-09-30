@@ -1,0 +1,31 @@
+name: Generate content metadata
+on:
+  push:
+    branches: [main]
+    paths:
+      - content-repository/manifest.json
+      - scripts/generate-content-metadata.py
+permissions:
+  contents: write
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - run: python scripts/test-content-metadata.py
+      - name: Download release ZIPs and generate metadata
+        run: |
+          mkdir -p content-repository/generated
+          python scripts/generate-content-metadata.py
+      - name: Commit generated metadata
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add content-repository/generated
+          if ! git diff --cached --quiet; then
+            git commit -m "Generate content package metadata"
+            git push
+          fi

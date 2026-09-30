@@ -7,7 +7,8 @@ import { zipSync, strToU8 } from "fflate";
 import { fixtures, hash } from "./fixtures.mjs";
 const root = path.resolve(import.meta.dirname, ".."),
   work = path.join(root, "work", "integration-" + Date.now()),
-  game = path.join(work, "assettocorsa");
+  game = path.join(work, "assettocorsa"),
+  apiOrigin = "http://127.0.0.1:32147";
 fs.mkdirSync(game, { recursive: true });
 fs.writeFileSync(path.join(game, "acs.exe"), "NOT EXECUTABLE");
 const { manifest, championship, archives } = fixtures();
@@ -37,11 +38,40 @@ fs.writeFileSync(
   }),
 );
 const server = http.createServer((req, res) => {
-  if (req.url === "/manifest.json" || req.url === "/championship.json") {
+  if (req.url === "/manifest.json") {
     res.setHeader("Content-Type", "application/json");
-    res.end(
-      JSON.stringify(req.url === "/manifest.json" ? manifest : championship),
+    const publicManifest = {
+      ...manifest,
+      content: manifest.content.map(
+        ({ id, name, type, version, required, download, description, changelog }) =>
+          ({ id, name, type, version, required, download, description, changelog }),
+      ),
+    };
+    res.end(JSON.stringify(publicManifest));
+    return;
+  }
+  if (req.url === "/championship.json") {
+    res.setHeader("Content-Type", "application/json");
+    res.end(JSON.stringify(championship));
+    return;
+  }
+  if (req.url?.startsWith("/generated/")) {
+    const pkg = manifest.content.find((p) =>
+      req.url === `/generated/${p.id}-${p.version}.json`,
     );
+    if (!pkg) {
+      res.writeHead(404).end();
+      return;
+    }
+    res.setHeader("Content-Type", "application/json");
+    res.end(JSON.stringify({
+      id: pkg.id,
+      version: pkg.version,
+      installPath: pkg.installPath,
+      size: pkg.size,
+      sha256: pkg.sha256,
+      files: pkg.files,
+    }));
     return;
   }
   let zip = archives.get(req.url.slice(1));
@@ -96,6 +126,7 @@ const child = spawn(
     env: {
       ...process.env,
       EC3_TEST_MODE: "1",
+      EC3_TEST_API_PORT: "32147",
       EC3_DATA: work,
       EC3_NO_BROWSER: "1",
     },
@@ -111,7 +142,7 @@ const check = (value, name) => {
   console.log("PASS: " + name);
 };
 async function raw(endpoint, body, extra = {}) {
-  return fetch("http://127.0.0.1:32145/api" + endpoint, {
+  return fetch(apiOrigin + "/api" + endpoint, {
     method: body === undefined ? "GET" : "POST",
     headers: {
       Origin: origin,
@@ -276,14 +307,19 @@ try {
   s = await settled();
   check(
     s.content[0].installedVersion === "2.3.2" &&
-      downloadCount === downloads + 3,
-    "new manifest version updates only the changed package",
+      downloadCount === downloads + 2,
+    "metadata-only version updates reuse identical verified package files",
   );
   // A malicious archive can pass the outer checksum. Extraction must still reject it.
   const bad = zipSync({ "../escape.txt": strToU8("malicious") }, { level: 0 });
   archives.set(car.id + ".zip", bad);
   const saved = { ...car };
-  Object.assign(car, { version: "2.3.3", size: bad.length, sha256: hash(bad) });
+  Object.assign(car, {
+    version: "2.3.3",
+    size: bad.length,
+    sha256: hash(bad),
+    files: [{ path: "updated.txt", size: 4, sha256: hash(strToU8("next")) }],
+  });
   await api("/update", { ids: [car.id] });
   s = await settled();
   check(

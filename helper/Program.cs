@@ -31,7 +31,13 @@ public static class Program
         var builder = WebApplication.CreateBuilder(
             new WebApplicationOptions { Args = args, WebRootPath = webRoot }
         );
-        builder.WebHost.UseUrls("http://127.0.0.1:32145");
+        int apiPort =
+            Environment.GetEnvironmentVariable("EC3_TEST_MODE") == "1"
+            && int.TryParse(Environment.GetEnvironmentVariable("EC3_TEST_API_PORT"), out var testPort)
+                ? testPort
+                : 32145;
+        string apiOrigin = $"http://127.0.0.1:{apiPort}";
+        builder.WebHost.UseUrls(apiOrigin);
         builder.WebHost.ConfigureKestrel(o => o.Limits.MaxRequestBodySize = 16384);
         var config = new ConfigService();
         builder.Services.AddSingleton(config);
@@ -51,11 +57,11 @@ public static class Program
                 ctx.Response.Headers["X-Content-Type-Options"] = "nosniff";
                 ctx.Response.Headers["Referrer-Policy"] = "same-origin";
                 ctx.Response.Headers["Content-Security-Policy"] =
-                    "default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' http://127.0.0.1:32145; frame-ancestors 'none'; base-uri 'self'; object-src 'none'";
+                    $"default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' {apiOrigin}; frame-ancestors 'none'; base-uri 'self'; object-src 'none'";
                 if (
                     ctx.Connection.RemoteIpAddress is not { } ip
                     || !IPAddress.IsLoopback(ip)
-                    || ctx.Request.Host.Value != "127.0.0.1:32145"
+                    || ctx.Request.Host.Value != $"127.0.0.1:{apiPort}"
                 )
                 {
                     ctx.Response.StatusCode = 403;

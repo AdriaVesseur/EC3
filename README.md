@@ -40,7 +40,8 @@ React / TypeScript / Vite / Tailwind / Lucide
         |                              |
         v                              v
 GitHub Raw                       GitHub Releases
-manifest.json                    ZIP + SHA256
+manifest.json                    ZIP assets
+generated/<id>-<version>.json   automatic size + SHA256 inventory
 championship.json                      |
         |                              v
         +--> catálogo validado --> staging --> verificación --> reemplazo
@@ -49,7 +50,7 @@ championship.json                      |
                                       Assetto Corsa/.ec3/backups
 ```
 
-`helper/` contiene servicios separados de configuración, detección, manifiestos, descarga, extracción, instalación, hashing y estado/cola. `Program.cs` configura la API local y el refresco cada cinco minutos. `src/` contiene la aplicación. `content-repository/` contiene el manifiesto, el calendario y los esquemas, dentro del mismo repositorio Git. `scripts/` incluye validación, empaquetado y pruebas. No hay estado de instalación en localStorage ni progreso simulado.
+`helper/` contiene servicios separados de configuración, detección, manifiestos, descarga, extracción, instalación, hashing y estado/cola. `Program.cs` configura la API local y el refresco cada cinco minutos. `src/` contiene la aplicación. `content-repository/` contiene el manifiesto, el calendario, los esquemas y los índices técnicos que GitHub Actions genera a partir de las releases. `scripts/` incluye validación y pruebas. No hay estado de instalación en localStorage ni progreso simulado.
 
 El helper muestra la interfaz dentro de una ventana de Windows mediante WebView2 y sirve sus recursos localmente en `http://127.0.0.1:32145`; el usuario no tiene que abrir un navegador. La ventana se puede ocultar en la bandeja y volver a abrir desde el icono de EC3; desde allí también se pueden consultar los logs o salir. La misma interfaz puede alojarse por separado en GitHub Pages con un origen aprobado explícitamente en el helper.
 
@@ -78,43 +79,17 @@ El helper busca Steam en el registro de Windows, analiza `steamapps/libraryfolde
 
 ## Publicar contenido
 
-Clona `AdriaVesseur/EC3` en tu PC con GitHub Desktop y abre su carpeta local. En PowerShell, desde esa carpeta, ejecuta `npm ci` una vez para preparar las herramientas.
+Prepara un ZIP que ya contenga las rutas de destino, por ejemplo `content/cars/mi_coche/data.acd` y `content/cars/mi_coche/ui/ui_car.json`. Todos sus archivos deben quedar bajo una sola carpeta de coche o circuito. El instalador extraerá el ZIP desde la carpeta principal de Assetto Corsa.
 
-1. Mantener el catálogo en `content-repository/` dentro de `AdriaVesseur/EC3`. Ajustar el manifest, las URLs y `EC3_CONTENT_REPOSITORY` al publicar.
-2. Preparar una carpeta con **los archivos internos del paquete**, sin `content/cars/...` como prefijo del ZIP. Cada paquete posee una carpeta exclusiva. No usar rutas compartidas como `content/cars` o `extension/config`.
-3. Generar el ZIP y los hashes:
+Publica ese ZIP como asset en una [release de `AdriaVesseur/EC3`](https://github.com/AdriaVesseur/EC3/releases/new). Después edita `content-repository/manifest.json` desde GitHub y rellena únicamente `id`, `name`, `type`, `version`, `required`, `download`, `changelog` y `description`. La acción **Generate content metadata** descarga el ZIP y calcula automáticamente su tamaño, SHA256, carpeta de destino y huellas de los archivos. Espera a que finalice correctamente; luego pulsa **Refresh catalog** en la app.
 
-```powershell
-node scripts/create-package.mjs C:/staging/ec3_barcelona C:/staging/barcelona-1.4.3.zip
-Get-FileHash C:/staging/barcelona-1.4.3.zip -Algorithm SHA256
-```
-
-El script produce `.metadata.json` con `size`, `sha256` e inventario `files`. Usa memoria proporcional al paquete; para archivos muy grandes usar un ZIP estándar y generar el inventario mediante una herramienta de publicación en streaming. Cada asset debe ajustarse al límite de GitHub Releases y al límite de 2 GiB del validador.
-
-4. En GitHub, abre [crear una release para `AdriaVesseur/EC3`](https://github.com/AdriaVesseur/EC3/releases/new), adjunta el ZIP compatible y publícala. Copia el enlace del archivo ZIP; tiene que incluir `/releases/download/`.
-
-5. Abre `content-repository/manifest.json` en GitHub y pulsa el lápiz para editarlo. Copia la entrada de un paquete parecido y cambia `id`, `name`, `version`, `installPath`, `download` (el enlace directo al ZIP), `description` y `required`. Copia `size`, `sha256` y todo el array `files` desde el `.metadata.json` que generaste en el paso 3. No reutilices los hashes de otro paquete.
-6. Cambia `build` en `manifest.json` y pon el mismo valor en `content-repository/championship.json`. Si el contenido es obligatorio, añade su ID a `requiredContent` y a los eventos que correspondan. `demo` solo pasa a `false` cuando todos los assets son oficiales.
-7. Valida los dos JSON con `npm run validate:content`, o espera a que GitHub Actions lo valide al guardar el cambio. La app encontrará el paquete al pulsar **Refresh catalog**.
-
-Para un coche, usa `type: "car"` y un `installPath` exclusivo como `content/cars/ec3_barcelona_gt3`. La carpeta de staging contiene los archivos que van dentro de esa carpeta del coche (por ejemplo, `ui/`, `data/` y `sfx/`), no el prefijo `content/cars/ec3_barcelona_gt3`. `manifest.json` es quien define la versión publicada: al sacar una actualización, aumenta `version`, crea un ZIP/release nuevo y reemplaza el inventario generado. Assetto Corsa no proporciona un campo de versión estándar para todos los coches y mods. Por eso el helper valida la versión instalada comparando los SHA256 de los archivos reales en `installPath` con `files` del manifiesto. También reconoce coches instalados manualmente: si coinciden quedan como actuales; si la carpeta existe y no coincide, aparecen como desactualizados para poder actualizarlos desde la app.
-
-```powershell
-npm run validate:content
-git add manifest.json championship.json
-git commit -m "Publish EC3 content build 1.4.1"
-git push
-```
+Al publicar una actualización, aumenta `version` y cambia `download` al asset nuevo. Aumenta también `build` en el manifest y usa el mismo `build` en `content-repository/championship.json`. Para incluir el paquete en el contenido obligatorio de una carrera, añade su ID en `requiredContent` en el calendario. Mantén `demo: true` mientras quede contenido de ejemplo.
 
 El helper vuelve a consultar el catálogo cada cinco minutos cuando no hay operaciones activas. También hay **Refresh catalog** y **Update all**. Al actualizar se verifican los archivos existentes y solo se descargan paquetes ausentes, distintos o corruptos. Las reparaciones actuales descargan el ZIP completo; `files` ya proporciona el inventario necesario para futuras actualizaciones por archivo. No hay implementación de deltas binarios.
 
-## Añadir circuitos, dependencias y eventos
+## Añadir circuitos y eventos
 
-Un circuito nuevo requiere una entrada `type: "track"`, ruta como `content/tracks/ec3_nuevo_circuito` y su inventario. No hay que modificar React. Los paquetes se resuelven topológicamente; dependencias desconocidas, versiones insuficientes y ciclos se rechazan.
-
-```json
-"dependencies": [{"id": "barcelona", "minimumVersion": "1.4.2"}]
-```
+Para un circuito usa `type: "track"` y rutas como `content/tracks/mi_circuito/...` dentro del ZIP. Los coches usan `type: "car"` y `content/cars/mi_coche/...`. `requiredContent` en el calendario indica qué IDs exige cada evento.
 
 `championship.requiredContent` fija la lista de competición; los paquetes marcados `required` también forman parte del chequeo global. Los eventos se definen como objetos en `championship.events` para obtener una instantánea coherente del build:
 
@@ -124,13 +99,13 @@ Un circuito nuevo requiere una entrada `type: "track"`, ruta como `content/track
   "name": "Round 4",
   "venue": "Barcelona",
   "round": "4",
-  "requiredContent": ["barcelona"]
+  "requiredContent": ["mi-circuito"]
 }
 ```
 
 Pueden mantenerse copias editoriales en `events/`, pero el runtime usa `championship.events`; no carga archivos externos arbitrarios. Esta decisión evita combinar versiones incompatibles de varios manifiestos durante una actualización.
 
-Para exigir CSP, añadir `minimumCspVersion` al paquete. La detección es conservadora y lee `extension/config/version.ini` cuando contiene `VERSION=x.y.z`. Algunas distribuciones no exponen esta información: en ese caso se muestra **Not detected** y no se declara compatible. No se ejecutan DLL ni se instala CSP automáticamente.
+La detección de CSP sigue siendo conservadora y lee `extension/config/version.ini` cuando contiene `VERSION=x.y.z`. Algunas distribuciones no exponen esta información: en ese caso se muestra **Not detected** y no se declara compatible. No se ejecutan DLL ni se instala CSP automáticamente.
 
 ## Seguridad y fiabilidad
 

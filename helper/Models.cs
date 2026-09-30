@@ -2,7 +2,7 @@ using System.Text.Json;
 
 namespace Eurocup3;
 
-public sealed record FileSpec(string Path, string Sha256, long Size);
+public sealed record FileSpec(string Path, string Sha256, long Size, string? ArchivePath = null);
 
 public sealed record Dependency(string Id, string MinimumVersion);
 
@@ -29,6 +29,34 @@ public sealed record Manifest(
     string Build,
     Package[] Content,
     bool Demo = false
+);
+
+public sealed record ManifestDraft(
+    string Championship,
+    string Season,
+    string Build,
+    PackageDraft[] Content,
+    bool Demo = false
+);
+
+public sealed record PackageDraft(
+    string Id,
+    string Name,
+    string Type,
+    string Version,
+    string Download,
+    bool Required,
+    string Description = "",
+    string[]? Changelog = null
+);
+
+public sealed record GeneratedPackageMetadata(
+    string Id,
+    string Version,
+    string InstallPath,
+    long Size,
+    string Sha256,
+    FileSpec[] Files
 );
 
 public sealed record EventSpec(

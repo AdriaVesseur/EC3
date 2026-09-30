@@ -10,7 +10,10 @@ public sealed class ExtractionService
         using var zip = ZipFile.OpenRead(archive);
         if (zip.Entries.Count > 100000)
             throw new AppFault("UNSAFE_ARCHIVE", "Too many archive entries.");
-        var inventory = package.Files.ToDictionary(f => f.Path, StringComparer.OrdinalIgnoreCase);
+        var inventory = package.Files.ToDictionary(
+            f => f.ArchivePath ?? f.Path,
+            StringComparer.OrdinalIgnoreCase
+        );
         var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         foreach (var e in zip.Entries)
         {
@@ -29,16 +32,12 @@ public sealed class ExtractionService
                 continue;
             }
             Paths.Relative(path);
-            if (
-                !seen.Add(path)
-                || !inventory.TryGetValue(path, out var spec)
-                || e.Length != spec.Size
-            )
+            if (!seen.Add(path) || !inventory.TryGetValue(path, out var spec) || e.Length != spec.Size)
                 throw new AppFault(
                     "UNSAFE_ARCHIVE",
                     "Archive contents do not match the published file inventory."
                 );
-            string target = Paths.Under(stage, path);
+            string target = Paths.Under(stage, spec.Path);
             Directory.CreateDirectory(Path.GetDirectoryName(target)!);
             await using var input = e.Open();
             await using var output = new FileStream(

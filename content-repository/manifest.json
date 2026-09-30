@@ -1,7 +1,7 @@
 {
   "championship": "Eurocup 3",
   "season": "2026",
-  "build": "1.4.2",
+  "build": "1.4.3",
   "demo": true,
   "content": [
     {
@@ -9,46 +9,12 @@
       "name": "Coche de prueba (plantilla)",
       "type": "car",
       "version": "1.0.0",
-      "installPath": "content/cars/ec3_car_template",
       "required": false,
       "download": "https://github.com/AdriaVesseur/EC3/releases/download/EC3Test/Test2.zip",
-      "size": 1,
-      "sha256": "97f834b1064997c0caf309d0e3bee7811b1e5cde55db59013add1028c3ebb195",
-      "description": "PLANTILLA: sustituye enlace, size, SHA256 y files con los datos del ZIP real. No es instalable todavía.",
+      "description": "Coche de prueba para validar la instalación automática desde su ZIP.",
       "changelog": [
         "Entry template for manual manifest editing."
-      ],
-      "files": [
-        {
-          "path": "REPLACE_WITH_REAL_FILE.txt",
-          "size": 64,
-          "sha256": "6eaa254c671e1e140a434f8103bb293fcbc0e2ddc303791ef64c9236e3cbfdda"
-        }
-      ],
-      "dependencies": []
-    },
-    {
-      "id": "barcelona",
-      "name": "Barcelona GP",
-      "type": "track",
-      "version": "1.4.2",
-      "installPath": "content/tracks/ec3_barcelona",
-      "required": true,
-      "download": "https://github.com/AdriaVesseur/EC3/releases/download/demo-1/barcelona.zip",
-      "size": 214,
-      "sha256": "c04f4a21ea0c77cd34ab163559f93c673422abce8266372bb60da94c9b763651",
-      "description": "Example package for Barcelona GP. Replace this catalog entry with official release assets before championship use.",
-      "changelog": [
-        "Safe demonstration package. No game assets are included."
-      ],
-      "files": [
-        {
-          "path": "ec3-demo.txt",
-          "size": 92,
-          "sha256": "f910734025fd9c49edc21fed66136f1f56bdcc47a6ec28c4a5aeaca8a4f355e0"
-        }
-      ],
-      "dependencies": []
+      ]
     }
   ]
 }

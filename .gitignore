@@ -12,3 +12,5 @@ release/
 public/helper/
 outputs/
 *.tsbuildinfo
+**/__pycache__/
+*.py[cod]

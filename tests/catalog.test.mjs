@@ -7,8 +7,31 @@ import {
   resolveDependencies,
 } from "../scripts/validate-content.mjs";
 import { fixtures } from "../scripts/fixtures.mjs";
-test("complete example catalog validates", () => {
+function publicCatalog() {
   const { manifest, championship } = fixtures();
+  manifest.content = manifest.content.map(
+    ({ id, name, type, version, required, download, description, changelog }) =>
+      ({ id, name, type, version, required, download, description, changelog }),
+  );
+  return { manifest, championship };
+}
+test("complete example catalog validates", () => {
+  const { manifest, championship } = publicCatalog();
+  assert.equal(validate(manifest, championship), true);
+});
+test("manifest asks only for the eight hand-edited package fields", () => {
+  const { manifest, championship } = publicCatalog();
+  const packageFields = Object.keys(manifest.content[0]).sort();
+  assert.deepEqual(packageFields, [
+    "changelog",
+    "description",
+    "download",
+    "id",
+    "name",
+    "required",
+    "type",
+    "version",
+  ]);
   assert.equal(validate(manifest, championship), true);
 });
 test("semver correctly handles numeric versions and prereleases", () => {
@@ -60,35 +83,17 @@ test("cycles and unsatisfied versions rejected", () => {
 for (const [name, mutate] of [
   ["duplicate ID", (m) => (m.content[1].id = m.content[0].id)],
   [
-    "overlapping folders",
-    (m) => (m.content[2].installPath = m.content[1].installPath + "/child"),
+    "automatic fields cannot be set manually",
+    (m) => (m.content[0].size = 123),
   ],
   [
     "untrusted download",
     (m) => (m.content[0].download = "https://evil.example/car.zip"),
   ],
-  ["checksum missing", (m) => (m.content[0].sha256 = "...")],
-  ["reserved file", (m) => (m.content[0].files[0].path = "AUX.ini")],
-  [
-    "case collision",
-    (m) =>
-      m.content[0].files.push({
-        ...m.content[0].files[0],
-        path: "EC3-DEMO.TXT",
-      }),
-  ],
   ["invalid semver", (m) => (m.content[0].version = "01.0.0")],
-  [
-    "file folder collision",
-    (m) =>
-      m.content[0].files.push({
-        ...m.content[0].files[0],
-        path: "ec3-demo.txt/child",
-      }),
-  ],
 ])
   test("rejects " + name, () => {
-    const { manifest, championship } = fixtures();
+    const { manifest, championship } = publicCatalog();
     mutate(manifest);
     assert.throws(() => validate(manifest, championship));
   });

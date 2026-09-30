@@ -1,19 +1,7 @@
 {
   "season": "2026",
-  "build": "1.4.2",
+  "build": "1.4.3",
   "minimumHelperVersion": "1.0.0",
-  "requiredContent": [
-    "barcelona"
-  ],
-  "events": [
-    {
-      "id": "round-04",
-      "name": "Round 4 · Example event",
-      "venue": "Barcelona",
-      "round": "4",
-      "requiredContent": [
-        "barcelona"
-      ]
-    }
-  ]
+  "requiredContent": [],
+  "events": []
 }

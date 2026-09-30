@@ -48,8 +48,45 @@ public sealed class ManifestService(ConfigService config)
                 return JsonSerializer.Deserialize<T>(ms.ToArray(), Json.Options)
                     ?? throw new AppFault("INVALID_MANIFEST", "Empty catalog.");
             }
-            var m = await Read<Manifest>(config.Value.ManifestUrl);
+            var draft = await Read<ManifestDraft>(config.Value.ManifestUrl);
             var c = await Read<Championship>(config.Value.ChampionshipUrl);
+            var packages = new List<Package>();
+            foreach (var item in draft.Content)
+            {
+                if (item.Download.Contains("REPLACE-ME", StringComparison.Ordinal))
+                    continue;
+
+                ValidateDownload(item.Download);
+                string metadataUrl = GeneratedMetadataUrl(
+                    config.Value.ManifestUrl,
+                    item.Id,
+                    item.Version
+                );
+                var metadata = await Read<GeneratedPackageMetadata>(metadataUrl);
+                if (metadata.Id != item.Id || metadata.Version != item.Version)
+                    throw new AppFault(
+                        "INVALID_PACKAGE_METADATA",
+                        $"Generated metadata does not match {item.Id} v{item.Version}."
+                    );
+                packages.Add(
+                    new Package(
+                        item.Id,
+                        item.Name,
+                        item.Type,
+                        item.Version,
+                        item.Download,
+                        metadata.Size,
+                        metadata.Sha256,
+                        metadata.InstallPath,
+                        item.Required,
+                        metadata.Files,
+                        [],
+                        item.Description,
+                        item.Changelog
+                    )
+                );
+            }
+            var m = new Manifest(draft.Championship, draft.Season, draft.Build, packages.ToArray(), draft.Demo);
             Validate(m, c);
             Current = new(m, c, DateTimeOffset.UtcNow);
             LastError = null;
@@ -67,6 +104,21 @@ public sealed class ManifestService(ConfigService config)
         {
             gate.Release();
         }
+    }
+
+    static string GeneratedMetadataUrl(string manifestUrl, string id, string version)
+    {
+        var uri = new Uri(manifestUrl);
+        string filename = Uri.EscapeDataString(id + "-" + version + ".json");
+        if (uri.Scheme == "http" && uri.Host == "127.0.0.1" && uri.Port == 32146)
+            return new Uri(uri, "generated/" + filename).ToString();
+        var marker = "/content-repository/manifest.json";
+        if (!uri.AbsolutePath.EndsWith(marker, StringComparison.Ordinal))
+            throw new AppFault("INVALID_MANIFEST_URL", "Manifest URL must end in content-repository/manifest.json.");
+        var path = uri.AbsolutePath[..^"manifest.json".Length]
+            + "generated/"
+            + filename;
+        return new UriBuilder(uri) { Path = path }.Uri.ToString();
     }
 
     public Catalog Require() =>
@@ -125,7 +177,7 @@ public sealed class ManifestService(ConfigService config)
             m.Content is null
             || c.RequiredContent is null
             || c.Events is null
-            || m.Content.Length is 0 or > 500
+            || m.Content.Length > 500
             || !Versions.Valid(m.Build)
             || !Versions.Valid(c.Build)
             || m.Build != c.Build
@@ -178,6 +230,8 @@ public sealed class ManifestService(ConfigService config)
             foreach (var f in p.Files)
             {
                 Paths.Relative(f.Path);
+                if (f.ArchivePath != null)
+                    Paths.Relative(f.ArchivePath);
                 if (
                     !files.Add(f.Path)
                     || !HashService.Valid(f.Sha256)

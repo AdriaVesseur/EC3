@@ -37,7 +37,7 @@ export function resolveDependencies(manifest, ids) {
     if (!p) throw Error("Unknown dependency " + id);
     if (visiting.has(id)) throw Error("Dependency cycle " + id);
     visiting.add(id);
-    for (const d of p.dependencies) {
+    for (const d of p.dependencies ?? []) {
       if (
         !map.has(d.id) ||
         !semver.valid(d.minimumVersion) ||
@@ -81,8 +81,7 @@ export function validate(
     manifest.season !== championship.season
   )
     throw Error("Invalid or inconsistent championship version");
-  const ids = new Set(),
-    paths = [];
+  const ids = new Set();
   for (const p of manifest.content) {
     if (
       ids.has(p.id) ||
@@ -91,25 +90,8 @@ export function validate(
     )
       throw Error("Duplicate ID or invalid version");
     ids.add(p.id);
-    relative(p.installPath);
-    const prefix = {
-      car: "content/cars/",
-      track: "content/tracks/",
-      app: "apps/python/",
-      config: "extension/config/",
-    }[p.type];
-    if (!p.installPath.startsWith(prefix)) throw Error("Type/path mismatch");
-    const target = p.installPath.toLowerCase();
-    if (
-      paths.some(
-        (q) =>
-          q === target ||
-          q.startsWith(target + "/") ||
-          target.startsWith(q + "/"),
-      )
-    )
-      throw Error("Overlapping install paths");
-    paths.push(target);
+    if (!p.description || !Array.isArray(p.changelog))
+      throw Error("Each package needs a description and changelog");
     const u = new URL(p.download);
     if (
       u.origin !== "https://github.com" ||
@@ -118,21 +100,7 @@ export function validate(
       !u.pathname.startsWith("/" + repository + "/releases/download/")
     )
       throw Error("Untrusted URL");
-    if (/^0+$/.test(p.sha256)) throw Error("Empty checksum");
-    const files = new Set();
-    let size = 0;
-    for (const f of p.files) {
-      relative(f.path);
-      const key = f.path.toLowerCase();
-      if (files.has(key) || /^0+$/.test(f.sha256))
-        throw Error("Duplicate file or empty checksum");
-      files.add(key);
-      size += f.size;
-    }
-    if (size > 20 * 1024 ** 3) throw Error("Expanded package too large");
-    for (const f of files)
-      if ([...files].some((x) => x.startsWith(f + "/")))
-        throw Error("File/directory collision");
+    if (p.download.includes("REPLACE-ME")) continue;
   }
   resolveDependencies(
     manifest,
@@ -159,7 +127,5 @@ if (
     JSON.parse(fs.readFileSync(path.join(dir, "championship.json"))),
     process.env.EC3_CONTENT_REPOSITORY ?? "AdriaVesseur/EC3",
   );
-  console.log(
-    "Catalog valid: schema, versions, paths, hashes, URLs and dependencies.",
-  );
+  console.log("Catalog valid: schema, versions, package fields and release URLs.");
 }

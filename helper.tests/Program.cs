@@ -173,6 +173,37 @@ try
         ) == 0,
         "safe archive extraction and verification"
     );
+    var fullPathZip = Path.Combine(work, "full-path.zip");
+    using (var z = ZipFile.Open(fullPathZip, ZipArchiveMode.Create))
+    {
+        var e = z.CreateEntry("content/cars/example_car/ui/test.txt");
+        using var w = new StreamWriter(e.Open());
+        w.Write("abc");
+    }
+    var fullPathPackage = package with
+    {
+        InstallPath = "content/cars/example_car",
+        Files =
+        [
+            new(
+                "ui/test.txt",
+                digest,
+                3,
+                "content/cars/example_car/ui/test.txt"
+            ),
+        ],
+    };
+    var fullPathStage = Path.Combine(work, "full-path-extracted");
+    await new ExtractionService().Extract(
+        fullPathZip,
+        fullPathStage,
+        fullPathPackage,
+        CancellationToken.None
+    );
+    Assert(
+        await File.ReadAllTextAsync(Path.Combine(fullPathStage, "ui", "test.txt")) == "abc",
+        "full Assetto Corsa ZIP paths install into the detected package folder"
+    );
     File.WriteAllText(Path.Combine(work, "extracted", "unexpected.txt"), "bad");
     Assert(
         await InstallationService.VerifyFolder(
