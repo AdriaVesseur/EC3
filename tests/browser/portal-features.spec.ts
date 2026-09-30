@@ -12,7 +12,7 @@ const checkedAt = "2026-09-30T14:00:00Z";
 const practice: ServerConfig = {
   id: "practice-a",
   name: "Championship practice",
-  host: "practice.example.test",
+  ip: "198.51.100.24",
   httpPort: 8081,
   description: "Practice with the championship grid.",
   liveTimingUrl: "https://timing.example.test/practice",
@@ -186,6 +186,24 @@ test("Servers loads only when opened, shows reported details and joins the selec
 }) => {
   let statusRequests = 0;
   const joins: { id: string; method: string; body: unknown }[] = [];
+  await page.addInitScript(() => {
+    let failCopy = true;
+    Object.defineProperty(navigator, "clipboard", {
+      value: {
+        writeText: async (text: string) => {
+          if (failCopy) {
+            failCopy = false;
+            throw new DOMException(
+              "Clipboard fixture denied",
+              "NotAllowedError",
+            );
+          }
+          (window as Window & { copiedServerIP?: string }).copiedServerIP =
+            text;
+        },
+      },
+    });
+  });
   await mockFeatures(page, {
     onServers: () => statusRequests++,
     onJoin: (id, method, body) => joins.push({ id, method, body }),
@@ -201,6 +219,25 @@ test("Servers loads only when opened, shows reported details and joins the selec
     .getByRole("article")
     .filter({ has: page.getByRole("heading", { name: practice.name }) });
   await expect(card).toBeVisible();
+  await expect(card.getByText("Server IP", { exact: true })).toBeVisible();
+  await expect(card.getByText(practice.ip!, { exact: true })).toBeVisible();
+  await card
+    .getByRole("button", { name: `Copy server address ${practice.ip}` })
+    .click();
+  const copyFailure = page.getByText(
+    "Copy is unavailable. Select the server address and copy it manually.",
+  );
+  await expect(copyFailure).toBeVisible();
+  await card
+    .getByRole("button", { name: `Copy server address ${practice.ip}` })
+    .click();
+  await expect(copyFailure).toHaveCount(0);
+  await expect(card.getByText("Copied", { exact: true })).toBeVisible();
+  expect(
+    await page.evaluate(
+      () => (window as Window & { copiedServerIP?: string }).copiedServerIP,
+    ),
+  ).toBe(practice.ip);
   expect(statusRequests).toBeGreaterThan(0);
   await expect(
     card.getByText("practice circuit", { exact: true }),

@@ -557,16 +557,39 @@ export default function App() {
                   {cat && hasRequiredPackages ? (
                     <>
                       <div className="race-ready-summary">
-                        <strong className="race-ready-count">
-                          {ready?.readyCount ?? 0}
-                          <span>/ {requiredCount}</span>
+                        <strong
+                          className="race-ready-count"
+                          role="img"
+                          aria-label={
+                            ready?.readyCount == null
+                              ? `Verification count unavailable for ${requiredCount} required packages`
+                              : `${ready.readyCount} of ${requiredCount} required packages verified`
+                          }
+                        >
+                          <span
+                            className="race-ready-current"
+                            aria-hidden="true"
+                          >
+                            {ready?.readyCount ?? "—"}
+                          </span>
+                          <span
+                            className="race-ready-separator"
+                            aria-hidden="true"
+                          >
+                            /
+                          </span>
+                          <span className="race-ready-total" aria-hidden="true">
+                            {requiredCount || "—"}
+                          </span>
                         </strong>
                         <p>
                           Required packages installed
                           <span>
                             {allReady
                               ? "Every required package is verified and ready."
-                              : `${Math.max(0, requiredCount - (ready?.readyCount ?? 0))} ${requiredCount - (ready?.readyCount ?? 0) === 1 ? "package" : "packages"} left to complete your setup.`}
+                              : ready?.readyCount == null
+                                ? "Verify packages to check your setup."
+                                : `${Math.max(0, requiredCount - (ready?.readyCount ?? 0))} ${requiredCount - (ready?.readyCount ?? 0) === 1 ? "package" : "packages"} left to complete your setup.`}
                           </span>
                         </p>
                       </div>
@@ -911,7 +934,7 @@ export default function App() {
               <div className="section-heading library-summary">
                 <span>
                   {library.length} PACKAGES <b>·</b>{" "}
-                  {content.filter((s) => s.state === "ready").length} UP TO DATE
+                  {library.filter((s) => s.state === "ready").length} UP TO DATE
                 </span>
                 <Button
                   disabled={!canAct || ongoing.length > 0}
@@ -1323,8 +1346,14 @@ export default function App() {
                       {results.races.map((race) => (
                         <article className="race-result-card" key={race.id}>
                           <div className="race-result-heading">
-                            <span className="round-number">
-                              {race.round.replace("R", "").padStart(2, "0")}
+                            <span
+                              className="round-number"
+                              role="img"
+                              aria-label={`Round ${race.round.replace(/^R/i, "")}`}
+                            >
+                              <span aria-hidden="true">
+                                {race.round.replace(/^R/i, "").padStart(2, "0")}
+                              </span>
                             </span>
                             <div>
                               <span className="eyebrow">

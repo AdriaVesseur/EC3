@@ -7,12 +7,13 @@ namespace Eurocup3;
 public sealed record PortalServer(
     string Id,
     string Name,
-    string Host,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? Host,
     int HttpPort,
     string? Description = null,
     bool AllowLan = false,
     string? LiveTimingUrl = null,
-    bool EmbedTiming = false
+    bool EmbedTiming = false,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? Ip = null
 );
 
 public sealed record PortalSponsor(string Id, string Name, string Logo, string Url, int Order = 0);
@@ -109,6 +110,21 @@ public sealed class PortalConfigService(ConfigService config)
             ?? throw new AppFault("INVALID_SERVERS", "Empty servers configuration.");
         if (document.Servers is null || document.Servers.Length > 32)
             throw new AppFault("INVALID_SERVERS", "servers must be an array containing at most 32 entries.");
+        // Preserve the distinction between an omitted alias and an explicitly null alias.
+        // Constructor binding alone maps both cases to null and would accept JSON the schema rejects.
+        using var source = JsonDocument.Parse(json);
+        var entries = source.RootElement.EnumerateObject()
+            .Last(p => p.Name.Equals("servers", StringComparison.OrdinalIgnoreCase)).Value;
+        foreach (var entry in entries.EnumerateArray())
+        {
+            if (entry.ValueKind != JsonValueKind.Object)
+                continue;
+            var addresses = entry.EnumerateObject().Where(p =>
+                p.Name.Equals("ip", StringComparison.OrdinalIgnoreCase) ||
+                p.Name.Equals("host", StringComparison.OrdinalIgnoreCase)).ToArray();
+            if (addresses.Length != 1 || addresses[0].Value.ValueKind == JsonValueKind.Null)
+                throw new AppFault("INVALID_SERVERS", "Each server must contain exactly one non-null ip or legacy host field.");
+        }
         var ids = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         foreach (var server in document.Servers)
         {
@@ -117,7 +133,7 @@ public sealed class PortalConfigService(ConfigService config)
             ValidateId(server.Id, ids, "INVALID_SERVERS");
             ValidateText(server.Name, 120, false, "Server name", "INVALID_SERVERS");
             ValidateText(server.Description, 1000, true, "Server description", "INVALID_SERVERS");
-            ServerNetworkPolicy.ValidateHost(server.Host, server.AllowLan);
+            ServerNetworkPolicy.ConfiguredAddress(server);
             if (server.HttpPort is < 1 or > 65535)
                 throw new AppFault("INVALID_SERVERS", "httpPort must be between 1 and 65535.");
             if (server.LiveTimingUrl is not null)

@@ -106,10 +106,10 @@ public sealed class ServerService(PortalConfigService portal)
 
     static async Task<ServerInfo> FetchInfo(PortalServer server, CancellationToken ct)
     {
-        ServerNetworkPolicy.ValidateHost(server.Host, server.AllowLan);
-        var addresses = IPAddress.TryParse(server.Host, out var literal)
+        string addressText = ServerNetworkPolicy.ConfiguredAddress(server);
+        var addresses = IPAddress.TryParse(addressText, out var literal)
             ? new[] { literal }
-            : await Dns.GetHostAddressesAsync(server.Host, ct);
+            : await Dns.GetHostAddressesAsync(addressText, ct);
         if (addresses.Length is 0 or > 16)
             throw new AppFault("SERVER_ADDRESS_BLOCKED", "The configured host did not resolve to an allowed server address.");
         foreach (var address in addresses)
@@ -144,7 +144,7 @@ public sealed class ServerService(PortalConfigService portal)
             },
         };
         using var http = new HttpClient(handler) { Timeout = Timeout.InfiniteTimeSpan };
-        var uri = new UriBuilder("http", server.Host, server.HttpPort, "/INFO").Uri;
+        var uri = new UriBuilder("http", addressText, server.HttpPort, "/INFO").Uri;
         using var response = await http.GetAsync(uri, HttpCompletionOption.ResponseHeadersRead, ct);
         response.EnsureSuccessStatusCode();
         var bytes = await PortalConfigService.ReadLimited(response.Content, 256 * 1024, ct);
@@ -172,10 +172,10 @@ public sealed class ServerService(PortalConfigService portal)
 
     public static string BuildJoinUri(PortalServer server)
     {
-        ServerNetworkPolicy.ValidateHost(server.Host, server.AllowLan);
+        string addressText = ServerNetworkPolicy.ConfiguredAddress(server);
         if (server.HttpPort is < 1 or > 65535)
             throw new AppFault("INVALID_SERVERS", "The Content Manager join command requires a valid HTTP port.");
-        return "acmanager://race/online/join?ip=" + Uri.EscapeDataString(server.Host) +
+        return "acmanager://race/online/join?ip=" + Uri.EscapeDataString(addressText) +
             "&httpPort=" + server.HttpPort.ToString(System.Globalization.CultureInfo.InvariantCulture);
     }
 
@@ -249,6 +249,31 @@ public sealed class ServerService(PortalConfigService portal)
 
 public static class ServerNetworkPolicy
 {
+    public static string ConfiguredAddress(PortalServer server)
+    {
+        if ((server.Ip is null) == (server.Host is null))
+            throw new AppFault("INVALID_SERVERS", "Configure one ip address, or one legacy host, never both.");
+        if (server.Ip is { } ip)
+        {
+            ValidateIp(ip, server.AllowLan);
+            return ip;
+        }
+        ValidateHost(server.Host, server.AllowLan);
+        return server.Host!;
+    }
+
+    public static void ValidateIp(string? ip, bool allowLan)
+    {
+        if (string.IsNullOrWhiteSpace(ip) || ip.Length > 45 || ip.Any(char.IsWhiteSpace) ||
+            !IPAddress.TryParse(ip, out var address) ||
+            (address.AddressFamily == AddressFamily.InterNetwork &&
+                !Regex.IsMatch(ip, @"^(?:0|[1-9][0-9]{0,2})(?:\.(?:0|[1-9][0-9]{0,2})){3}$")) ||
+            (address.AddressFamily == AddressFamily.InterNetworkV6 &&
+                (!ip.Contains(':') || !Regex.IsMatch(ip, @"^[0-9A-Fa-f:.]+$"))))
+            throw new AppFault("INVALID_SERVERS", "ip must contain a literal IPv4 or IPv6 address without a URL, brackets, port or hostname.");
+        ValidateAddress(address, allowLan);
+    }
+
     public static void ValidateHost(string? host, bool allowLan)
     {
         if (string.IsNullOrWhiteSpace(host) || host.Length > 253 || host != host.Trim() ||

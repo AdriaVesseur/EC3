@@ -6,7 +6,7 @@ La app descarga estos archivos desde la misma carpeta y rama que `manifest.json`
 
 ## servers.json
 
-Ejemplo de formato: sustituye el dominio, nombre y URL por los del servidor real antes de guardarlo.
+Ejemplo de formato: sustituye la IP, nombre y URL por los del servidor real antes de guardarlo. La IP de ejemplo es una dirección reservada para documentación, no un servidor del campeonato.
 
 ```json
 {
@@ -14,7 +14,7 @@ Ejemplo de formato: sustituye el dominio, nombre y URL por los del servidor real
     {
       "id": "ec3-practice",
       "name": "Nombre de tu servidor",
-      "host": "server.example.com",
+      "ip": "203.0.113.10",
       "httpPort": 8081,
       "description": "Entrenamientos del campeonato",
       "liveTimingUrl": "https://timing.example.com/ec3",
@@ -28,18 +28,21 @@ Ejemplo de formato: sustituye el dominio, nombre y URL por los del servidor real
 | --- | --- |
 | `id` | Identificador estable del servidor. |
 | `name` | Nombre que aparece en la app. |
-| `host` | IP pública o dominio del servidor, sin `http://`, sin ruta y sin puerto. |
+| `ip` | IP pública IPv4 o IPv6 del servidor, sin `http://`, sin corchetes, sin ruta y sin puerto. Es el formato recomendado para configuraciones nuevas. |
+| `host` | Campo antiguo compatible con IP o dominio. Úsalo solo si ya tienes una configuración que lo necesita; no lo combines con `ip`. Debe existir exactamente uno de los dos campos. |
 | `httpPort` | Puerto **HTTP** configurado en AC, normalmente `8081`. No es el puerto de carrera UDP/TCP, normalmente `9600`. |
 | `description` | Texto opcional de hasta 1000 caracteres. |
 | `allowLan` | Opcional, `false` por defecto. Pon `true` únicamente si quieres que los usuarios consulten una IP privada de su red local. |
 | `liveTimingUrl` | URL HTTPS opcional del servicio que proporciona el cronometraje. |
 | `embedTiming` | Opcional, `false` por defecto. Pon `true` solo si el servicio permite mostrar su web en un iframe. El enlace externo está disponible aunque el servicio bloquee el iframe. |
 
-El estado se consulta mediante `http://host:httpPort/INFO`. La app muestra el nombre del servidor, circuito, jugadores actuales/máximos, coches, tipo de sesión y segundos restantes cuando el servidor publica esos campos. `session` significa `0` Booking, `1` Practice, `2` Qualifying y `3` Race. `/INFO` no ofrece vueltas ni una clasificación de pilotos: esos datos deben venir de la página de cronometraje indicada en `liveTimingUrl`.
+La conexión utiliza la IP y el puerto HTTP que configures, por ejemplo `http://203.0.113.10:8081/INFO`. Para IPv6, el helper añade automáticamente los corchetes necesarios a la URL de consulta; en el JSON escribe únicamente la dirección, por ejemplo `"ip": "2001:db8::10"`. La app muestra la dirección configurada, un botón para copiarla, el nombre del servidor, circuito, jugadores actuales/máximos, tipo de sesión y tiempo restante cuando el servidor publica esos campos. `session` significa `0` Booking, `1` Practice, `2` Qualifying y `3` Race. `/INFO` no ofrece vueltas ni una clasificación de pilotos: esos datos deben venir de la página de cronometraje indicada en `liveTimingUrl`.
 
-«Join» abre Content Manager con `acmanager://race/online/join?ip=HOST&httpPort=PUERTO`. Instala Content Manager y ábrelo al menos una vez para que registre su protocolo Windows. Si lo has desactivado en sus ajustes, habilita la integración del protocolo. La app comprueba que existe un ejecutable registrado; la confirmación de coche, contraseña si hace falta y entrada a la sesión siguen siendo responsabilidad de Content Manager. No guardes contraseñas en este JSON público.
+«Join» abre Content Manager con `acmanager://race/online/join?ip=IP&httpPort=PUERTO`, usando exactamente la dirección configurada. Las configuraciones antiguas con `host` siguen funcionando. Instala Content Manager y ábrelo al menos una vez para que registre su protocolo Windows. Si lo has desactivado en sus ajustes, habilita la integración del protocolo. La app comprueba que existe un ejecutable registrado; la confirmación de coche, contraseña si hace falta y entrada a la sesión siguen siendo responsabilidad de Content Manager. No guardes contraseñas en este JSON público.
 
-Para servidores LAN, `allowLan: true` admite direcciones privadas y nombres locales, pero siempre bloquea loopback, link-local y direcciones conocidas de metadatos cloud. Los hosts públicos también se validan después de resolver DNS. El helper fija la conexión a esas direcciones validadas, no sigue redirecciones ni proxies, consulta únicamente `/INFO`, limita cada respuesta a 256 KiB y cada consulta a ocho segundos. Un servidor que no responda no impide mostrar los demás. `liveTimingUrl` nunca se descarga desde el helper: se utiliza como enlace y, si lo activas, como iframe del navegador.
+Para **Join**, recomendamos IPv4. El helper consulta `/INFO` mediante IPv6 correctamente, pero el [código público revisado de Content Manager](https://github.com/gro-ove/actools/blob/master/AcManager.Tools/Helpers/Api/KunosApiProvider.cs) no construye correctamente todas las URLs al recibir una IPv6 literal; no garantizamos que Join funcione con esa dirección en CM.
+
+Para servidores LAN, `allowLan: true` admite direcciones privadas y nombres locales del campo antiguo `host`, pero siempre bloquea loopback, link-local y direcciones conocidas de metadatos cloud. `ip` siempre exige una dirección literal, nunca un dominio. Los nombres de `host` también se validan después de resolver DNS. El helper fija la conexión a las direcciones validadas, no sigue redirecciones ni proxies, consulta únicamente `/INFO`, limita cada respuesta a 256 KiB y cada consulta a ocho segundos. Un servidor que no responda no impide mostrar los demás. `liveTimingUrl` nunca se descarga desde el helper: se utiliza como enlace y, si lo activas, como iframe del navegador.
 
 ## sponsors.json
 
@@ -65,6 +68,7 @@ Ejemplo de formato: sustituye todos los valores por los de tus patrocinadores.
 
 - `GET /api/portal` devuelve `{ servers, sponsors, errors, fetchedAt }`. Los errores incluyen `source`, `code` y `message`; el fallo de un archivo no impide cargar el otro.
 - `GET /api/servers` devuelve `{ servers, contentManagerAvailable, errors, checkedAt }`. Cada entrada contiene `{ server, state, info, error, checkedAt, joinAvailable }`; `state` es `online` u `offline` y `info` es `null` cuando falla la consulta.
+- Cada `server` conserva `ip` si se configuró mediante IP, o `host` para configuraciones antiguas. El frontend utiliza `ip ?? host` para mostrar la dirección. No se inventan ni se reemplazan IP en el catálogo.
 - `info` contiene `{ name, track, currentPlayers, maxPlayers, session, timeLeft, cars, passwordRequired }`. Los datos ausentes son `null`, salvo `cars`, que será `[]`. `timeLeft` está expresado en segundos.
 - `POST /api/servers/{id}/join` solo admite un ID de `servers.json`. Devuelve `{ serverId, launched: true, message }` al entregar la petición a Windows. Los fallos usan los códigos habituales del helper, por ejemplo `SERVER_NOT_FOUND` o `CONTENT_MANAGER_NOT_FOUND`.
 

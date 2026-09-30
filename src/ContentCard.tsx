@@ -57,6 +57,13 @@ export function ContentCard({
           </div>
         )}
         <div className="content-card-shade" aria-hidden="true" />
+        <button
+          type="button"
+          className="content-card-open"
+          aria-labelledby={titleId}
+          aria-haspopup="dialog"
+          onClick={onSelect}
+        />
         <div className="content-card-category">
           <PackageArtwork package={p} className="content-card-icon" />
           <span>{categoryNames[p.type]}</span>
@@ -65,10 +72,8 @@ export function ContentCard({
           </span>
         </div>
         <h2 className="content-card-title" id={titleId}>
-          <button type="button" onClick={onSelect}>
-            <span>{p.name}</span>
-            <ArrowUpRight size={17} aria-hidden="true" />
-          </button>
+          <span>{p.name}</span>
+          <ArrowUpRight size={17} aria-hidden="true" />
         </h2>
       </div>
       <div className="content-card-body">

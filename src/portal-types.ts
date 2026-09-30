@@ -2,7 +2,8 @@ export type PortalError = { source?: string; code?: string; message: string };
 export type ServerConfig = {
   id: string;
   name: string;
-  host: string;
+  ip?: string | null;
+  host?: string | null;
   httpPort: number;
   description?: string | null;
   allowLan?: boolean;

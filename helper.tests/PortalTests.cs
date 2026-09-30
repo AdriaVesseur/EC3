@@ -17,6 +17,44 @@ public static class PortalTests
             "acmanager://race/online/join?ip=server.example.com&httpPort=8081", "join URI uses CM's verified command and HTTP port");
         assert(ServerService.BuildJoinUri(server with { Host = "2001:4860:4860::8888" }).Contains("ip=2001%3A4860%3A4860%3A%3A8888"),
             "join URI encodes IPv6 host without injecting command parameters");
+        var ipServer = server with { Host = null, Ip = "8.8.8.8" };
+        var explicitIp = PortalConfigService.ParseServers(ServerJson(ipServer));
+        assert(explicitIp.Length == 1 && explicitIp[0] == ipServer && explicitIp[0].Host is null,
+            "portal accepts explicit IPv4 configuration without legacy host");
+        assert(!ServerJson(ipServer).Contains("\"host\"", StringComparison.Ordinal) &&
+            !ServerJson(server).Contains("\"ip\"", StringComparison.Ordinal),
+            "server snapshot preserves one configured address field without null aliases");
+        assert(ServerService.BuildJoinUri(ipServer) == "acmanager://race/online/join?ip=8.8.8.8&httpPort=8081",
+            "join uses explicitly configured IPv4 and HTTP port");
+        var ipv6Server = ipServer with { Ip = "2001:4860:4860::8888" };
+        assert(PortalConfigService.ParseServers(ServerJson(ipv6Server))[0] == ipv6Server &&
+            ServerService.BuildJoinUri(ipv6Server) == "acmanager://race/online/join?ip=2001%3A4860%3A4860%3A%3A8888&httpPort=8081",
+            "explicit IPv6 survives configuration and is encoded safely in CM join URI");
+        foreach (var invalidIp in new[] { "server.example.com", "http://8.8.8.8", "8.8.8.8:8081", "999.8.8.8", "8.8.8", "008.8.8.8", "[2001:4860:4860::8888]", " 8.8.8.8", "" })
+            reject(() => PortalConfigService.ParseServers(ServerJson(ipServer with { Ip = invalidIp })),
+                "explicit ip rejects invalid literal or hostname: " + invalidIp);
+        reject(() => PortalConfigService.ParseServers(ServerJson(server with { Ip = "8.8.8.8" })),
+            "portal rejects conflicting ip and legacy host");
+        foreach (var addressFields in new[]
+        {
+            "\"ip\":null", "\"host\":null", "\"ip\":\"8.8.8.8\",\"host\":null",
+            "\"host\":\"server.example.com\",\"ip\":null",
+            "\"ip\":\"8.8.8.8\",\"IP\":\"1.1.1.1\"",
+            "\"ip\":\"8.8.8.8\",\"Host\":\"server.example.com\"",
+        })
+            reject(() => PortalConfigService.ParseServers(
+                "{\"servers\":[{\"id\":\"practice\",\"name\":\"Practice\",\"httpPort\":8081," + addressFields + "}]}"),
+                "portal rejects explicit null or ambiguous address aliases: " + addressFields);
+        reject(() => PortalConfigService.ParseServers(ServerJson(server with { Host = null })),
+            "portal requires ip or legacy host");
+        reject(() => ServerService.BuildJoinUri(server with { Ip = "8.8.8.8" }),
+            "CM join rejects conflicting address fields even outside parsed configuration");
+        reject(() => PortalConfigService.ParseServers(ServerJson(ipServer with { Ip = "192.168.1.20" })),
+            "explicit LAN ip still requires allowLan");
+        assert(PortalConfigService.ParseServers(ServerJson(ipServer with { Ip = "192.168.1.20", AllowLan = true }))[0].Ip == "192.168.1.20",
+            "explicitly approved LAN ip is supported");
+        reject(() => PortalConfigService.ParseServers(ServerJson(ipServer with { Ip = "169.254.169.254", AllowLan = true })),
+            "explicit ip cannot bypass cloud metadata policy with LAN consent");
         reject(() => PortalConfigService.ParseServers(JsonSerializer.Serialize(new { servers = new[] { server, server } }, Json.Options)),
             "portal rejects duplicate server ids");
         reject(() => PortalConfigService.ParseServers("{}"), "portal requires its servers array");

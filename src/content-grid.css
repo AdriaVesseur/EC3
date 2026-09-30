@@ -1,8 +1,8 @@
-/* The minimum card width determines one, two or three columns in its container. */
+/* Reserve up to three columns, including empty slots when a filter returns fewer cards. */
 .content-grid {
   display: grid;
   grid-template-columns: repeat(
-    auto-fit,
+    auto-fill,
     minmax(min(100%, max(280px, calc((100% - 36px) / 3))), 1fr)
   );
   gap: 18px;
@@ -76,6 +76,9 @@
   opacity: 0.55;
 }
 .content-card-category {
+  position: relative;
+  z-index: 1;
+  pointer-events: none;
   display: flex;
   align-items: center;
   min-width: 0;
@@ -108,6 +111,11 @@
 }
 .content-card-title {
   position: relative;
+  z-index: 1;
+  pointer-events: none;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
   margin-top: 35px;
   font-family: "Transducer", sans-serif;
   font-size: var(--ec3-item-title, 18px);
@@ -115,30 +123,29 @@
   line-height: 1.4;
   letter-spacing: -0.015em;
 }
-.content-card-title > button {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
+.content-card-open {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
   width: 100%;
-  min-width: 0;
+  height: 100%;
   padding: 0;
   border: 0;
-  border-radius: 3px;
+  border-radius: 9px 9px 0 0;
   background: transparent;
-  color: #f4f6fa;
-  text-align: left;
-  font: inherit;
+  cursor: pointer;
 }
-.content-card-title > button > span {
+.content-card-title > span {
   min-width: 0;
+  color: #f4f6fa;
   overflow-wrap: anywhere;
 }
-.content-card-title > button > svg {
+.content-card-title > svg {
   flex: 0 0 17px;
   margin-top: 4px;
   color: #d5dcea;
 }
-.content-card-title > button:hover > span {
+.content-card-artwork:hover .content-card-title > span {
   text-decoration: underline;
   text-underline-offset: 4px;
   text-decoration-color: #df8493;
@@ -210,6 +217,9 @@
 .content-card button:focus-visible {
   outline: 2px solid #f09ca6;
   outline-offset: 3px;
+}
+.content-card .content-card-open:focus-visible {
+  outline-offset: -5px;
 }
 @media (max-width: 560px) {
   .content-grid {

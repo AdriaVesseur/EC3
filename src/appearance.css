@@ -471,11 +471,35 @@ input:focus-visible {
   color: var(--ec3-muted);
 }
 .race-ready-count {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
   color: #f5f6f8;
+  font-family: "Transducer Condensed", "Transducer", sans-serif;
+  font-size: 52px;
   font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  letter-spacing: 0;
+  white-space: nowrap;
 }
-.race-ready-count span {
-  color: #8d929f;
+.race-ready-count .race-ready-current {
+  color: #f5f6f8;
+  font-size: 1em;
+  font-weight: 500;
+  line-height: 1;
+}
+.race-ready-count .race-ready-separator {
+  color: #9299a8;
+  font-size: 28px;
+  font-weight: 400;
+  line-height: 1;
+}
+.race-ready-count .race-ready-total {
+  color: #b0b6c3;
+  font-size: 34px;
+  font-weight: 500;
+  line-height: 1;
 }
 .race-ready-list {
   border-color: var(--ec3-line);
@@ -749,11 +773,26 @@ input:focus-visible {
   background: linear-gradient(120deg, #22242c, #1c1e24);
 }
 .race-result-heading .round-number {
-  border-radius: 6px;
+  display: grid;
+  flex: 0 0 52px;
+  place-items: center;
+  width: 52px;
+  min-width: 52px;
+  height: 52px;
+  padding: 0;
+  border-radius: 7px;
   background: linear-gradient(160deg, #3a252e, #2a2129);
   box-shadow: inset 0 1px 0 rgb(239 164 176 / 8%);
   color: #e9bdc5;
+  font-family: "Transducer Condensed", "Transducer", sans-serif;
+  font-size: 36px;
   font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  letter-spacing: 0;
+}
+.race-result-heading .round-number > span {
+  line-height: 1;
 }
 .race-result-heading h3 {
   color: #edf0f6;
@@ -1066,6 +1105,23 @@ dialog::backdrop {
   .latest-content-item > .badge {
     padding: 3px 5px;
     font-size: 8px;
+  }
+  .race-ready-count {
+    gap: 5px;
+    font-size: 46px;
+  }
+  .race-ready-count .race-ready-separator {
+    font-size: 25px;
+  }
+  .race-ready-count .race-ready-total {
+    font-size: 30px;
+  }
+  .race-result-heading .round-number {
+    flex-basis: 44px;
+    width: 44px;
+    min-width: 44px;
+    height: 44px;
+    font-size: 30px;
   }
   .featured-package-shade {
     background:

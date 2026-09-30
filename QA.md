@@ -4,12 +4,12 @@ Tested locally on Windows x64 with .NET 8 runtime, .NET SDK 10, Node 24 and Micr
 
 ## Automated checks
 
-Current app 1.3.0 / catalog 1.4.5 verification:
+Current app 1.3.1 / catalog 1.4.5 verification:
 
-- TypeScript, catalog schema, 31 Node tests, two metadata generator tests and 153 helper checks pass.
+- TypeScript, catalog schema, 31 Node tests, two metadata generator tests and 178 helper checks pass.
 - All 22 real integration checks pass, including rejecting stale installation receipts when a package version changes without changing its files.
-- All 20 browser scenarios pass (19 in the full run, plus the added sponsor-error recovery scenario). New coverage includes card photos/logos and failed-image fallback, server session/player details, Join request selection, missing Content Manager, timing embed/external switching, sponsor logo proportions/web links, empty configuration, stale server state, app update dismissal/new versions and failed update checks.
-- Axe and horizontal overflow checks pass at desktop and 390px widths. Reviewed `package-logos-content.png`, `content-grid-mobile.png` and Servers/timing/sponsors screenshots. Server/timing/sponsor scenes use explicitly intercepted fixtures; production configuration is empty until the owner supplies real data.
+- All 23 browser scenarios pass (22 in the full run, plus the corrected photo/grid fixture scenario rerun and a passing server clipboard recovery rerun). Coverage includes three-column slots with one or two cards aligned left, photo and keyboard access to package details, separated readiness figures, responsive round badges, filtered ready counts, configured server IP display/copy, legacy host compatibility, Join request selection, timing, sponsors, app updates and failure states.
+- Axe and horizontal overflow checks pass at desktop and 390px widths. Reviewed `content-grid-two.png`, `content-grid-one.png`, `readiness-count-1440.png`, `round-badge-1440.png` and mobile captures, in addition to the Servers/timing/sponsors screenshots. Server/timing/sponsor scenes use explicitly intercepted fixtures; production configuration is empty until the owner supplies real data. Clipboard tests stub the browser API and do not change the system clipboard.
 - Browser checks use isolated ports 5185/32155; installed app 32145 remains available. The test helper serves the freshly built web resources through its test-only web-root setting. Packaging recompiles the production endpoint.
 - A pre-existing nonfatal WindowsBase/WebView2 assembly-resolution warning remains; compilation succeeds. No game content was changed by these tests.
 

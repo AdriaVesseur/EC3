@@ -93,7 +93,7 @@ La cuadrícula de **Content** usa también `image`, una URL HTTPS opcional para 
 
 ## Servidores, sponsors y actualizaciones de la app
 
-Edita `content-repository/servers.json` para añadir IP/host, puerto HTTP de AC y URL del live timing; **Servers** muestra el estado real de `/INFO` y abre Content Manager mediante **Join server**. El protocolo `acmanager` debe estar registrado en Windows. No se inicia una carrera ni se simula cronometraje desde el helper. El timing se abre mediante su enlace o, con `embedTiming: true`, dentro de la app si el proveedor admite iframes.
+Edita `content-repository/servers.json` para añadir `ip` (dirección IPv4 o IPv6 literal, sin URL ni puerto), `httpPort` (puerto HTTP de AC, normalmente `8081`), nombre y URL opcional del live timing. El campo antiguo `host` sigue siendo compatible, pero debes configurar exactamente uno de `ip` o `host`. **Servers** muestra el estado real de `/INFO` y abre Content Manager mediante **Join server**, usando esa IP y su puerto HTTP; no utilices el puerto UDP/TCP de carrera, normalmente `9600`. El protocolo `acmanager` debe estar registrado en Windows. No se inicia una carrera ni se simula cronometraje desde el helper. El timing se abre mediante su enlace o, con `embedTiming: true`, dentro de la app si el proveedor admite iframes.
 
 `content-repository/sponsors.json` contiene nombre, logo HTTPS y web HTTPS de cada sponsor. Sus logos enlazados aparecen al pie de todas las páginas. Ambos JSON empiezan vacíos para que publiques tus datos. Hay ejemplos completos en [portal-config.md](content-repository/portal-config.md); la configuración se consulta cada cinco minutos y Servers refresca el estado cada treinta segundos mientras está visible.
 

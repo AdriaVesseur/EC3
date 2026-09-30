@@ -2,6 +2,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import {
   AlertTriangle,
   Check,
+  Copy,
   ExternalLink,
   Flag,
   LockKeyhole,
@@ -52,9 +53,31 @@ export function ServersPage({
   const [joining, setJoining] = useState<string | null>(null);
   const [joinMessage, setJoinMessage] = useState("");
   const [joinError, setJoinError] = useState("");
+  const [copyError, setCopyError] = useState("");
+  const [copiedAddress, setCopiedAddress] = useState("");
+  const copyTimer = useRef<number | null>(null);
   const [timingServerId, setTimingServerId] = useState("");
   const timingSelectId = useId();
   const joinRequest = useRef<AbortController | null>(null);
+  useEffect(
+    () => () => {
+      if (copyTimer.current !== null) window.clearTimeout(copyTimer.current);
+    },
+    [],
+  );
+  const copyAddress = async (address: string) => {
+    setCopyError("");
+    try {
+      await navigator.clipboard.writeText(address);
+      setCopiedAddress(address);
+      if (copyTimer.current !== null) window.clearTimeout(copyTimer.current);
+      copyTimer.current = window.setTimeout(() => setCopiedAddress(""), 2500);
+    } catch {
+      setCopyError(
+        "Copy is unavailable. Select the server address and copy it manually.",
+      );
+    }
+  };
   useEffect(() => {
     if (!connected || !active) {
       joinRequest.current?.abort();
@@ -155,6 +178,12 @@ export function ServersPage({
           <p>{joinError}</p>
         </div>
       )}
+      {copyError && (
+        <div className="portal-notice error" role="alert">
+          <AlertTriangle size={18} aria-hidden="true" />
+          <p>{copyError}</p>
+        </div>
+      )}
       {joinMessage && (
         <div className="portal-notice success" role="status">
           <Check size={18} aria-hidden="true" />
@@ -196,6 +225,7 @@ export function ServersPage({
         <div className="servers-grid">
           {data.servers.map((entry) => {
             const info = entry.info;
+            const address = entry.server.ip ?? entry.server.host ?? "";
             const session =
               info?.session == null
                 ? null
@@ -220,6 +250,28 @@ export function ServersPage({
                     {entry.state === "online" ? "online" : "offline"}
                   </Badge>
                 </div>
+                {address && (
+                  <div className="server-address">
+                    <div>
+                      <span>
+                        {entry.server.ip ? "Server IP" : "Server address"}
+                      </span>
+                      <code>{address}</code>
+                      <span>HTTP port {entry.server.httpPort}</span>
+                    </div>
+                    <Button
+                      onClick={() => void copyAddress(address)}
+                      aria-label={`Copy server address ${address}`}
+                    >
+                      {copiedAddress === address ? (
+                        <Check size={14} aria-hidden="true" />
+                      ) : (
+                        <Copy size={14} aria-hidden="true" />
+                      )}
+                      {copiedAddress === address ? "Copied" : "Copy"}
+                    </Button>
+                  </div>
+                )}
                 {entry.server.description && (
                   <p className="server-description">
                     {entry.server.description}

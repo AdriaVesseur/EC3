@@ -44,6 +44,16 @@ test("package photos and logos render in the grid and fall back when unavailable
       await route.fulfill({ response, json: snapshot });
       return;
     }
+    const trackIds = snapshot.content
+      .filter(
+        (item: { package: { type: string } }) => item.package.type === "track",
+      )
+      .slice(0, 2)
+      .map((item: { package: { id: string } }) => item.package.id);
+    snapshot.content = snapshot.content.filter(
+      (item: { package: { type: string; id: string } }) =>
+        item.package.type !== "track" || trackIds.includes(item.package.id),
+    );
     targetId ||= snapshot.content[0].package.id;
     packageCount = snapshot.content.length;
     for (const item of snapshot.content) {
@@ -90,6 +100,56 @@ test("package photos and logos render in the grid and fall back when unavailable
   await expect(page.locator(".content-card .package-artwork svg")).toHaveCount(
     packageCount - 1,
   );
+  const opener = page.locator(".content-card-open").first();
+  const cardName = await page
+    .locator(".content-card-title")
+    .first()
+    .innerText();
+  await opener.click({ position: { x: 80, y: 80 } });
+  await expect(page.getByRole("dialog")).toBeVisible();
+  await expect(
+    page
+      .getByRole("dialog")
+      .getByRole("heading", { name: cardName.trim(), exact: true }),
+  ).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  await opener.focus();
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("dialog")).toBeVisible();
+  await page.keyboard.press("Escape");
+
+  const original = (await page.locator(".content-card").first().boundingBox())!;
+  await page.getByRole("button", { name: "Circuits", exact: true }).click();
+  await expect(page.locator(".content-card")).toHaveCount(2);
+  const two = await page.locator(".content-card").all();
+  const first = (await two[0].boundingBox())!;
+  const second = (await two[1].boundingBox())!;
+  expect(Math.abs(first.width - original.width)).toBeLessThan(1);
+  expect(Math.abs(first.x - original.x)).toBeLessThan(1);
+  expect(Math.abs(second.x - (first.x + first.width + 18))).toBeLessThan(1);
+  await page.screenshot({
+    path: "artifacts/content-grid-two.png",
+    fullPage: true,
+    animations: "disabled",
+  });
+  await page
+    .getByRole("textbox", { name: "Search content", exact: true })
+    .fill("Barcelona");
+  await expect(page.locator(".content-card")).toHaveCount(1);
+  const single = (await page.locator(".content-card").boundingBox())!;
+  expect(Math.abs(single.width - original.width)).toBeLessThan(1);
+  expect(Math.abs(single.x - original.x)).toBeLessThan(1);
+  await page.screenshot({
+    path: "artifacts/content-grid-one.png",
+    fullPage: true,
+    animations: "disabled",
+  });
+  await page
+    .getByRole("textbox", { name: "Search content", exact: true })
+    .fill("");
+  await page.getByRole("button", { name: /^All content/ }).click();
+  await expect(page.locator(".content-card")).toHaveCount(packageCount);
   await page.screenshot({
     path: "artifacts/package-logos-content.png",
     animations: "disabled",
