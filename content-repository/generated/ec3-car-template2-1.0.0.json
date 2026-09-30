@@ -1,0 +1,219 @@
+{
+  "id": "ec3-car-template2",
+  "version": "1.0.0",
+  "installPath": "content/cars/v2gt3_bmw_m4_gt3",
+  "size": 93589032,
+  "sha256": "36a0b734d6448b840527a42697d657b24a0ce0c53cd41b25f81dbeb59867d4e0",
+  "files": [
+    {
+      "path": "body_shadow.png",
+      "archivePath": "content/cars/v2gt3_bmw_m4_gt3/body_shadow.png",
+      "size": 74016,
+      "sha256": "bdf2e867d12d25f423243309d1ff3642bf77165cc7081ae5f67c4ccc3e02b611"
+    },
+    {
+      "path": "tyre_0_shadow.png",
+      "archivePath": "content/cars/v2gt3_bmw_m4_gt3/tyre_0_shadow.png",
+      "size": 3813,
+      "sha256": "d889b26406b3bab11253cbb407be8927a36e5245317ed1492e7912f7157def7e"
+    },
+    {
+      "path": "tyre_1_shadow.png",
+      "archivePath": "content/cars/v2gt3_bmw_m4_gt3/tyre_1_shadow.png",
+      "size": 3822,
+      "sha256": "6012df06170a8c5a1a1ceeb14da0f0c9edc966179bba281cc4994bc7c906b7c8"
+    },
+    {
+      "path": "tyre_2_shadow.png",
+      "archivePath": "content/cars/v2gt3_bmw_m4_gt3/tyre_2_shadow.png",
+      "size": 3775,
+      "sha256": "771f650377618a1418375fc9151afb9dc46fb1f90c06b70a7dd9080633442462"
+    },
+    {
+      "path": "tyre_3_shadow.png",
+      "archivePath": "content/cars/v2gt3_bmw_m4_gt3/tyre_3_shadow.png",
+      "size": 3881,
+      "sha256": "c169de1a0ed6608ae24c711145e41003e2c641b6c6e243e89193a74bd8c38f80"
+    },
+    {
+      "path": "collider.kn5",
+      "archivePath": "content/cars/v2gt3_bmw_m4_gt3/collider.kn5",
+      "size": 7865,
+      "sha256": "6b40b91b87b85f00099ce401abe7fc06097dccb4720319bcedeb91dbd640f488"
+    },
+    {
+      "path": "driver_base_pos.knh",
+      "archivePath": "content/cars/v2gt3_bmw_m4_gt3/driver_base_pos.knh",
+      "size": 6420,
+      "sha256": "58ee8872bfd0323918145bc1ff2f65c268af220bb2cf89b5e514b692939339d2"
+    },
+    {
+      "path": "logo.png",
+      "archivePath": "content/cars/v2gt3_bmw_m4_gt3/logo.png",
+      "size": 16376,
+      "sha256": "aa550d57c567123eaf5a57f0f38d147049627005e5730103bcd4e42267d8117f"
+    },
+    {
+      "path": "animations/car_wiper.ksanim",
+      "archivePath": "content/cars/v2gt3_bmw_m4_gt3/animations/car_wiper.ksanim",
+      "size": 12057,
+      "sha256": "d6b262015ac13a4c3c64bdfeaf4fcb2633896314b5451a83b4dee20a1740c027"
+    },
+    {
+      "path": "animations/steer.ksanim",
+      "archivePath": "content/cars/v2gt3_bmw_m4_gt3/animations/steer.ksanim",
+      "size": 800453,
+      "sha256": "ed01af429688d6c77f6b3447a4b1ee749db564e42e0955033695d9f3b071a876"
+    },
+    {
+      "path": "extension/ext_config.ini",
+      "archivePath": "content/cars/v2gt3_bmw_m4_gt3/extension/ext_config.ini",
+      "size": 4950,
+      "sha256": "76cd41d0fa76fcff7918c74c2492e2d6b0cc9809f3d59d215b51981df38c5b5f"
+    },
+    {
+      "path": "sfx/GUIDs.txt",
+      "archivePath": "content/cars/v2gt3_bmw_m4_gt3/sfx/GUIDs.txt",
+      "size": 4477,
+      "sha256": "ec84747f925ce227afa4fa4b26a6a9ff8e190cb78d62809ea4840846728daa2f"
+    },
+    {
+      "path": "sfx/v2gt3_bmw_m4_gt3.bank",
+      "archivePath": "content/cars/v2gt3_bmw_m4_gt3/sfx/v2gt3_bmw_m4_gt3.bank",
+      "size": 63550272,
+      "sha256": "7b7bb2d1955541bde74e5e98a0ea11282f6a946db2aec5684316f7d155a1a56d"
+    },
+    {
+      "path": "texture/flames/f2.dds",
+      "archivePath": "content/cars/v2gt3_bmw_m4_gt3/texture/flames/f2.dds",
+      "size": 5584,
+      "sha256": "64e45a3b772847743f8bd13749e648283ad49c2f137ecd345078f39f976fb0e9"
+    },
+    {
+      "path": "texture/flames/f3.dds",
+      "archivePath": "content/cars/v2gt3_bmw_m4_gt3/texture/flames/f3.dds",
+      "size": 4224,
+      "sha256": "8aee8919af51d314bcb4c2fb32204166c04cb05a1a7d7ede7b60a5cbbf2fcc9a"
+    },
+    {
+      "path": "texture/flames/f4.dds",
+      "archivePath": "content/cars/v2gt3_bmw_m4_gt3/texture/flames/f4.dds",
+      "size": 5584,
+      "sha256": "8cbfe1256c96e5295ba47de6c9050422294a4ac0b31334771012bea0ab94da56"
+    },
+    {
+      "path": "texture/flames/l3.dds",
+      "archivePath": "content/cars/v2gt3_bmw_m4_gt3/texture/flames/l3.dds",
+      "size": 16512,
+      "sha256": "019119a0a87da4e8e16f75270bc00107242844ee4398dc339fd53850b4fc636d"
+    },
+    {
+      "path": "texture/flames/l4.dds",
+      "archivePath": "content/cars/v2gt3_bmw_m4_gt3/texture/flames/l4.dds",
+      "size": 16512,
+      "sha256": "d0ccfc1fb668a6f13a86b93de3bea06f868f9e87ba207a28d0307e1a9b575ead"
+    },
+    {
+      "path": "texture/flames/l6.dds",
+      "archivePath": "content/cars/v2gt3_bmw_m4_gt3/texture/flames/l6.dds",
+      "size": 16512,
+      "sha256": "16f75b14b788ade534d852451ff36a53baf0fc20209f6aee14398d4764d5760d"
+    },
+    {
+      "path": "texture/flames/x0.dds",
+      "archivePath": "content/cars/v2gt3_bmw_m4_gt3/texture/flames/x0.dds",
+      "size": 16512,
+      "sha256": "0f325dcf44151adc088ee9babcd592ac343350ec9f3a830a04e9ccc314f1b8b4"
+    },
+    {
+      "path": "texture/flames/x1.dds",
+      "archivePath": "content/cars/v2gt3_bmw_m4_gt3/texture/flames/x1.dds",
+      "size": 16512,
+      "sha256": "17abf95bfdebefa4bfe62f6322848e95cdaf44c9d6ec77fb8b9fe256280a6b8d"
+    },
+    {
+      "path": "texture/flames/x5.dds",
+      "archivePath": "content/cars/v2gt3_bmw_m4_gt3/texture/flames/x5.dds",
+      "size": 16512,
+      "sha256": "6276231249678def47d017ca1125e21bdd1620da908c8b0a4b837535e7b449cf"
+    },
+    {
+      "path": "texture/flames/x7.dds",
+      "archivePath": "content/cars/v2gt3_bmw_m4_gt3/texture/flames/x7.dds",
+      "size": 16512,
+      "sha256": "18ba7c1f56bf04d25d4b637052c5b2c0f8b4722f4f764a4f268d8881f2f1dc8c"
+    },
+    {
+      "path": "texture/flames/x8.dds",
+      "archivePath": "content/cars/v2gt3_bmw_m4_gt3/texture/flames/x8.dds",
+      "size": 16512,
+      "sha256": "00e1293d7e9d2465142f51a4a4675199c961b52fcd9f127bd5b5a04813c10617"
+    },
+    {
+      "path": "ui/badge.png",
+      "archivePath": "content/cars/v2gt3_bmw_m4_gt3/ui/badge.png",
+      "size": 16376,
+      "sha256": "aa550d57c567123eaf5a57f0f38d147049627005e5730103bcd4e42267d8117f"
+    },
+    {
+      "path": "ui/ui_car.json",
+      "archivePath": "content/cars/v2gt3_bmw_m4_gt3/ui/ui_car.json",
+      "size": 4454,
+      "sha256": "29494aabdd8b554af6951e0e327efdb6d0df4d7a351075edd8077870d97496cc"
+    },
+    {
+      "path": "skins/prototype/EXT_Skin.dds",
+      "archivePath": "content/cars/v2gt3_bmw_m4_gt3/skins/prototype/EXT_Skin.dds",
+      "size": 22369776,
+      "sha256": "e115f758a2329a396132a60bb91aed0b9f8b67772f6dbadc6c7f2c21128a485e"
+    },
+    {
+      "path": "skins/prototype/livery.png",
+      "archivePath": "content/cars/v2gt3_bmw_m4_gt3/skins/prototype/livery.png",
+      "size": 12939,
+      "sha256": "6cca9c93dd8a0eaa1090ad69527283edb42dd06dbe1f06278f52afb76b4823df"
+    },
+    {
+      "path": "skins/prototype/preview.jpg",
+      "archivePath": "content/cars/v2gt3_bmw_m4_gt3/skins/prototype/preview.jpg",
+      "size": 165438,
+      "sha256": "14bded2d5e2d602d42e7466f4141442602b7c7145441d320e7751b1583cf5c7e"
+    },
+    {
+      "path": "data.acd",
+      "archivePath": "content/cars/v2gt3_bmw_m4_gt3/data.acd",
+      "size": 323764,
+      "sha256": "72ae545b2720d0118e17625852e6822be16d5081fc7f72d54053e3a340c08b8d"
+    },
+    {
+      "path": "v2gt3_a.kn5",
+      "archivePath": "content/cars/v2gt3_bmw_m4_gt3/v2gt3_a.kn5",
+      "size": 112913179,
+      "sha256": "375d31809a43a3eb3bd31d72b5ebf828fa4f3b195254b2c87b1cedfddb0a953c"
+    },
+    {
+      "path": "v2gt3_b.kn5",
+      "archivePath": "content/cars/v2gt3_bmw_m4_gt3/v2gt3_b.kn5",
+      "size": 3066418,
+      "sha256": "ebd5f07a9cf6274cf94a3b9db5579239842a0782804626a012c4e7f870dacb80"
+    },
+    {
+      "path": "v2gt3_c.kn5",
+      "archivePath": "content/cars/v2gt3_bmw_m4_gt3/v2gt3_c.kn5",
+      "size": 1470824,
+      "sha256": "94cbf16070987d109800ef1d7af04ccd189952417a415e55e99c66c31a3d5943"
+    },
+    {
+      "path": "v2gt3_d.kn5",
+      "archivePath": "content/cars/v2gt3_bmw_m4_gt3/v2gt3_d.kn5",
+      "size": 417526,
+      "sha256": "46cc1d6b56109c52571c5b9da6009e4233cfb73afdd0297ae24ab90ffe883726"
+    },
+    {
+      "path": "ReadMe.txt",
+      "archivePath": "ReadMe.txt",
+      "size": 256,
+      "sha256": "ffa451cc6f634b012f453b2cb4ba741f4ec151eab0a8efa9ea04f4a03e914f48"
+    }
+  ]
+}
