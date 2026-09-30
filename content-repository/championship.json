@@ -1,6 +1,6 @@
 {
   "season": "2026",
-  "build": "1.4.0",
+  "build": "1.4.1",
   "minimumHelperVersion": "1.0.0",
   "requiredContent": [
     "ec3-dallara-326",
