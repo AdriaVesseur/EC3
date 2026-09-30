@@ -37,6 +37,26 @@ const server = http.createServer((req, res) => {
     );
     return;
   }
+  if (req.url?.startsWith("/generated/")) {
+    const pkg = manifest.content.find((p) =>
+      req.url === `/generated/${p.id}-${p.version}.json`,
+    );
+    if (!pkg) {
+      res.statusCode = 404;
+      res.end();
+      return;
+    }
+    res.setHeader("Content-Type", "application/json");
+    res.end(JSON.stringify({
+      id: pkg.id,
+      version: pkg.version,
+      installPath: pkg.installPath,
+      size: pkg.size,
+      sha256: pkg.sha256,
+      files: pkg.files,
+    }));
+    return;
+  }
   const zip = archives.get(req.url?.slice(1));
   if (zip) {
     res.setHeader("Content-Length", zip.length);
