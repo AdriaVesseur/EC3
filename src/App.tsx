@@ -197,8 +197,7 @@ export default function App() {
     ongoing = jobs.filter((j) => active(j.state)),
     ready = snapshot?.raceReady,
     cat = snapshot?.catalog,
-    canAct = connected && !!snapshot?.assettoPath && !!cat && !pending,
-    allReady = connected && !!ready?.ready && !pending;
+    canAct = connected && !!snapshot?.assettoPath && !!cat && !pending;
   const library = content.filter(
     (s) =>
       (filter === "all" || s.package.type === filter) &&
@@ -232,6 +231,10 @@ export default function App() {
       ...content.filter((s) => s.package.required).map((s) => s.package.id),
     ]),
   ];
+  const requiredCount = ready?.total ?? raceIds.length;
+  const hasRequiredPackages = requiredCount > 0;
+  const allReady =
+    connected && !!ready?.ready && hasRequiredPackages && !pending;
   const requiredItems = raceIds
     .map((id) => content.find((item) => item.package.id === id))
     .filter((item): item is Content => !!item);
@@ -481,7 +484,9 @@ export default function App() {
                   </div>
                   <div className="featured-package-foot">
                     <span>
-                      {ready?.total ?? requiredItems.length} required packages
+                      {!cat
+                        ? "Catalog not loaded"
+                        : `${requiredCount} required ${requiredCount === 1 ? "package" : "packages"}`}
                     </span>
                     <span>2026 / COMPETITION CONTENT</span>
                   </div>
@@ -497,7 +502,15 @@ export default function App() {
                     </div>
                     <Badge
                       state={
-                        allReady ? "ready" : connected ? "outdated" : "offline"
+                        allReady
+                          ? "ready"
+                          : !connected
+                            ? "offline"
+                            : !cat || !hasRequiredPackages
+                              ? "unverified"
+                              : ongoing.length
+                                ? "downloading"
+                                : "outdated"
                       }
                     >
                       {allReady
@@ -508,102 +521,162 @@ export default function App() {
                             ? "In progress"
                             : !cat
                               ? "Catalog unavailable"
-                              : "Missing content"}
+                              : !hasRequiredPackages
+                                ? "No requirements yet"
+                                : "Missing content"}
                     </Badge>
                   </div>
-                  <div className="race-ready-summary">
-                    <strong className="race-ready-count">
-                      {ready?.readyCount ?? "—"}
-                      <span>/ {ready?.total || "—"}</span>
-                    </strong>
-                    <p>
-                      Required packages installed
-                      <span>
-                        {allReady
-                          ? "Every required package is verified and ready."
-                          : `${Math.max(0, (ready?.total ?? requiredItems.length) - (ready?.readyCount ?? 0))} packages left to complete your setup.`}
-                      </span>
-                    </p>
-                  </div>
-                  <Progress
-                    value={
-                      ready?.total
-                        ? ((ready.readyCount ?? 0) / ready.total) * 100
-                        : 0
-                    }
-                    label="Required content confirmed"
-                  />
-                  <div className="race-ready-list">
-                    {requiredItems.slice(0, 5).map((item) => (
-                      <button
-                        key={item.package.id}
-                        onClick={() => select(item.package)}
-                        aria-label={`${item.package.name} v${item.package.version}`}
-                      >
-                        <span
-                          className={
-                            item.state === "ready"
-                              ? "ready-check checked"
-                              : "ready-check"
-                          }
-                        >
-                          {item.state === "ready" && (
-                            <Check size={14} aria-hidden="true" />
-                          )}
-                        </span>
-                        <span className="ready-item-name">
-                          {item.package.name}
-                        </span>
-                        <span className="ready-item-version">
-                          v{item.package.version}
-                        </span>
-                        <ChevronRight size={15} aria-hidden="true" />
-                      </button>
-                    ))}
-                    {!requiredItems.length && (
-                      <p className="race-ready-empty">
-                        {connected
-                          ? "Refresh the catalog to see required packages."
-                          : "Connect the helper to check your race setup."}
+                  {cat && hasRequiredPackages ? (
+                    <>
+                      <div className="race-ready-summary">
+                        <strong className="race-ready-count">
+                          {ready?.readyCount ?? 0}
+                          <span>/ {requiredCount}</span>
+                        </strong>
+                        <p>
+                          Required packages installed
+                          <span>
+                            {allReady
+                              ? "Every required package is verified and ready."
+                              : `${Math.max(0, requiredCount - (ready?.readyCount ?? 0))} ${requiredCount - (ready?.readyCount ?? 0) === 1 ? "package" : "packages"} left to complete your setup.`}
+                          </span>
+                        </p>
+                      </div>
+                      <Progress
+                        value={
+                          requiredCount
+                            ? ((ready?.readyCount ?? 0) / requiredCount) * 100
+                            : 0
+                        }
+                        label="Required content confirmed"
+                      />
+                      <div className="race-ready-list">
+                        {requiredItems.slice(0, 5).map((item) => (
+                          <button
+                            key={item.package.id}
+                            onClick={() => select(item.package)}
+                            aria-label={`${item.package.name} v${item.package.version}`}
+                          >
+                            <span
+                              className={
+                                item.state === "ready"
+                                  ? "ready-check checked"
+                                  : "ready-check"
+                              }
+                            >
+                              {item.state === "ready" && (
+                                <Check size={14} aria-hidden="true" />
+                              )}
+                            </span>
+                            <span className="ready-item-name">
+                              {item.package.name}
+                            </span>
+                            <span className="ready-item-version">
+                              v{item.package.version}
+                            </span>
+                            <ChevronRight size={15} aria-hidden="true" />
+                          </button>
+                        ))}
+                        {!requiredItems.length && (
+                          <p className="race-ready-empty">
+                            Checking the required package list…
+                          </p>
+                        )}
+                      </div>
+                    </>
+                  ) : (
+                    <div className="race-ready-guidance">
+                      <strong>
+                        {!connected
+                          ? "Connect the desktop helper"
+                          : !cat
+                            ? "Load the championship catalog"
+                            : "No required packages are listed yet"}
+                      </strong>
+                      <p>
+                        {!connected
+                          ? "The helper checks your game files and manages downloads."
+                          : !cat
+                            ? "Refresh the catalog to see the cars and circuits needed for race day."
+                            : "Browse the content library to see available cars, circuits and tools."}
                       </p>
-                    )}
-                  </div>
+                    </div>
+                  )}
                   <Button
                     variant="primary"
                     className="race-ready-download"
-                    disabled={!canAct || ongoing.length > 0}
-                    onClick={() =>
-                      run(
+                    disabled={
+                      connecting ||
+                      pending ||
+                      (connected && hasRequiredPackages && ongoing.length > 0)
+                    }
+                    onClick={() => {
+                      if (!connected) return reconnect();
+                      if (!cat) return refresh();
+                      if (!hasRequiredPackages) {
+                        setContentTab("library");
+                        setPage("content");
+                        location.hash = "content";
+                        return;
+                      }
+                      if (!snapshot?.assettoPath) {
+                        setPage("settings");
+                        location.hash = "settings";
+                        return;
+                      }
+                      return run(
                         "/update",
                         { ids: raceIds },
                         "Championship preparation started.",
-                      )
-                    }
+                      );
+                    }}
                   >
-                    <Download size={17} aria-hidden="true" />
-                    {allReady
-                      ? "Check for updates"
-                      : "Download missing content"}
+                    {!connected ? (
+                      <RefreshCw size={17} aria-hidden="true" />
+                    ) : !cat ? (
+                      <RefreshCw size={17} aria-hidden="true" />
+                    ) : !hasRequiredPackages ? (
+                      <Layers size={17} aria-hidden="true" />
+                    ) : !snapshot?.assettoPath ? (
+                      <FolderOpen size={17} aria-hidden="true" />
+                    ) : (
+                      <Download size={17} aria-hidden="true" />
+                    )}
+                    {!connected
+                      ? "Reconnect helper"
+                      : !cat
+                        ? "Refresh catalog"
+                        : !hasRequiredPackages
+                          ? "Browse content"
+                          : !snapshot?.assettoPath
+                            ? "Set up Assetto Corsa"
+                            : allReady
+                              ? "Check for updates"
+                              : "Download missing content"}
                   </Button>
-                  <Button
-                    className="race-ready-verify"
-                    disabled={!canAct || ongoing.length > 0}
-                    onClick={() =>
-                      run(
-                        "/verify",
-                        { ids: raceIds },
-                        "Checking championship files.",
-                      )
-                    }
-                  >
-                    <ShieldCheck size={15} aria-hidden="true" />
-                    Verify all packages
-                  </Button>
-                  <small className="action-hint">
-                    {snapshot?.assettoPath
-                      ? "Based on files verified by your local helper."
-                      : "Choose your Assetto Corsa folder in Installation."}
-                  </small>
+                  {cat && hasRequiredPackages && (
+                    <>
+                      <Button
+                        className="race-ready-verify"
+                        disabled={!canAct || ongoing.length > 0}
+                        onClick={() =>
+                          run(
+                            "/verify",
+                            { ids: raceIds },
+                            "Checking championship files.",
+                          )
+                        }
+                      >
+                        <ShieldCheck size={15} aria-hidden="true" />
+                        Verify all packages
+                      </Button>
+                      <small className="action-hint">
+                        {snapshot?.assettoPath
+                          ? "Readiness is based on files verified by your local helper."
+                          : "Set your Assetto Corsa folder in Settings to install content."}
+                      </small>
+                    </>
+                  )}
                 </section>
               </div>
               <div className="status-strip">
@@ -1033,23 +1106,73 @@ export default function App() {
                     <p className="eyebrow">2026 SEASON</p>
                     <h2>Championship readiness</h2>
                   </div>
-                  <Badge state={allReady ? "ready" : "outdated"}>
+                  <Badge
+                    state={
+                      allReady
+                        ? "ready"
+                        : !connected
+                          ? "offline"
+                          : !cat || !hasRequiredPackages
+                            ? "unverified"
+                            : "outdated"
+                    }
+                  >
                     {allReady
                       ? "Ready to race"
-                      : `${ready?.readyCount ?? 0} / ${ready?.total ?? 0} packages ready`}
+                      : !connected
+                        ? "Helper offline"
+                        : !cat
+                          ? "Catalog unavailable"
+                          : !hasRequiredPackages
+                            ? "No requirements yet"
+                            : `${ready?.readyCount ?? 0} / ${requiredCount} packages ready`}
                   </Badge>
                 </div>
                 <p>
-                  All required cars, circuits, configurations and dependencies
-                  must pass verification.
+                  {cat && hasRequiredPackages
+                    ? "All required cars, circuits, configurations and dependencies must pass verification."
+                    : !connected
+                      ? "Connect the local helper to check your Assetto Corsa installation."
+                      : !cat
+                        ? "Refresh the catalog to load this season’s required content."
+                        : "The catalog has no required packages configured for this season yet."}
                 </p>
                 <Button
                   variant="primary"
-                  disabled={!canAct || ongoing.length > 0}
-                  onClick={() => run("/update", { ids: raceIds })}
+                  disabled={
+                    connecting ||
+                    pending ||
+                    (connected && hasRequiredPackages && ongoing.length > 0)
+                  }
+                  onClick={() => {
+                    if (!connected) return reconnect();
+                    if (!cat) return refresh();
+                    if (!hasRequiredPackages) {
+                      setContentTab("library");
+                      setPage("content");
+                      location.hash = "content";
+                      return;
+                    }
+                    if (!snapshot?.assettoPath) {
+                      setPage("settings");
+                      location.hash = "settings";
+                      return;
+                    }
+                    return run("/update", { ids: raceIds });
+                  }}
                 >
-                  Prepare championship
-                  <ArrowRight size={16} />
+                  {!connected
+                    ? "Reconnect helper"
+                    : !cat
+                      ? "Refresh catalog"
+                      : !hasRequiredPackages
+                        ? "Browse content"
+                        : !snapshot?.assettoPath
+                          ? "Set up Assetto Corsa"
+                          : "Prepare championship"}
+                  {cat && hasRequiredPackages && snapshot?.assettoPath ? (
+                    <ArrowRight size={16} />
+                  ) : null}
                 </Button>
               </section>
               <section className="results-section">

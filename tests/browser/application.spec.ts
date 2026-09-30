@@ -226,6 +226,39 @@ test("downloads are inside Content and installation controls are in Settings", a
     page.getByRole("heading", { name: "Your workspace." }),
   ).toBeVisible();
 });
+test("race readiness explains a missing catalog instead of showing false zeroes", async ({
+  page,
+}) => {
+  await page.route("**/api/status", (route) =>
+    route.fulfill({
+      json: {
+        version: "1.2.0",
+        assettoPath: null,
+        cspVersion: null,
+        testMode: false,
+        catalog: null,
+        catalogError: "Package folders overlap.",
+        content: [],
+        jobs: [],
+        raceReady: { ready: false, readyCount: 0, total: 0 },
+      },
+    }),
+  );
+
+  await page.goto("/");
+  const readiness = page.getByRole("region", { name: "Race Ready" });
+  await expect(readiness.getByText("Catalog unavailable")).toBeVisible();
+  await expect(
+    readiness.getByRole("button", { name: "Refresh catalog" }),
+  ).toBeEnabled();
+  await expect(readiness.getByText(/0\s*\/\s*—/)).toHaveCount(0);
+  await expect(readiness.getByText(/0 packages left/)).toHaveCount(0);
+  await page.screenshot({
+    path: "artifacts/race-ready-catalog-unavailable.png",
+    fullPage: true,
+    animations: "disabled",
+  });
+});
 test("offline state never reports race ready and provides installation action", async ({
   page,
 }) => {
@@ -236,8 +269,11 @@ test("offline state never reports race ready and provides installation action", 
     page.getByRole("link", { name: "Install EC3 Helper" }),
   ).toBeVisible();
   await expect(
+    page.getByRole("button", { name: "Reconnect helper" }),
+  ).toBeEnabled();
+  await expect(
     page.getByRole("button", { name: "Download missing content" }),
-  ).toBeDisabled();
+  ).toHaveCount(0);
   await expect(
     page.getByText("Every required package is verified and ready.", {
       exact: true,
