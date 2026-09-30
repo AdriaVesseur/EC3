@@ -152,97 +152,111 @@ test("the desktop shell hides the browser-only install link", async ({
 test("championship shows standings and results shows race classifications", async ({
   page,
 }) => {
-  await page.route("**/api/status", async (route) => {
-    const response = await route.fetch();
-    const snapshot = await response.json();
-    if (snapshot.catalog)
-      snapshot.catalog.championship.resultsUrl =
-        "https://www.makrobeasts.com/championships/example";
-    await route.fulfill({ response, json: snapshot });
-  });
-  await page.route("**/api/results**", (route) =>
-    route.fulfill({
-      json: {
-        sourceUrl: "https://www.makrobeasts.com/championships/example",
-        updatedAt: "2026-09-30T12:00:00Z",
-        standings: [
-          { position: 1, number: "16", driver: "Sofia Example", points: "42" },
-          { position: 2, number: "8", driver: "Alex Example", points: "37" },
-          { position: 3, number: "95", driver: "Sam Example", points: "31" },
-        ],
-        races: [
-          {
-            id: "event-1",
-            round: "R1",
-            name: "Round 1 | Example Circuit",
-            venue: "Example Circuit",
-            url: "https://www.makrobeasts.com/championships/example/events/event-1/results",
-            sessions: [
-              {
-                name: "Race",
-                results: [
-                  {
-                    position: 1,
-                    number: "16",
-                    driver: "Sofia Example",
-                    car: "Porsche Cup",
-                    time: "26:12.232",
-                  },
-                  {
-                    position: 2,
-                    number: "8",
-                    driver: "Alex Example",
-                    car: "Porsche Cup",
-                    time: "26:24.410",
-                  },
-                  {
-                    position: 3,
-                    number: "95",
-                    driver: "Sam Example",
-                    car: "Porsche Cup",
-                    time: "26:28.162",
-                  },
-                ],
-              },
-            ],
-          },
-        ],
-      },
-    }),
-  );
+  try {
+    await page.route("**/api/status", async (route) => {
+      const response = await route.fetch();
+      const snapshot = await response.json();
+      if (snapshot.catalog)
+        snapshot.catalog.championship.resultsUrl =
+          "https://www.makrobeasts.com/championships/example";
+      await route.fulfill({ response, json: snapshot });
+    });
+    await page.route("**/api/results**", (route) =>
+      route.fulfill({
+        json: {
+          sourceUrl: "https://www.makrobeasts.com/championships/example",
+          updatedAt: "2026-09-30T12:00:00Z",
+          standings: [
+            {
+              position: 1,
+              number: "16",
+              driver: "Sofia Example",
+              points: "42",
+            },
+            { position: 2, number: "8", driver: "Alex Example", points: "37" },
+            { position: 3, number: "95", driver: "Sam Example", points: "31" },
+          ],
+          races: [
+            {
+              id: "event-1",
+              round: "R1",
+              name: "Round 1 | Example Circuit",
+              venue: "Example Circuit",
+              url: "https://www.makrobeasts.com/championships/example/events/event-1/results",
+              sessions: [
+                {
+                  name: "Race",
+                  results: [
+                    {
+                      position: 1,
+                      number: "16",
+                      driver: "Sofia Example",
+                      car: "Porsche Cup",
+                      time: "26:12.232",
+                    },
+                    {
+                      position: 2,
+                      number: "8",
+                      driver: "Alex Example",
+                      car: "Porsche Cup",
+                      time: "26:24.410",
+                    },
+                    {
+                      position: 3,
+                      number: "95",
+                      driver: "Sam Example",
+                      car: "Porsche Cup",
+                      time: "26:28.162",
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      }),
+    );
 
-  await page.goto("/#championship");
-  await expect(
-    page.getByRole("heading", { name: "Driver standings" }),
-  ).toBeVisible();
-  await expect(page.getByText("Sofia Example", { exact: true })).toBeVisible();
-  await expect(
-    page.getByRole("heading", { name: "Championship readiness" }),
-  ).toHaveCount(0);
-  await expect(page.getByRole("heading", { name: "Race results" })).toHaveCount(
-    0,
-  );
-  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
-  await page.screenshot({
-    path: "artifacts/championship-standings.png",
-    fullPage: true,
-    animations: "disabled",
-  });
+    await page.goto("/#championship");
+    await expect(
+      page.getByRole("heading", { name: "Driver standings" }),
+    ).toBeVisible();
+    await expect(
+      page.getByText("Sofia Example", { exact: true }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: "Championship readiness" }),
+    ).toHaveCount(0);
+    await expect(
+      page.getByRole("heading", { name: "Race results" }),
+    ).toHaveCount(0);
+    expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+    await page.screenshot({
+      path: "artifacts/championship-standings.png",
+      fullPage: true,
+      animations: "disabled",
+    });
 
-  await page.getByRole("link", { name: "Results", exact: true }).click();
-  await expect(
-    page.getByRole("heading", { name: "Race results" }),
-  ).toBeVisible();
-  await expect(page.getByText("Sofia Example", { exact: true })).toBeVisible();
-  await expect(
-    page.getByRole("heading", { name: "Driver standings" }),
-  ).toHaveCount(0);
-  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
-  await page.screenshot({
-    path: "artifacts/race-results.png",
-    fullPage: true,
-    animations: "disabled",
-  });
+    await page.getByRole("link", { name: "Results", exact: true }).click();
+    await expect(
+      page.getByRole("heading", { name: "Race results" }),
+    ).toBeVisible();
+    await expect(
+      page.getByText("Sofia Example", { exact: true }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: "Driver standings" }),
+    ).toHaveCount(0);
+    expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+    await page.screenshot({
+      path: "artifacts/race-results.png",
+      fullPage: true,
+      animations: "disabled",
+    });
+  } finally {
+    // Drain status polls before the test fixture disposes their request context.
+    await page.unrouteAll({ behavior: "wait" });
+  }
 });
 test("downloads are inside Content and installation controls are in Settings", async ({
   page,
