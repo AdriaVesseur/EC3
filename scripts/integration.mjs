@@ -302,13 +302,39 @@ try {
     s.raceReady.ready && hash(fs.readFileSync(file)) === car.files[0].sha256,
     "repair restores exact official bytes",
   );
+  const previousVersion = car.version;
+  const downloadsBeforeVersionChange = downloadCount;
   car.version = "2.3.2";
-  await api("/update", { ids: [] });
+  await api("/refresh", {});
   s = await settled();
   check(
-    s.content[0].installedVersion === "2.3.2" &&
-      downloadCount === downloads + 2,
-    "metadata-only version updates reuse identical verified package files",
+    s.content.find((p) => p.package.id === car.id).state === "outdated" &&
+      s.content.find((p) => p.package.id === car.id).installedVersion ===
+        previousVersion &&
+      !s.raceReady.ready &&
+      downloadCount === downloadsBeforeVersionChange,
+    "a newer catalog version marks the previous receipt outdated even when files match",
+  );
+  const versionUpdate = (await api("/update", { ids: [] })).find(
+    (j) => j.packageId === car.id,
+  );
+  s = await settled();
+  const updatedCar = s.content.find((p) => p.package.id === car.id);
+  const updatedReceipt = JSON.parse(
+    fs.readFileSync(
+      path.join(game, ".ec3", "installed", car.id + ".json"),
+      "utf8",
+    ),
+  );
+  check(
+    s.jobs.find((j) => j.id === versionUpdate.id).state === "complete" &&
+      updatedCar.state === "ready" &&
+      updatedCar.installedVersion === car.version &&
+      updatedReceipt.version === car.version &&
+      s.raceReady.ready &&
+      downloadCount === downloadsBeforeVersionChange + 1 &&
+      hash(fs.readFileSync(file)) === car.files[0].sha256,
+    "an explicit version update installs verified bytes and records the new receipt version",
   );
   // A malicious archive can pass the outer checksum. Extraction must still reject it.
   const bad = zipSync({ "../escape.txt": strToU8("malicious") }, { level: 0 });

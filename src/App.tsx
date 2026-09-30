@@ -173,13 +173,14 @@ export default function App() {
       void refresh();
   }, [connected, snapshot?.catalog]);
   const resultsSource = snapshot?.catalog?.championship.resultsUrl;
+  const hasCatalog = !!snapshot?.catalog;
   useEffect(() => {
     if (
       !connected ||
       (page !== "home" && page !== "championship" && page !== "results")
     )
       return;
-    if (!resultsSource) {
+    if (hasCatalog && !resultsSource) {
       setResults(null);
       setResultsLoading(false);
       setResultsError("");
@@ -187,7 +188,7 @@ export default function App() {
     }
     let cancelled = false;
     setResults((previous) =>
-      previous?.sourceUrl === resultsSource ? previous : null,
+      !resultsSource || previous?.sourceUrl === resultsSource ? previous : null,
     );
     setResultsLoading(true);
     setResultsError("");
@@ -209,7 +210,7 @@ export default function App() {
     return () => {
       cancelled = true;
     };
-  }, [page, connected, resultsSource]);
+  }, [page, connected, resultsSource, hasCatalog]);
   const content = snapshot?.content ?? [],
     jobs = snapshot?.jobs ?? [],
     ongoing = jobs.filter((j) => active(j.state)),
@@ -819,12 +820,14 @@ export default function App() {
                 </section>
                 <StandingsPreview
                   results={
-                    results?.sourceUrl === resultsSource ? results : null
+                    !cat || results?.sourceUrl === resultsSource
+                      ? results
+                      : null
                   }
                   loading={resultsLoading}
                   error={resultsError}
                   connected={connected}
-                  configured={!!resultsSource}
+                  configured={!cat || !!resultsSource}
                 />
               </div>
             </>
@@ -1107,7 +1110,7 @@ export default function App() {
                     <span>{resultsError}</span>
                   </div>
                 )}
-                {connected && !resultsSource && (
+                {connected && cat && !resultsSource && (
                   <EmptyState title="No standings source configured">
                     {cat
                       ? "This championship has no standings source configured yet."
@@ -1280,7 +1283,7 @@ export default function App() {
                   <span>{resultsError}</span>
                 </div>
               )}
-              {connected && !resultsSource && (
+              {connected && cat && !resultsSource && (
                 <EmptyState title="No results source configured">
                   {cat
                     ? "This championship has no race results source configured yet."

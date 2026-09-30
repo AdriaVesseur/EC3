@@ -86,6 +86,33 @@ test("Home previews the top five by position and links to full standings", async
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 });
 
+test("Home can show standings while the content catalog is unavailable", async ({
+  page,
+}) => {
+  await page.route("**/api/status", async (route) => {
+    const response = await route.fetch();
+    const snapshot = await response.json();
+    snapshot.catalog = null;
+    snapshot.catalogError = "Catalog unavailable in test";
+    snapshot.content = [];
+    await route.fulfill({ response, json: snapshot });
+  });
+  await page.route("**/api/results**", (route) =>
+    route.fulfill({
+      json: {
+        sourceUrl,
+        updatedAt: "2026-09-30T12:00:00Z",
+        standings,
+        races: [],
+      },
+    }),
+  );
+  await page.goto("/?desktop=1#home");
+  await expect(
+    page.getByRole("region", { name: "Top 5 drivers" }).locator("tbody tr"),
+  ).toHaveCount(5);
+});
+
 for (const mode of ["empty", "unavailable"] as const) {
   test(`Home explains ${mode} standings`, async ({ page }) => {
     await configureSource(page);
