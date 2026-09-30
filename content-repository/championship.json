@@ -1,7 +1,7 @@
 {
   "season": "2026",
   "build": "1.4.3",
-  "minimumHelperVersion": "1.0.0",
+  "minimumHelperVersion": "1.1.0",
   "requiredContent": [],
   "events": []
 }

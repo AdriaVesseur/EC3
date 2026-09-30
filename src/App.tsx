@@ -1107,7 +1107,7 @@ export default function App() {
                   </div>
                   <div>
                     <dt>Application version</dt>
-                    <dd>1.0.0</dd>
+                    <dd>1.1.0</dd>
                   </div>
                   <div>
                     <dt>Catalog last refreshed</dt>
