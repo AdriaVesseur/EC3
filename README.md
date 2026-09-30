@@ -54,6 +54,8 @@ championship.json                      |
 
 El helper muestra la interfaz dentro de una ventana de Windows mediante WebView2 y sirve sus recursos localmente en `http://127.0.0.1:32145`; el usuario no tiene que abrir un navegador. La ventana se puede ocultar en la bandeja y volver a abrir desde el icono de EC3; desde allí también se pueden consultar los logs o salir. La misma interfaz puede alojarse por separado en GitHub Pages con un origen aprobado explícitamente en el helper.
 
+El logo existente de EC3 se usa en el EXE, la ventana, la bandeja, el instalador y el favicon. El icono se incluye como recurso embebido para las publicaciones single-file. Si cambia el logo PNG, `python scripts/generate-app-icon.py` (Python con Pillow) regenera ambos archivos ICO.
+
 ## Configuración de producción
 
 La configuración local está en `%LOCALAPPDATA%/Eurocup3/settings.json`. Si no existe se usan los valores predeterminados. Crea ese archivo o distribuye los valores adecuados en `ConfigService.cs` antes de publicar:

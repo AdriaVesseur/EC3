@@ -82,6 +82,7 @@ sealed class DesktopWindow : Form
     const int DwmwaCaptionColor = 35;
     const int DwmwaTextColor = 36;
     readonly WebView2 browser = new() { Dock = DockStyle.Fill };
+    readonly Icon applicationIcon = AppIcon.Load();
     bool exiting;
 
     [DllImport("dwmapi.dll", PreserveSig = true)]
@@ -93,7 +94,7 @@ sealed class DesktopWindow : Form
         StartPosition = FormStartPosition.CenterScreen;
         MinimumSize = new Size(900, 620);
         Size = new Size(1480, 940);
-        Icon = SystemIcons.Application;
+        Icon = applicationIcon;
         Controls.Add(browser);
         Shown += (_, _) => ApplyDarkTitleBar();
         FormClosing += (_, args) =>
@@ -208,5 +209,12 @@ sealed class DesktopWindow : Form
     {
         exiting = true;
         Close();
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        base.Dispose(disposing);
+        if (disposing)
+            applicationIcon.Dispose();
     }
 }

@@ -2,9 +2,11 @@
 
 Operational desktop software for championship drivers. Fixed navigation, one dominant preparation action, concise package rows and persistent connection state. The initial skill search suggested a landing page; that pattern was rejected. The narrower UI/UX Pro Max search returned data-dense operational dashboards, which informed the library and status displays.
 
-Use Transducer for interface text, with Transducer Condensed for motorsport display typography and Transducer Extended for selected emphasis. The supplied JTD font files are bundled locally under the user-confirmed application license. Graphite surfaces, white type and EC3 red establish the visual identity; green and amber communicate named status, always accompanied by text. The mark is a typographic project treatment, not a supplied official logo.
+Use Transducer for interface text, with Transducer Condensed for motorsport display typography and Transducer Extended for selected emphasis. The supplied JTD font files are bundled locally under the user-confirmed application license. Graphite surfaces, white type and EC3 red establish the visual identity; green and amber communicate named status, always accompanied by text. Use the existing EC3 logo consistently in the interface, native Windows application and favicon.
 
 Page geometry and responsive composition remain in `src/styles.css`. The visual finish lives in `src/appearance.css`, imported last. Keep navigation, section order, columns and container widths unchanged when refining appearance.
+
+Home's right-hand overview panel previews the first five drivers by championship position from the same source used by Championship. Display real points, the update time and a link to full standings. Loading, missing source, offline and empty results have explicit states. Championship leads with the driver classification; preparation actions stay with the content and readiness controls on Home.
 
 Core palette: carbon `#111214`, graphite `#191b20`, raised controls `#23262d`, measured edges `#34373f`, EC3 crimson `#cf2d40`, near-white `#f2f3f6`. The same `--ec3-*` tokens drive named success, warning and error states. Light falls subtly from above: panel inset highlights, darker inner paths/search fields, precise neutral edges and restrained control shadows. Container radii are 9–12px, controls 6px and status tags 4px.
 

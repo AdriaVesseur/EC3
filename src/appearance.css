@@ -811,6 +811,84 @@ input:focus-visible {
   color: #a7adbb;
 }
 
+/* The Home preview uses the same standings hierarchy in a compact panel. */
+.standings-preview .section-heading {
+  align-items: center;
+  margin-bottom: 18px;
+}
+.standings-preview-table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  text-align: left;
+}
+.preview-position-column {
+  width: 38px;
+}
+.preview-points-column {
+  width: 60px;
+}
+.standings-preview-table th {
+  padding: 0 0 10px;
+  border-bottom: 1px solid var(--ec3-line);
+  color: var(--ec3-quiet);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.085em;
+  text-transform: uppercase;
+}
+.standings-preview-table td {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--ec3-line);
+  font-size: 13px;
+  line-height: 1.45;
+}
+.standings-preview-table th:nth-child(2),
+.standings-preview-table td:nth-child(2) {
+  padding-right: 8px;
+  padding-left: 8px;
+}
+.standings-preview-table th:last-child,
+.standings-preview-table td:last-child {
+  text-align: right;
+}
+.standings-preview-table .preview-driver {
+  color: var(--ec3-text);
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+.standings-preview-table .preview-points {
+  color: var(--ec3-text);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.standings-preview-state {
+  display: flex;
+  align-items: center;
+  min-height: 180px;
+  color: var(--ec3-muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+.standings-preview-footer {
+  display: grid;
+  gap: 10px;
+  margin-top: 16px;
+}
+.standings-preview-updated {
+  color: var(--ec3-quiet);
+  font-size: 10px;
+  line-height: 1.5;
+}
+.standings-preview-footer .text-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  justify-self: start;
+  font-size: 12px;
+  font-weight: 500;
+}
+
 /* The same finish extends to paths, downloads, messages and detail dialogs. */
 .path-box {
   border-color: #343740;

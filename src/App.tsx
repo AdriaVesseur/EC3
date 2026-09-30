@@ -37,6 +37,7 @@ import {
   TypeIcon,
 } from "./components";
 import type { ChampionshipResults, Content, Package, Snapshot } from "./types";
+import { StandingsPreview } from "./StandingsPreview";
 type Page = "home" | "content" | "championship" | "results" | "settings";
 const pages = [
   ["home", "Home", Home],
@@ -171,9 +172,23 @@ export default function App() {
     )
       void refresh();
   }, [connected, snapshot?.catalog]);
+  const resultsSource = snapshot?.catalog?.championship.resultsUrl;
   useEffect(() => {
-    if ((page !== "championship" && page !== "results") || !connected) return;
+    if (
+      !connected ||
+      (page !== "home" && page !== "championship" && page !== "results")
+    )
+      return;
+    if (!resultsSource) {
+      setResults(null);
+      setResultsLoading(false);
+      setResultsError("");
+      return;
+    }
     let cancelled = false;
+    setResults((previous) =>
+      previous?.sourceUrl === resultsSource ? previous : null,
+    );
     setResultsLoading(true);
     setResultsError("");
     api<ChampionshipResults>("/results")
@@ -194,7 +209,7 @@ export default function App() {
     return () => {
       cancelled = true;
     };
-  }, [page, connected]);
+  }, [page, connected, resultsSource]);
   const content = snapshot?.content ?? [],
     jobs = snapshot?.jobs ?? [],
     ongoing = jobs.filter((j) => active(j.state)),
@@ -802,56 +817,15 @@ export default function App() {
                     </EmptyState>
                   )}
                 </section>
-                <section className="event-panel">
-                  <div className="section-heading">
-                    <div>
-                      <span className="eyebrow">CHAMPIONSHIP</span>
-                      <h2>Prepare for the next green light.</h2>
-                    </div>
-                    <Flag size={23} />
-                  </div>
-                  <div className="event-art" aria-hidden="true">
-                    <div className="track-line" />
-                    <span>EC3</span>
-                  </div>
-                  {cat?.championship.events[0] ? (
-                    <>
-                      <span className="eyebrow">
-                        ROUND {cat.championship.events[0].round} · EVENT PACKAGE
-                      </span>
-                      <h3>{cat.championship.events[0].venue}</h3>
-                      <p>
-                        Car, circuit and event configuration. Everything you
-                        need, installed together.
-                      </p>
-                      <Button
-                        disabled={!canAct}
-                        onClick={() =>
-                          run(
-                            "/install",
-                            { ids: cat.championship.events[0].requiredContent },
-                            "Event package added to Downloads.",
-                          )
-                        }
-                      >
-                        Prepare event
-                        <ArrowRight size={16} />
-                      </Button>
-                    </>
-                  ) : (
-                    <>
-                      <h3>Every round. In sync.</h3>
-                      <p>
-                        Event packages will appear here when your championship
-                        catalog is connected.
-                      </p>
-                      <a href="#championship" className="text-link">
-                        Explore championship
-                        <ArrowRight size={16} />
-                      </a>
-                    </>
-                  )}
-                </section>
+                <StandingsPreview
+                  results={
+                    results?.sourceUrl === resultsSource ? results : null
+                  }
+                  loading={resultsLoading}
+                  error={resultsError}
+                  connected={connected}
+                  configured={!!resultsSource}
+                />
               </div>
             </>
           )}
@@ -1087,81 +1061,6 @@ export default function App() {
           )}
           {page === "championship" && (
             <>
-              <section className="settings-section">
-                <div className="section-heading">
-                  <div>
-                    <p className="eyebrow">2026 SEASON</p>
-                    <h2>Championship readiness</h2>
-                  </div>
-                  <Badge
-                    state={
-                      allReady
-                        ? "ready"
-                        : !connected
-                          ? "offline"
-                          : !cat || !hasRequiredPackages
-                            ? "unverified"
-                            : "outdated"
-                    }
-                  >
-                    {allReady
-                      ? "Ready to race"
-                      : !connected
-                        ? "Helper offline"
-                        : !cat
-                          ? "Catalog unavailable"
-                          : !hasRequiredPackages
-                            ? "No requirements yet"
-                            : `${ready?.readyCount ?? 0} / ${requiredCount} packages ready`}
-                  </Badge>
-                </div>
-                <p>
-                  {cat && hasRequiredPackages
-                    ? "All required cars, circuits, configurations and dependencies must pass verification."
-                    : !connected
-                      ? "Connect the local helper to check your Assetto Corsa installation."
-                      : !cat
-                        ? "Refresh the catalog to load this season’s required content."
-                        : "The catalog has no required packages configured for this season yet."}
-                </p>
-                <Button
-                  variant="primary"
-                  disabled={
-                    connecting ||
-                    pending ||
-                    (connected && hasRequiredPackages && ongoing.length > 0)
-                  }
-                  onClick={() => {
-                    if (!connected) return reconnect();
-                    if (!cat) return refresh();
-                    if (!hasRequiredPackages) {
-                      setContentTab("library");
-                      setPage("content");
-                      location.hash = "content";
-                      return;
-                    }
-                    if (!snapshot?.assettoPath) {
-                      setPage("settings");
-                      location.hash = "settings";
-                      return;
-                    }
-                    return run("/update", { ids: raceIds });
-                  }}
-                >
-                  {!connected
-                    ? "Reconnect helper"
-                    : !cat
-                      ? "Refresh catalog"
-                      : !hasRequiredPackages
-                        ? "Browse content"
-                        : !snapshot?.assettoPath
-                          ? "Set up Assetto Corsa"
-                          : "Prepare championship"}
-                  {cat && hasRequiredPackages && snapshot?.assettoPath ? (
-                    <ArrowRight size={16} />
-                  ) : null}
-                </Button>
-              </section>
               <section className="results-section">
                 <div className="section-heading">
                   <div>
@@ -1207,6 +1106,13 @@ export default function App() {
                     <AlertTriangle size={16} />
                     <span>{resultsError}</span>
                   </div>
+                )}
+                {connected && !resultsSource && (
+                  <EmptyState title="No standings source configured">
+                    {cat
+                      ? "This championship has no standings source configured yet."
+                      : "Refresh the catalog to load the championship standings source."}
+                  </EmptyState>
                 )}
                 {resultsLoading && !results && (
                   <EmptyState title="Loading driver standings">
@@ -1373,6 +1279,13 @@ export default function App() {
                   <AlertTriangle size={16} />
                   <span>{resultsError}</span>
                 </div>
+              )}
+              {connected && !resultsSource && (
+                <EmptyState title="No results source configured">
+                  {cat
+                    ? "This championship has no race results source configured yet."
+                    : "Refresh the catalog to load the championship results source."}
+                </EmptyState>
               )}
               {!resultsLoading && !resultsError && results && (
                 <section className="results-section">

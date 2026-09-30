@@ -30,9 +30,10 @@ public static class Tray
                 }
             );
             menu.Items.Add("Exit helper", null, (_, _) => lifetime.StopApplication());
+            using var applicationIcon = AppIcon.Load();
             using var icon = new System.Windows.Forms.NotifyIcon
             {
-                Icon = System.Drawing.SystemIcons.Application,
+                Icon = applicationIcon,
                 Text = "Eurocup 3 Content Manager",
                 ContextMenuStrip = menu,
                 Visible = true,

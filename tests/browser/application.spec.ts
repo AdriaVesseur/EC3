@@ -152,6 +152,14 @@ test("the desktop shell hides the browser-only install link", async ({
 test("championship shows standings and results shows race classifications", async ({
   page,
 }) => {
+  await page.route("**/api/status", async (route) => {
+    const response = await route.fetch();
+    const snapshot = await response.json();
+    if (snapshot.catalog)
+      snapshot.catalog.championship.resultsUrl =
+        "https://www.makrobeasts.com/championships/example";
+    await route.fulfill({ response, json: snapshot });
+  });
   await page.route("**/api/results**", (route) =>
     route.fulfill({
       json: {
@@ -208,6 +216,9 @@ test("championship shows standings and results shows race classifications", asyn
     page.getByRole("heading", { name: "Driver standings" }),
   ).toBeVisible();
   await expect(page.getByText("Sofia Example", { exact: true })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Championship readiness" }),
+  ).toHaveCount(0);
   await expect(page.getByRole("heading", { name: "Race results" })).toHaveCount(
     0,
   );

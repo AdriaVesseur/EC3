@@ -11,6 +11,7 @@ OutputBaseFilename=Eurocup3-Helper-Setup
 Compression=lzma2
 SolidCompression=yes
 WizardStyle=modern
+SetupIconFile=..\helper\Assets\ec3.ico
 UninstallDisplayIcon={app}\Eurocup3.Helper.exe
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
@@ -20,8 +21,8 @@ CloseApplications=yes
 Source: "..\artifacts\helper\*"; Excludes: "Eurocup3.Helper.exe.WebView2\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
-Name: "{group}\Eurocup 3 Content Manager"; Filename: "{app}\Eurocup3.Helper.exe"; WorkingDir: "{app}"
-Name: "{autodesktop}\Eurocup 3 Content Manager"; Filename: "{app}\Eurocup3.Helper.exe"; WorkingDir: "{app}"
+Name: "{group}\Eurocup 3 Content Manager"; Filename: "{app}\Eurocup3.Helper.exe"; WorkingDir: "{app}"; IconFilename: "{app}\Eurocup3.Helper.exe"; IconIndex: 0
+Name: "{autodesktop}\Eurocup 3 Content Manager"; Filename: "{app}\Eurocup3.Helper.exe"; WorkingDir: "{app}"; IconFilename: "{app}\Eurocup3.Helper.exe"; IconIndex: 0
 
 [Run]
 Filename: "{app}\Eurocup3.Helper.exe"; Description: "Open Eurocup 3 Content Manager"; Flags: nowait postinstall skipifsilent

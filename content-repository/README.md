@@ -52,4 +52,8 @@ El logo aparece junto al nombre en **Content** y en los listados de **Home**. Si
 
 `championship.json` incluye `resultsUrl`, que apunta a la página pública del campeonato en MakroBeasts. La app lee de ahí la clasificación de pilotos y los podios publicados por ronda. Al abrir **Results**, la app actualiza los datos y los conserva en caché durante cinco minutos. Cuando se publique Eurocup 3 en MakroBeasts, cambia este campo por la URL pública de ese campeonato.
 
+**Home** muestra los cinco primeros pilotos de esa misma clasificación, ordenados por posición, con sus puntos y un enlace a la tabla completa de **Championship**. **Results** sigue mostrando los resultados de las carreras.
+
+El aviso «Example catalog» depende únicamente de `demo` en `content-repository/manifest.json`: `true` lo muestra y `false` lo oculta. No afecta a las descargas ni a la verificación de los coches, y no requiere volver a publicar los ZIP. Este indicador es independiente de usar temporalmente Porsche Cup como fuente de clasificación.
+
 La entrada `ec3-car-template` es un ejemplo con URL `REPLACE-ME`; no aparece en el catálogo de la app hasta que sustituyas el enlace por una release real y la acción genere su índice.
