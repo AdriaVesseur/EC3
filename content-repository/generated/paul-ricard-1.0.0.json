@@ -1,0 +1,1461 @@
+{
+  "id": "paul-ricard",
+  "version": "1.0.0",
+  "installPath": "content/tracks/paul_ricard_2021",
+  "size": 353066866,
+  "sha256": "9ee7b796d2db811c29e85053cadabcae4ba6559edfabd38e4d580a3c82e176d3",
+  "files": [
+    {
+      "path": "ai/fast_lane.ai",
+      "archivePath": "content/tracks/paul_ricard_2021/ai/fast_lane.ai",
+      "size": 2043376,
+      "sha256": "5b4c4dd0052d32beef8d48fe45bb9f251f7ac11d849801eb3e1bca0ff4063c95"
+    },
+    {
+      "path": "ai/fast_lane_payloads.bin",
+      "archivePath": "content/tracks/paul_ricard_2021/ai/fast_lane_payloads.bin",
+      "size": 193848,
+      "sha256": "60ee12de72ef15d49d548d87c04d37d4f2e1c79531b642294a7013bafd02e920"
+    },
+    {
+      "path": "ai/pit_lane.ai",
+      "archivePath": "content/tracks/paul_ricard_2021/ai/pit_lane.ai",
+      "size": 82824,
+      "sha256": "5136e08a6ba4ea04f578165c5f01a26644a181c78b9dd40e4da3cb34ec583a90"
+    },
+    {
+      "path": "ai/pit_lane_payloads.bin",
+      "archivePath": "content/tracks/paul_ricard_2021/ai/pit_lane_payloads.bin",
+      "size": 33961,
+      "sha256": "6e1c878842a6d35ee21f856f9cf132413d8c5945eebc7cc158e93739f552a5f1"
+    },
+    {
+      "path": "ai/pit_lane_with_grid.ai",
+      "archivePath": "content/tracks/paul_ricard_2021/ai/pit_lane_with_grid.ai",
+      "size": 902532,
+      "sha256": "6da40ceb7ed5cef566aa1f6d6684a491ed62c933d5e3703a957cf37089c2347b"
+    },
+    {
+      "path": "data/audio_sources.ini",
+      "archivePath": "content/tracks/paul_ricard_2021/data/audio_sources.ini",
+      "size": 96,
+      "sha256": "67dfa86287be32ea64ff858b0c959575de48592fc2fe567a2ff2fd032f85f143"
+    },
+    {
+      "path": "data/cameras.ini",
+      "archivePath": "content/tracks/paul_ricard_2021/data/cameras.ini",
+      "size": 6359,
+      "sha256": "03c0a1fe22421971701d954cabd1f3c2756b48c9abd75a9561d7bc390e2dbce7"
+    },
+    {
+      "path": "data/cameras_1.ini",
+      "archivePath": "content/tracks/paul_ricard_2021/data/cameras_1.ini",
+      "size": 6988,
+      "sha256": "914bd45d42f29638805f8f09605e058b3a5df5c018555a7ed7e55a79ed7e5fb3"
+    },
+    {
+      "path": "data/cameras_2.ini",
+      "archivePath": "content/tracks/paul_ricard_2021/data/cameras_2.ini",
+      "size": 6538,
+      "sha256": "3d5392cc1b2d47d0be8f05d97eaefe30d4125eaa744e0cba97ad4a375623db9b"
+    },
+    {
+      "path": "data/cameras_3.ini",
+      "archivePath": "content/tracks/paul_ricard_2021/data/cameras_3.ini",
+      "size": 4695,
+      "sha256": "c16c0c8631ebccae6f5ea2e1dce608397287e2150493fa95de8d2c143561f353"
+    },
+    {
+      "path": "data/cameras_4.ini",
+      "archivePath": "content/tracks/paul_ricard_2021/data/cameras_4.ini",
+      "size": 6418,
+      "sha256": "dd545e67b40786974a18eeb7fab8fc0064eb0e5004c36721312f950bae21f15d"
+    },
+    {
+      "path": "data/cameras_start.ini",
+      "archivePath": "content/tracks/paul_ricard_2021/data/cameras_start.ini",
+      "size": 4576,
+      "sha256": "9d17ebd73e6cf26862b545d732e3e934fa7da9901f191c66c91e59a5d4cbebc7"
+    },
+    {
+      "path": "data/crew.ini",
+      "archivePath": "content/tracks/paul_ricard_2021/data/crew.ini",
+      "size": 43,
+      "sha256": "4a60d4f3a0c6a2115b6bcfbe80ffab40cc78df3f2fc4f7e74cd37a0492c484f2"
+    },
+    {
+      "path": "data/drs_zones.ini",
+      "archivePath": "content/tracks/paul_ricard_2021/data/drs_zones.ini",
+      "size": 125,
+      "sha256": "23da3d264f7e045abb597e584dc1062191f6efb3bcd38c291097c9d6692bf908"
+    },
+    {
+      "path": "data/groove.ini",
+      "archivePath": "content/tracks/paul_ricard_2021/data/groove.ini",
+      "size": 1086,
+      "sha256": "1c86088e7a1d2f3134679b8958f306207ec96574772cb431718c5f96b1d86c10"
+    },
+    {
+      "path": "data/groveline.csv",
+      "archivePath": "content/tracks/paul_ricard_2021/data/groveline.csv",
+      "size": 129749,
+      "sha256": "390d618bce56fca78dd780c726de4c337b3e8d5f29782403024d7ffbaea0e35d"
+    },
+    {
+      "path": "data/map.ini",
+      "archivePath": "content/tracks/paul_ricard_2021/data/map.ini",
+      "size": 138,
+      "sha256": "bedabd0a75c67679d83b3f3886e2ae408d180da6f423fc942d778699ba953ff4"
+    },
+    {
+      "path": "data/sections.ini",
+      "archivePath": "content/tracks/paul_ricard_2021/data/sections.ini",
+      "size": 668,
+      "sha256": "e0982a9ed23a31a9012ca251eeb735af3e9753a92ad6369f475a21fe5e1e4992"
+    },
+    {
+      "path": "data/semaphore.ini",
+      "archivePath": "content/tracks/paul_ricard_2021/data/semaphore.ini",
+      "size": 250,
+      "sha256": "68a0e13d7235109b1a6520297b7ac2bac5a3333cde828fdcf611e1224122cb44"
+    },
+    {
+      "path": "data/side_l.csv",
+      "archivePath": "content/tracks/paul_ricard_2021/data/side_l.csv",
+      "size": 103853,
+      "sha256": "34ce4be918238cb5e058a57236ef34df3e278e3df0d6629e4f48a33c55af4cc4"
+    },
+    {
+      "path": "data/surfaces.ini",
+      "archivePath": "content/tracks/paul_ricard_2021/data/surfaces.ini",
+      "size": 1141,
+      "sha256": "d9dfa1ddf74b6e07c94b408c10d251185fa2c2f519c1cc6cd4d40f437f9830a3"
+    },
+    {
+      "path": "extension/ext_config.ini",
+      "archivePath": "content/tracks/paul_ricard_2021/extension/ext_config.ini",
+      "size": 15560,
+      "sha256": "10d12f1d039ffaab8ce19308365593c49885e2cd24272b521ab82a8c991865d8"
+    },
+    {
+      "path": "extension/ext_config_original.ini",
+      "archivePath": "content/tracks/paul_ricard_2021/extension/ext_config_original.ini",
+      "size": 1151,
+      "sha256": "376bd95f28ab7ed24739b45d4081a12e6c71503fba7e3923a8a503930129ab66"
+    },
+    {
+      "path": "FINAL - 23.06.2021.txt",
+      "archivePath": "content/tracks/paul_ricard_2021/FINAL - 23.06.2021.txt",
+      "size": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "layout_f1_2022/ai/fast_lane.ai",
+      "archivePath": "content/tracks/paul_ricard_2021/layout_f1_2022/ai/fast_lane.ai",
+      "size": 2043376,
+      "sha256": "5b4c4dd0052d32beef8d48fe45bb9f251f7ac11d849801eb3e1bca0ff4063c95"
+    },
+    {
+      "path": "layout_f1_2022/ai/pit_lane.ai",
+      "archivePath": "content/tracks/paul_ricard_2021/layout_f1_2022/ai/pit_lane.ai",
+      "size": 82824,
+      "sha256": "5136e08a6ba4ea04f578165c5f01a26644a181c78b9dd40e4da3cb34ec583a90"
+    },
+    {
+      "path": "layout_f1_2022/data/cameras.ini",
+      "archivePath": "content/tracks/paul_ricard_2021/layout_f1_2022/data/cameras.ini",
+      "size": 6359,
+      "sha256": "03c0a1fe22421971701d954cabd1f3c2756b48c9abd75a9561d7bc390e2dbce7"
+    },
+    {
+      "path": "layout_f1_2022/data/cameras_1.ini",
+      "archivePath": "content/tracks/paul_ricard_2021/layout_f1_2022/data/cameras_1.ini",
+      "size": 6988,
+      "sha256": "914bd45d42f29638805f8f09605e058b3a5df5c018555a7ed7e55a79ed7e5fb3"
+    },
+    {
+      "path": "layout_f1_2022/data/cameras_2.ini",
+      "archivePath": "content/tracks/paul_ricard_2021/layout_f1_2022/data/cameras_2.ini",
+      "size": 6538,
+      "sha256": "3d5392cc1b2d47d0be8f05d97eaefe30d4125eaa744e0cba97ad4a375623db9b"
+    },
+    {
+      "path": "layout_f1_2022/data/cameras_3.ini",
+      "archivePath": "content/tracks/paul_ricard_2021/layout_f1_2022/data/cameras_3.ini",
+      "size": 4695,
+      "sha256": "c16c0c8631ebccae6f5ea2e1dce608397287e2150493fa95de8d2c143561f353"
+    },
+    {
+      "path": "layout_f1_2022/data/cameras_4.ini",
+      "archivePath": "content/tracks/paul_ricard_2021/layout_f1_2022/data/cameras_4.ini",
+      "size": 6418,
+      "sha256": "dd545e67b40786974a18eeb7fab8fc0064eb0e5004c36721312f950bae21f15d"
+    },
+    {
+      "path": "layout_f1_2022/data/cameras_start.ini",
+      "archivePath": "content/tracks/paul_ricard_2021/layout_f1_2022/data/cameras_start.ini",
+      "size": 4576,
+      "sha256": "9d17ebd73e6cf26862b545d732e3e934fa7da9901f191c66c91e59a5d4cbebc7"
+    },
+    {
+      "path": "layout_f1_2022/data/camera_facing.ini",
+      "archivePath": "content/tracks/paul_ricard_2021/layout_f1_2022/data/camera_facing.ini",
+      "size": 412,
+      "sha256": "6d0e66cea15ddf759595fc5311b703a8d6bdb291126c82963a51ed34da4db925"
+    },
+    {
+      "path": "layout_f1_2022/data/crew.ini",
+      "archivePath": "content/tracks/paul_ricard_2021/layout_f1_2022/data/crew.ini",
+      "size": 43,
+      "sha256": "4a60d4f3a0c6a2115b6bcfbe80ffab40cc78df3f2fc4f7e74cd37a0492c484f2"
+    },
+    {
+      "path": "layout_f1_2022/data/drs_zones.ini",
+      "archivePath": "content/tracks/paul_ricard_2021/layout_f1_2022/data/drs_zones.ini",
+      "size": 112,
+      "sha256": "0986bc211b5df1d1125bd0acf25a4c091e7cdf238bc1f656f6798e78b9f83481"
+    },
+    {
+      "path": "layout_f1_2022/data/groove.ini",
+      "archivePath": "content/tracks/paul_ricard_2021/layout_f1_2022/data/groove.ini",
+      "size": 1086,
+      "sha256": "1c86088e7a1d2f3134679b8958f306207ec96574772cb431718c5f96b1d86c10"
+    },
+    {
+      "path": "layout_f1_2022/data/groveline.csv",
+      "archivePath": "content/tracks/paul_ricard_2021/layout_f1_2022/data/groveline.csv",
+      "size": 129749,
+      "sha256": "390d618bce56fca78dd780c726de4c337b3e8d5f29782403024d7ffbaea0e35d"
+    },
+    {
+      "path": "layout_f1_2022/data/lighting.ini",
+      "archivePath": "content/tracks/paul_ricard_2021/layout_f1_2022/data/lighting.ini",
+      "size": 57,
+      "sha256": "2da86118a2d3d81280b87fb6ed91e5a4c22393dcb1cae1a12f37aa85648183d8"
+    },
+    {
+      "path": "layout_f1_2022/data/map.ini",
+      "archivePath": "content/tracks/paul_ricard_2021/layout_f1_2022/data/map.ini",
+      "size": 138,
+      "sha256": "bedabd0a75c67679d83b3f3886e2ae408d180da6f423fc942d778699ba953ff4"
+    },
+    {
+      "path": "layout_f1_2022/data/sections.ini",
+      "archivePath": "content/tracks/paul_ricard_2021/layout_f1_2022/data/sections.ini",
+      "size": 668,
+      "sha256": "e0982a9ed23a31a9012ca251eeb735af3e9753a92ad6369f475a21fe5e1e4992"
+    },
+    {
+      "path": "layout_f1_2022/data/semaphore.ini",
+      "archivePath": "content/tracks/paul_ricard_2021/layout_f1_2022/data/semaphore.ini",
+      "size": 250,
+      "sha256": "68a0e13d7235109b1a6520297b7ac2bac5a3333cde828fdcf611e1224122cb44"
+    },
+    {
+      "path": "layout_f1_2022/data/side_l.csv",
+      "archivePath": "content/tracks/paul_ricard_2021/layout_f1_2022/data/side_l.csv",
+      "size": 103853,
+      "sha256": "34ce4be918238cb5e058a57236ef34df3e278e3df0d6629e4f48a33c55af4cc4"
+    },
+    {
+      "path": "layout_f1_2022/data/surfaces.ini",
+      "archivePath": "content/tracks/paul_ricard_2021/layout_f1_2022/data/surfaces.ini",
+      "size": 1141,
+      "sha256": "d9dfa1ddf74b6e07c94b408c10d251185fa2c2f519c1cc6cd4d40f437f9830a3"
+    },
+    {
+      "path": "layout_f1_2022/extension/billboards2022.kn5",
+      "archivePath": "content/tracks/paul_ricard_2021/layout_f1_2022/extension/billboards2022.kn5",
+      "size": 45485641,
+      "sha256": "5414e9e8616e00f8a24363b2755563e99e859f377b35b2263649e322bf4b2684"
+    },
+    {
+      "path": "layout_f1_2022/extension/displays.kn5",
+      "archivePath": "content/tracks/paul_ricard_2021/layout_f1_2022/extension/displays.kn5",
+      "size": 760313,
+      "sha256": "267e23e548ee3e1373db1a727d38c29fe54ad15f2913473431ea9d4cedb28ffb"
+    },
+    {
+      "path": "layout_f1_2022/extension/Environment/concrete_nm.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/layout_f1_2022/extension/Environment/concrete_nm.dds",
+      "size": 4194432,
+      "sha256": "3d875b2d8947e74cab9a409245270a2f24febd6ca6ae873c15071f8d2c392a33"
+    },
+    {
+      "path": "layout_f1_2022/extension/Environment/ground_nm.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/layout_f1_2022/extension/Environment/ground_nm.dds",
+      "size": 4000128,
+      "sha256": "9f43a933802ff7fecd45dbf39ea8fafbc157c66b792ecae3f06eb256b4442c43"
+    },
+    {
+      "path": "layout_f1_2022/extension/Environment/railsponsor_nm.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/layout_f1_2022/extension/Environment/railsponsor_nm.dds",
+      "size": 524416,
+      "sha256": "9aaa5a8c788d6f95ca9eb03f17756e83b1ae4bebadaa44d4ee6233ecf4621876"
+    },
+    {
+      "path": "layout_f1_2022/extension/Environment/standard_nm.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/layout_f1_2022/extension/Environment/standard_nm.dds",
+      "size": 4224,
+      "sha256": "b3e18215b3af3af2144db9e4002a437f7844f9b04d3060c5e9ddfbe57d2c224e"
+    },
+    {
+      "path": "layout_f1_2022/extension/Environment/tyresponsor_nm.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/layout_f1_2022/extension/Environment/tyresponsor_nm.dds",
+      "size": 699300,
+      "sha256": "ffbfde7f58acb13eb0b30a45a1b45fe91a512eaea6d9189ba7b54a75459badb0"
+    },
+    {
+      "path": "layout_f1_2022/extension/ext_config-pyyer-clock.ini",
+      "archivePath": "content/tracks/paul_ricard_2021/layout_f1_2022/extension/ext_config-pyyer-clock.ini",
+      "size": 3038,
+      "sha256": "68615f32c322de19a78550cb92382b7f4581df3e6099d9667abcedc7e567e457"
+    },
+    {
+      "path": "layout_f1_2022/extension/ext_config-pyyer-paulricard-animations.ini",
+      "archivePath": "content/tracks/paul_ricard_2021/layout_f1_2022/extension/ext_config-pyyer-paulricard-animations.ini",
+      "size": 4822,
+      "sha256": "e19cbb8e4a94fa060ed16a55b43735029415ab9c858f7eb84c75c59c768c1feb"
+    },
+    {
+      "path": "layout_f1_2022/extension/ext_config-pyyer-paulricard-bc7.ini",
+      "archivePath": "content/tracks/paul_ricard_2021/layout_f1_2022/extension/ext_config-pyyer-paulricard-bc7.ini",
+      "size": 3104,
+      "sha256": "5a2a177fdb9967afa3ed0b6d01e65795d3d4fad2bf5a6e12547b55abc8e40340"
+    },
+    {
+      "path": "layout_f1_2022/extension/ext_config-pyyer-paulricard-cleanup.ini",
+      "archivePath": "content/tracks/paul_ricard_2021/layout_f1_2022/extension/ext_config-pyyer-paulricard-cleanup.ini",
+      "size": 3821,
+      "sha256": "9aeffb1b5bdef7452d457f17d03dfb4b180811b697210cf10589a60d2e6c3fd5"
+    },
+    {
+      "path": "layout_f1_2022/extension/ext_config-pyyer-paulricard-displays.ini",
+      "archivePath": "content/tracks/paul_ricard_2021/layout_f1_2022/extension/ext_config-pyyer-paulricard-displays.ini",
+      "size": 4249,
+      "sha256": "7b68be46b3757ad4f7f5cabca09c594f79a975d48c7f649f7c0723e26b008eaa"
+    },
+    {
+      "path": "layout_f1_2022/extension/ext_config-pyyer-paulricard-environment.ini",
+      "archivePath": "content/tracks/paul_ricard_2021/layout_f1_2022/extension/ext_config-pyyer-paulricard-environment.ini",
+      "size": 2241,
+      "sha256": "ba437b4a19018f336673c2a0289857bfe75864fdff44b21b68033754ad67df00"
+    },
+    {
+      "path": "layout_f1_2022/extension/ext_config-pyyer-paulricard-fix.ini",
+      "archivePath": "content/tracks/paul_ricard_2021/layout_f1_2022/extension/ext_config-pyyer-paulricard-fix.ini",
+      "size": 1275,
+      "sha256": "9629149272c5f54e976cc4bd9d648a960ce424e965e386c4cafe4b090a8a3446"
+    },
+    {
+      "path": "layout_f1_2022/extension/ext_config-pyyer-paulricard-flags.ini",
+      "archivePath": "content/tracks/paul_ricard_2021/layout_f1_2022/extension/ext_config-pyyer-paulricard-flags.ini",
+      "size": 3339,
+      "sha256": "f252d8a97844cf0d1fbc3678353c09ee90bf1ac36faf2206056a6ede14df0484"
+    },
+    {
+      "path": "layout_f1_2022/extension/ext_config-pyyer-paulricard-grandstands.ini",
+      "archivePath": "content/tracks/paul_ricard_2021/layout_f1_2022/extension/ext_config-pyyer-paulricard-grandstands.ini",
+      "size": 1153,
+      "sha256": "cb0ac2defa2d20dbbf6b362a47e7e498796b7c8d2c1c05f089d84aceba66ca47"
+    },
+    {
+      "path": "layout_f1_2022/extension/ext_config-pyyer-paulricard-grassfx.ini",
+      "archivePath": "content/tracks/paul_ricard_2021/layout_f1_2022/extension/ext_config-pyyer-paulricard-grassfx.ini",
+      "size": 118,
+      "sha256": "6b1497fcea244ce3f7a54ac1fc71b2ce4758ffe1a373cd183ebb77283e4e5245"
+    },
+    {
+      "path": "layout_f1_2022/extension/ext_config-pyyer-paulricard-help.ini",
+      "archivePath": "content/tracks/paul_ricard_2021/layout_f1_2022/extension/ext_config-pyyer-paulricard-help.ini",
+      "size": 357,
+      "sha256": "be1b8a789eefba81d2950cd85ccbba55a29658c5b527189cdbe372ee5985b7cb"
+    },
+    {
+      "path": "layout_f1_2022/extension/ext_config-pyyer-paulricard-lods.ini",
+      "archivePath": "content/tracks/paul_ricard_2021/layout_f1_2022/extension/ext_config-pyyer-paulricard-lods.ini",
+      "size": 527,
+      "sha256": "2e4b5c6d7d13d127365312e27ac22b19fd7d3064347552503e2023be9832cc4c"
+    },
+    {
+      "path": "layout_f1_2022/extension/ext_config-pyyer-paulricard-marshals.ini",
+      "archivePath": "content/tracks/paul_ricard_2021/layout_f1_2022/extension/ext_config-pyyer-paulricard-marshals.ini",
+      "size": 314,
+      "sha256": "8b3fc7f86afc1c48afccd665380c130aeca741f2ff3b8266915728559533e584"
+    },
+    {
+      "path": "layout_f1_2022/extension/ext_config-pyyer-paulricard-people.ini",
+      "archivePath": "content/tracks/paul_ricard_2021/layout_f1_2022/extension/ext_config-pyyer-paulricard-people.ini",
+      "size": 352,
+      "sha256": "57370d2bf8ee7bc878bbc5f8d13a321c049785866f72625ede9986a0f8104124"
+    },
+    {
+      "path": "layout_f1_2022/extension/ext_config-pyyer-paulricard-replace.ini",
+      "archivePath": "content/tracks/paul_ricard_2021/layout_f1_2022/extension/ext_config-pyyer-paulricard-replace.ini",
+      "size": 889,
+      "sha256": "1628f5716d04b4c3d3f446d12cfcf4ee292a041cff428423cdde920a5ab1a8bc"
+    },
+    {
+      "path": "layout_f1_2022/extension/ext_config.ini",
+      "archivePath": "content/tracks/paul_ricard_2021/layout_f1_2022/extension/ext_config.ini",
+      "size": 1147,
+      "sha256": "0b8485177ad822ab91ac866cd887730ffa832a3d0fa438dd847e86cc8a392592"
+    },
+    {
+      "path": "layout_f1_2022/extension/flags.kn5",
+      "archivePath": "content/tracks/paul_ricard_2021/layout_f1_2022/extension/flags.kn5",
+      "size": 534692,
+      "sha256": "cedaf06bba7eac079baafbf904771b95bd4ae75487b0a7c9cedb26f396a8de7e"
+    },
+    {
+      "path": "layout_f1_2022/extension/flags.zip",
+      "archivePath": "content/tracks/paul_ricard_2021/layout_f1_2022/extension/flags.zip",
+      "size": 462948,
+      "sha256": "897570100f05e2ec76b60a91d7ac250776d69747530fe167543b00b08baaa916"
+    },
+    {
+      "path": "layout_f1_2022/extension/grandstands.kn5",
+      "archivePath": "content/tracks/paul_ricard_2021/layout_f1_2022/extension/grandstands.kn5",
+      "size": 9891430,
+      "sha256": "f6e43697e8f74cde97d1d2cd85108549da89e5168315fa64a07892cd6eea194a"
+    },
+    {
+      "path": "layout_f1_2022/extension/marshals.kn5",
+      "archivePath": "content/tracks/paul_ricard_2021/layout_f1_2022/extension/marshals.kn5",
+      "size": 3042224,
+      "sha256": "90992c7ce2eea60723cd9ccc4497b220d503d469d2c371d93dd74d2eb2b73230"
+    },
+    {
+      "path": "layout_f1_2022/extension/people.kn5",
+      "archivePath": "content/tracks/paul_ricard_2021/layout_f1_2022/extension/people.kn5",
+      "size": 583518,
+      "sha256": "d26e1d239d9b68b743f27872ac54cfd2c889d017e73892492d5041ba57168225"
+    },
+    {
+      "path": "layout_f1_2022/extension/replace.kn5",
+      "archivePath": "content/tracks/paul_ricard_2021/layout_f1_2022/extension/replace.kn5",
+      "size": 8394861,
+      "sha256": "e7bd16d01a11339e539fe234447e79bc859abbcdb544e90466354b4e0f441128"
+    },
+    {
+      "path": "layout_f1_2022/extension/sponsorsBC7.zip",
+      "archivePath": "content/tracks/paul_ricard_2021/layout_f1_2022/extension/sponsorsBC7.zip",
+      "size": 330302,
+      "sha256": "0a6293d727177eb0cceec68a460415b7d0e316528a9fd9aa2f1b794aa9084c48"
+    },
+    {
+      "path": "layout_f1_2022/extension/textures.zip",
+      "archivePath": "content/tracks/paul_ricard_2021/layout_f1_2022/extension/textures.zip",
+      "size": 8503,
+      "sha256": "028e46858d06ecb1f1ba325b932f412a249475cbc64659249f9139b68ee8f012"
+    },
+    {
+      "path": "layout_f1_2022/map.png",
+      "archivePath": "content/tracks/paul_ricard_2021/layout_f1_2022/map.png",
+      "size": 74849,
+      "sha256": "0b7aaf8f6215519f972768845e21183bb6f3b1773f51e5cc0c15db5df8bf2626"
+    },
+    {
+      "path": "layout_f1_2022/Release notes.txt",
+      "archivePath": "content/tracks/paul_ricard_2021/layout_f1_2022/Release notes.txt",
+      "size": 634,
+      "sha256": "f25e4b20c47046f65cfe6a6d813ce6482869d01f90ddebffb3115ce68c53a613"
+    },
+    {
+      "path": "map.png",
+      "archivePath": "content/tracks/paul_ricard_2021/map.png",
+      "size": 74849,
+      "sha256": "0b7aaf8f6215519f972768845e21183bb6f3b1773f51e5cc0c15db5df8bf2626"
+    },
+    {
+      "path": "models.ini",
+      "archivePath": "content/tracks/paul_ricard_2021/models.ini",
+      "size": 283,
+      "sha256": "7090c279cceb619336ea1f2fa99f1f436d7a9568fb1cfbc4336ffaadfab4c09a"
+    },
+    {
+      "path": "models_layout_f1_2022.ini",
+      "archivePath": "content/tracks/paul_ricard_2021/models_layout_f1_2022.ini",
+      "size": 378,
+      "sha256": "ac8c7f15bc9a021f6e434188c7cca9e11c5e9eeda9114bd824998973d47ba8da"
+    },
+    {
+      "path": "paul_ricard_2021.kn5",
+      "archivePath": "content/tracks/paul_ricard_2021/paul_ricard_2021.kn5",
+      "size": 364045594,
+      "sha256": "dc9d7ed128b961ce1ecee19db4ef90c472d5c3dac6a29afd88ef1d3665051a87"
+    },
+    {
+      "path": "paul_ricard_colidable.kn5",
+      "archivePath": "content/tracks/paul_ricard_2021/paul_ricard_colidable.kn5",
+      "size": 19869230,
+      "sha256": "8450cbe4eb33cc7c5c643198cfd14616faf5e633921f33a0964a1b0cd711bc92"
+    },
+    {
+      "path": "paul_ricard_wallf1.kn5",
+      "archivePath": "content/tracks/paul_ricard_2021/paul_ricard_wallf1.kn5",
+      "size": 21541,
+      "sha256": "c922bf5d123db078a0e20d896639e6935d48ac8cca1807698da8ef70fefc3470"
+    },
+    {
+      "path": "pit_crew.kn5",
+      "archivePath": "content/tracks/paul_ricard_2021/pit_crew.kn5",
+      "size": 40109720,
+      "sha256": "0082faa65c861a78b64a58f6213acebb396dbce1592b4d327dec9898c64a846d"
+    },
+    {
+      "path": "skins/cm_skins/Blackcelica's F1 2021/aram_brake.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Blackcelica's F1 2021/aram_brake.dds",
+      "size": 1310848,
+      "sha256": "01235924611bc53a55ebbee187238d7ba10cd62195d38d9c30ccb05cd87a8cb6"
+    },
+    {
+      "path": "skins/cm_skins/Blackcelica's F1 2021/asphalt_pr.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Blackcelica's F1 2021/asphalt_pr.dds",
+      "size": 22369776,
+      "sha256": "ef911889ba334298a9eabce5c7169961bb9532a92e788000c2b002ca72c564a9"
+    },
+    {
+      "path": "skins/cm_skins/Blackcelica's F1 2021/asphalt_pr_out.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Blackcelica's F1 2021/asphalt_pr_out.dds",
+      "size": 22369776,
+      "sha256": "a997641499e3f6386dcfefd351612bee4c5d641e41f041b4839e245157319ba9"
+    },
+    {
+      "path": "skins/cm_skins/Blackcelica's F1 2021/better_brake.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Blackcelica's F1 2021/better_brake.dds",
+      "size": 1310848,
+      "sha256": "eda8afd0caa247b04b50d0211c0e35abaff1f7fbc9ed9c111cf7b43153101c3d"
+    },
+    {
+      "path": "skins/cm_skins/Blackcelica's F1 2021/board_f1.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Blackcelica's F1 2021/board_f1.dds",
+      "size": 524416,
+      "sha256": "f64110a1991d5295046196d3de91dedb4c51965c296589ce1a8d6e85867261ff"
+    },
+    {
+      "path": "skins/cm_skins/Blackcelica's F1 2021/board_fly.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Blackcelica's F1 2021/board_fly.dds",
+      "size": 524416,
+      "sha256": "830caaeee364d451655b9d72a9065cc46d727fa217105750530976642f55a4f1"
+    },
+    {
+      "path": "skins/cm_skins/Blackcelica's F1 2021/board_pz.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Blackcelica's F1 2021/board_pz.dds",
+      "size": 524416,
+      "sha256": "2f33e8cb41a274bc5082378ed2df3be3e2695abc3d505aa104284a53a6a8b4a6"
+    },
+    {
+      "path": "skins/cm_skins/Blackcelica's F1 2021/board_r.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Blackcelica's F1 2021/board_r.dds",
+      "size": 524416,
+      "sha256": "91f3bce9e5bd37f5ce3bec48a9096296a760d6ffdb30786ec05edc0b1c9db367"
+    },
+    {
+      "path": "skins/cm_skins/Blackcelica's F1 2021/board_visit.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Blackcelica's F1 2021/board_visit.dds",
+      "size": 524416,
+      "sha256": "3395393d08088b7fdc8b5b7845385649d02324f8dd14bbe32928988f58f3af9c"
+    },
+    {
+      "path": "skins/cm_skins/Blackcelica's F1 2021/brake_marker_white_100_d.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Blackcelica's F1 2021/brake_marker_white_100_d.dds",
+      "size": 87504,
+      "sha256": "c374e8bd4a23f1f9ec5517a582d3d2d433e0f6cab5e6f0fca785cf9a0ff4a59a"
+    },
+    {
+      "path": "skins/cm_skins/Blackcelica's F1 2021/brake_marker_white_150_d.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Blackcelica's F1 2021/brake_marker_white_150_d.dds",
+      "size": 87504,
+      "sha256": "bddaf41f9a5d2121e22a4d88b651febbd95fba1af6abb8cc9e67650047026fdc"
+    },
+    {
+      "path": "skins/cm_skins/Blackcelica's F1 2021/brake_marker_white_50_d.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Blackcelica's F1 2021/brake_marker_white_50_d.dds",
+      "size": 87504,
+      "sha256": "abc5b17ba4658fb08c3d0af782552bf8e5035f276c3a1819854cf3ce726b09f9"
+    },
+    {
+      "path": "skins/cm_skins/Blackcelica's F1 2021/branch5.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Blackcelica's F1 2021/branch5.dds",
+      "size": 262272,
+      "sha256": "6d73a4587b717f677711091a90781a71db2f3be0eb2cb824864e03dc188c6025"
+    },
+    {
+      "path": "skins/cm_skins/Blackcelica's F1 2021/bridge_rolex.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Blackcelica's F1 2021/bridge_rolex.dds",
+      "size": 1398256,
+      "sha256": "2f08912d30bddb1e65c24f6c672c01d1cfde37fccc0f9dc292c2faa505d23c00"
+    },
+    {
+      "path": "skins/cm_skins/Blackcelica's F1 2021/f1_hero_board_a.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Blackcelica's F1 2021/f1_hero_board_a.dds",
+      "size": 349712,
+      "sha256": "99fc3eeaf8df069fa72705f5d06461935520660b87c70f832a1e39f9362500ae"
+    },
+    {
+      "path": "skins/cm_skins/Blackcelica's F1 2021/f1_jumbo.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Blackcelica's F1 2021/f1_jumbo.dds",
+      "size": 131200,
+      "sha256": "6674902556c85b7265a724f6ff2f4117a177f84bf5865251548282fc6f4ed7a4"
+    },
+    {
+      "path": "skins/cm_skins/Blackcelica's F1 2021/grass-3 - Copie.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Blackcelica's F1 2021/grass-3 - Copie.dds",
+      "size": 4194432,
+      "sha256": "dd3d7ff21e592db3261ea7ed66419900fbdc616ef194af582a4dcb2ba3ed57e0"
+    },
+    {
+      "path": "skins/cm_skins/Blackcelica's F1 2021/grass-3.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Blackcelica's F1 2021/grass-3.dds",
+      "size": 4194432,
+      "sha256": "cc47da6a52ac5b0ea6283e85d9bb1d73826eeb2afbf2c8e777b79ee950984159"
+    },
+    {
+      "path": "skins/cm_skins/Blackcelica's F1 2021/grass_sp_a.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Blackcelica's F1 2021/grass_sp_a.dds",
+      "size": 5592560,
+      "sha256": "f1d754be7b6806ee61a8f5d052fc647f3cfc41b20d48afe5281007f2981106b6"
+    },
+    {
+      "path": "skins/cm_skins/Blackcelica's F1 2021/Haie_01.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Blackcelica's F1 2021/Haie_01.dds",
+      "size": 262272,
+      "sha256": "9ecf0a2bd3dfe59f662e7d148e25d4cd4523bc1a2ab339bd4c52b0c0aff376ff"
+    },
+    {
+      "path": "skins/cm_skins/Blackcelica's F1 2021/KERBS.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Blackcelica's F1 2021/KERBS.dds",
+      "size": 22369776,
+      "sha256": "c700baf5298ab1b5c63d5239ba7407d3241977dc102ba32b08e9d2cb935931e2"
+    },
+    {
+      "path": "skins/cm_skins/Blackcelica's F1 2021/KERBS2.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Blackcelica's F1 2021/KERBS2.dds",
+      "size": 22369776,
+      "sha256": "de8844ad5e61c76417d560c297fb6d43f9f1a79c510722ffc61dd670d4bcffbf"
+    },
+    {
+      "path": "skins/cm_skins/Blackcelica's F1 2021/marshal_sponsor_dhl.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Blackcelica's F1 2021/marshal_sponsor_dhl.dds",
+      "size": 696448,
+      "sha256": "9472ef9f22837740896d4824a3edc39de3d93c53fcd0b058c3e3b8674290740f"
+    },
+    {
+      "path": "skins/cm_skins/Blackcelica's F1 2021/marshal_sponsor_fly.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Blackcelica's F1 2021/marshal_sponsor_fly.dds",
+      "size": 696448,
+      "sha256": "9bad0966d52a576c60b9b80ebcf88aecc2f66c3d052a75a599e5d6414123fcb8"
+    },
+    {
+      "path": "skins/cm_skins/Blackcelica's F1 2021/marshal_sponsor_pzero.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Blackcelica's F1 2021/marshal_sponsor_pzero.dds",
+      "size": 696448,
+      "sha256": "3d5efab588659697535d9aa1e3e5a2e41aa8fcdf2f4bdb0a052f994d351ae51f"
+    },
+    {
+      "path": "skins/cm_skins/Blackcelica's F1 2021/marshal_sponsor_rolex.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Blackcelica's F1 2021/marshal_sponsor_rolex.dds",
+      "size": 696448,
+      "sha256": "ceeb34959474b4fef1944ebcc3f4c7a72f20eef13db8c148f7bd4d66d467a057"
+    },
+    {
+      "path": "skins/cm_skins/Blackcelica's F1 2021/NewBridge.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Blackcelica's F1 2021/NewBridge.dds",
+      "size": 5592560,
+      "sha256": "086db1d7009367cfe0f54cfd0c619fb774d3589917c38441235b43947d472cea"
+    },
+    {
+      "path": "skins/cm_skins/Blackcelica's F1 2021/NewBridge_fly.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Blackcelica's F1 2021/NewBridge_fly.dds",
+      "size": 1048704,
+      "sha256": "1ff419037f83c37d0bfa323dc9eaa5be4a9a4a37c22b8969a546f103a7a89473"
+    },
+    {
+      "path": "skins/cm_skins/Blackcelica's F1 2021/NewBridge_L.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Blackcelica's F1 2021/NewBridge_L.dds",
+      "size": 1048704,
+      "sha256": "aa167a8e3828cfb3d610914014c9b9898914d1f4b42d749e6685d6fa3eda5569"
+    },
+    {
+      "path": "skins/cm_skins/Blackcelica's F1 2021/New_Red.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Blackcelica's F1 2021/New_Red.dds",
+      "size": 699192,
+      "sha256": "0d6ab940c08ab4a400301cfbc46cb42d70fc1add0f2fac967a58635c65f117ae"
+    },
+    {
+      "path": "skins/cm_skins/Blackcelica's F1 2021/Outdoor_aramco.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Blackcelica's F1 2021/Outdoor_aramco.dds",
+      "size": 262272,
+      "sha256": "c7fc840a0d504d316f25b7b1d46847a05264d14655781dce77da78f05194f3cb"
+    },
+    {
+      "path": "skins/cm_skins/Blackcelica's F1 2021/Outdoor_aramcob.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Blackcelica's F1 2021/Outdoor_aramcob.dds",
+      "size": 262272,
+      "sha256": "34ec53f9958acbc67126b25045ce279aa490aaa685813bb7c1b1f14ec3b5e16c"
+    },
+    {
+      "path": "skins/cm_skins/Blackcelica's F1 2021/Outdoor_aramcoc.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Blackcelica's F1 2021/Outdoor_aramcoc.dds",
+      "size": 262272,
+      "sha256": "099b2ea24f894638dc734f0ba89a9b0060648d8316df43ff9850f0b0c1d87f40"
+    },
+    {
+      "path": "skins/cm_skins/Blackcelica's F1 2021/Outdoor_Borders_Beton.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Blackcelica's F1 2021/Outdoor_Borders_Beton.dds",
+      "size": 2097280,
+      "sha256": "d1f38262f525d50426f524237f83dc5e8ddd7b5da432c449d3b8425268e1fb51"
+    },
+    {
+      "path": "skins/cm_skins/Blackcelica's F1 2021/Outdoor_Borders_Beton2.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Blackcelica's F1 2021/Outdoor_Borders_Beton2.dds",
+      "size": 699192,
+      "sha256": "3a8197c2e97e962fc4f557ca047216e8b6d49f58579d8d02e65772418b6c4dad"
+    },
+    {
+      "path": "skins/cm_skins/Blackcelica's F1 2021/Outdoor_Borders_Blue.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Blackcelica's F1 2021/Outdoor_Borders_Blue.dds",
+      "size": 8388736,
+      "sha256": "a7be1dc318ca8da388af348609e2074176807e592cf13a2fc72f448651c9df31"
+    },
+    {
+      "path": "skins/cm_skins/Blackcelica's F1 2021/Outdoor_Borders_Red.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Blackcelica's F1 2021/Outdoor_Borders_Red.dds",
+      "size": 8388736,
+      "sha256": "2a75cda8d394b70121139a3e0ea782874100ace7a785de4997e6303a7067abf7"
+    },
+    {
+      "path": "skins/cm_skins/Blackcelica's F1 2021/outdoor_rolex.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Blackcelica's F1 2021/outdoor_rolex.dds",
+      "size": 262272,
+      "sha256": "cf9f41248249786e5cb2449a37c2155a810ac8fd0f3372609b2f283c070ca44b"
+    },
+    {
+      "path": "skins/cm_skins/Blackcelica's F1 2021/Pin_Foret_5.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Blackcelica's F1 2021/Pin_Foret_5.dds",
+      "size": 16777344,
+      "sha256": "1c4087713c27d08f3c5688f8ff0d5b95f76e0c550df55ae5b7c503281c7c69dc"
+    },
+    {
+      "path": "skins/cm_skins/Blackcelica's F1 2021/Pin_V2.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Blackcelica's F1 2021/Pin_V2.dds",
+      "size": 4194432,
+      "sha256": "25a0083bf55b55932bb753c7f452f56671e884fa2736aad57432dc4209931916"
+    },
+    {
+      "path": "skins/cm_skins/Blackcelica's F1 2021/Pin_V4.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Blackcelica's F1 2021/Pin_V4.dds",
+      "size": 4194432,
+      "sha256": "600781941cf35dd854ee18b390da25cb3ee87e79b6c0cd9364fa45e4b55c4972"
+    },
+    {
+      "path": "skins/cm_skins/Blackcelica's F1 2021/Pin_V5.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Blackcelica's F1 2021/Pin_V5.dds",
+      "size": 4194432,
+      "sha256": "a7bd0b8ce45d8747dfc29f810b0d6dce5e3418527d2ae199dfb4de0d6ef4d438"
+    },
+    {
+      "path": "skins/cm_skins/Blackcelica's F1 2021/Portique.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Blackcelica's F1 2021/Portique.dds",
+      "size": 87536,
+      "sha256": "1b6f7956f8eab172dcd6289cf2a6dec6e3fbcf969d940446d69d86277f5bf7ba"
+    },
+    {
+      "path": "skins/cm_skins/Blackcelica's F1 2021/preview.png",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Blackcelica's F1 2021/preview.png",
+      "size": 23064,
+      "sha256": "3085c2141c4edd758e6f976ae19ecf080fc045e3c7614c04c07ec5e5076c13a9"
+    },
+    {
+      "path": "skins/cm_skins/Blackcelica's F1 2021/Road_better.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Blackcelica's F1 2021/Road_better.dds",
+      "size": 1048704,
+      "sha256": "ae945bb8d163fb281957afc3bfa2877ad51aba6fee80382a62c538bdf68a6161"
+    },
+    {
+      "path": "skins/cm_skins/Blackcelica's F1 2021/Road_better_blank.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Blackcelica's F1 2021/Road_better_blank.dds",
+      "size": 1048704,
+      "sha256": "7b6f213f1140dbb154e1f5efb2f6f4e2071626f8599bb18f9117c9a8bfcb8964"
+    },
+    {
+      "path": "skins/cm_skins/Blackcelica's F1 2021/rolex_brake.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Blackcelica's F1 2021/rolex_brake.dds",
+      "size": 1310848,
+      "sha256": "1e5efe22729e1d3bb4f8c7d4b6d5489ac3e4a4a8fae99b45ca1b7b2e30bfe10e"
+    },
+    {
+      "path": "skins/cm_skins/Blackcelica's F1 2021/Siege.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Blackcelica's F1 2021/Siege.dds",
+      "size": 349680,
+      "sha256": "26b5dfb4e08d1341896e475f1695b21435ea6e6a24c3822a2ce6af61ff96e4dd"
+    },
+    {
+      "path": "skins/cm_skins/Blackcelica's F1 2021/sponsors_dhl.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Blackcelica's F1 2021/sponsors_dhl.dds",
+      "size": 2097280,
+      "sha256": "8ed38991941f79cc9964de26e0211686947cf97467406b862af5d31e683f72bc"
+    },
+    {
+      "path": "skins/cm_skins/Blackcelica's F1 2021/sponsors_f1.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Blackcelica's F1 2021/sponsors_f1.dds",
+      "size": 699216,
+      "sha256": "f87c725698f4ec2e9ed980151b8d9affea2fe7173c061822d3ead5a3a0ae751e"
+    },
+    {
+      "path": "skins/cm_skins/Blackcelica's F1 2021/sponsors_liqui.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Blackcelica's F1 2021/sponsors_liqui.dds",
+      "size": 2796368,
+      "sha256": "024e08c12ed82a6dd06e89a28727ae641255cdcbf71341207342d6f242a1a730"
+    },
+    {
+      "path": "skins/cm_skins/Blackcelica's F1 2021/sponsors_pirelli.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Blackcelica's F1 2021/sponsors_pirelli.dds",
+      "size": 2097280,
+      "sha256": "2f23ca37e2246d52fea7f3a513c371d02f80a461450b15ba93006e532f390302"
+    },
+    {
+      "path": "skins/cm_skins/Blackcelica's F1 2021/sponsors_pzero.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Blackcelica's F1 2021/sponsors_pzero.dds",
+      "size": 2097280,
+      "sha256": "8f0e4acfa7ac910d7e3bfd9ab43d5fbf0074107a173310e6f29258aa50c6e9e4"
+    },
+    {
+      "path": "skins/cm_skins/Blackcelica's F1 2021/sponsors_rolex.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Blackcelica's F1 2021/sponsors_rolex.dds",
+      "size": 2097280,
+      "sha256": "6c771901971525902c6f1d8f03aaca18a26ccdd9b494cd8984ea0110cc48ca69"
+    },
+    {
+      "path": "skins/cm_skins/Blackcelica's F1 2021/sponsor_b.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Blackcelica's F1 2021/sponsor_b.dds",
+      "size": 288,
+      "sha256": "9e3da18ff8e53fc8ffa4b94ab50b1170ee9ce85e884cff058fab7bc7fdb6119c"
+    },
+    {
+      "path": "skins/cm_skins/Blackcelica's F1 2021/sponsor_emib.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Blackcelica's F1 2021/sponsor_emib.dds",
+      "size": 4194432,
+      "sha256": "8168515456e257d358a890c89833b281b29339c63f386febf9fa2e1137bc980e"
+    },
+    {
+      "path": "skins/cm_skins/Blackcelica's F1 2021/sponsor_fly.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Blackcelica's F1 2021/sponsor_fly.dds",
+      "size": 4194432,
+      "sha256": "7ef4c02c32ee77027813e858d914e7d3695a02f91956629db464c6a9a98ee0ec"
+    },
+    {
+      "path": "skins/cm_skins/Blackcelica's F1 2021/sponsor_polystyrene_d.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Blackcelica's F1 2021/sponsor_polystyrene_d.dds",
+      "size": 699280,
+      "sha256": "dc2f6c1d1c78745cd968b311a4a681cd932b6a041b2d05080895e60c23aa88e0"
+    },
+    {
+      "path": "skins/cm_skins/Blackcelica's F1 2021/TREEF.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Blackcelica's F1 2021/TREEF.dds",
+      "size": 1048704,
+      "sha256": "b9cd0c934705a7e506ab68263f7aba7621c013a9a77c407a83545b616bb535e2"
+    },
+    {
+      "path": "skins/cm_skins/Blackcelica's F1 2021/ui_track_skin.json",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Blackcelica's F1 2021/ui_track_skin.json",
+      "size": 267,
+      "sha256": "1904ea911967383d068e51a0830fe4169391c9246bce6524fcb3deb332900464"
+    },
+    {
+      "path": "skins/cm_skins/Blackcelica's F1 2021/Wall.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Blackcelica's F1 2021/Wall.dds",
+      "size": 4194432,
+      "sha256": "6d9b19058c61caed5d4c15ac78bf37a278d17749da1790beb10af4cfb8d64519"
+    },
+    {
+      "path": "skins/cm_skins/Blackcelica's F1 2021/Wall_aramco.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Blackcelica's F1 2021/Wall_aramco.dds",
+      "size": 4194432,
+      "sha256": "521ac3083e51ee4ba25a62ef2c81a728b5cb788d00c3b161e4930e274599c181"
+    },
+    {
+      "path": "skins/cm_skins/Blackcelica's F1 2021/Wall_aramco_b.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Blackcelica's F1 2021/Wall_aramco_b.dds",
+      "size": 4194432,
+      "sha256": "83aae3a6e9e03b2f3f534e93026aa46d75312ffb6f764152084a0ee6615ae01a"
+    },
+    {
+      "path": "skins/cm_skins/Blackcelica's F1 2021/Wall_fly.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Blackcelica's F1 2021/Wall_fly.dds",
+      "size": 4194432,
+      "sha256": "31be7b12d252fae503b4a280e8414177129b3731afbc3626c952f037c765ffb1"
+    },
+    {
+      "path": "skins/cm_skins/Blackcelica's F1 2021/Wall_fly_b.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Blackcelica's F1 2021/Wall_fly_b.dds",
+      "size": 4194432,
+      "sha256": "38ee8c45baed0a1d04823ed80db7dc84d29198264a23df81ca8954f9d3456014"
+    },
+    {
+      "path": "skins/cm_skins/Blackcelica's F1 2021/Wall_fly_blank.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Blackcelica's F1 2021/Wall_fly_blank.dds",
+      "size": 4194432,
+      "sha256": "722d0c6c5e3c8693518a9815d920cf802afcb3d6fed51e904b23f09ea8a05efc"
+    },
+    {
+      "path": "skins/cm_skins/Blackcelica's F1 2021/Wall_pi.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Blackcelica's F1 2021/Wall_pi.dds",
+      "size": 4194432,
+      "sha256": "e989a3fe20f6ab211d9612960806583a9b3bc5bfb48ae7ac3a186f7708b1d209"
+    },
+    {
+      "path": "skins/cm_skins/Blackcelica's F1 2021/Wall_workday.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Blackcelica's F1 2021/Wall_workday.dds",
+      "size": 4194432,
+      "sha256": "8f11409a0b3aef3f4c7346fce4d889b6b6c70e4f637f801adc547604c623ca86"
+    },
+    {
+      "path": "skins/cm_skins/Blackcelica's F1 2021/zoom_brake.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Blackcelica's F1 2021/zoom_brake.dds",
+      "size": 1310848,
+      "sha256": "1b9175eb61bcacbacf3eafc050fbc3514332dddcf720c1cbdcf58d33dacc72fd"
+    },
+    {
+      "path": "skins/cm_skins/Optional/branch5.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Optional/branch5.dds",
+      "size": 262272,
+      "sha256": "6d73a4587b717f677711091a90781a71db2f3be0eb2cb824864e03dc188c6025"
+    },
+    {
+      "path": "skins/cm_skins/Optional/grass-3 - Copie.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Optional/grass-3 - Copie.dds",
+      "size": 4194432,
+      "sha256": "dd3d7ff21e592db3261ea7ed66419900fbdc616ef194af582a4dcb2ba3ed57e0"
+    },
+    {
+      "path": "skins/cm_skins/Optional/grass-3.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Optional/grass-3.dds",
+      "size": 4194432,
+      "sha256": "cc47da6a52ac5b0ea6283e85d9bb1d73826eeb2afbf2c8e777b79ee950984159"
+    },
+    {
+      "path": "skins/cm_skins/Optional/Haie_01.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Optional/Haie_01.dds",
+      "size": 262272,
+      "sha256": "9ecf0a2bd3dfe59f662e7d148e25d4cd4523bc1a2ab339bd4c52b0c0aff376ff"
+    },
+    {
+      "path": "skins/cm_skins/Optional/Pin_Foret_5.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Optional/Pin_Foret_5.dds",
+      "size": 16777344,
+      "sha256": "1c4087713c27d08f3c5688f8ff0d5b95f76e0c550df55ae5b7c503281c7c69dc"
+    },
+    {
+      "path": "skins/cm_skins/Optional/Pin_V2.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Optional/Pin_V2.dds",
+      "size": 4194432,
+      "sha256": "25a0083bf55b55932bb753c7f452f56671e884fa2736aad57432dc4209931916"
+    },
+    {
+      "path": "skins/cm_skins/Optional/Pin_V4.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Optional/Pin_V4.dds",
+      "size": 4194432,
+      "sha256": "600781941cf35dd854ee18b390da25cb3ee87e79b6c0cd9364fa45e4b55c4972"
+    },
+    {
+      "path": "skins/cm_skins/Optional/Pin_V5.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Optional/Pin_V5.dds",
+      "size": 4194432,
+      "sha256": "a7bd0b8ce45d8747dfc29f810b0d6dce5e3418527d2ae199dfb4de0d6ef4d438"
+    },
+    {
+      "path": "skins/cm_skins/Optional/preview.png",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Optional/preview.png",
+      "size": 6388903,
+      "sha256": "9e1e63b79eda9c7e764294ff0eaf66ba1b0df61dc5a5083c06633d50b552e726"
+    },
+    {
+      "path": "skins/cm_skins/Optional/TREEF.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Optional/TREEF.dds",
+      "size": 1048704,
+      "sha256": "b9cd0c934705a7e506ab68263f7aba7621c013a9a77c407a83545b616bb535e2"
+    },
+    {
+      "path": "skins/cm_skins/Optional/ui_track_skin.json",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/cm_skins/Optional/ui_track_skin.json",
+      "size": 79,
+      "sha256": "9d5f3e1f1f38a134cb7698970bec2a53c295016f63cb52981df838d02341b5d8"
+    },
+    {
+      "path": "skins/default/aram_brake.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/default/aram_brake.dds",
+      "size": 1310848,
+      "sha256": "01235924611bc53a55ebbee187238d7ba10cd62195d38d9c30ccb05cd87a8cb6"
+    },
+    {
+      "path": "skins/default/asphalt_pr.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/default/asphalt_pr.dds",
+      "size": 22369776,
+      "sha256": "ef911889ba334298a9eabce5c7169961bb9532a92e788000c2b002ca72c564a9"
+    },
+    {
+      "path": "skins/default/asphalt_pr_out.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/default/asphalt_pr_out.dds",
+      "size": 22369776,
+      "sha256": "a997641499e3f6386dcfefd351612bee4c5d641e41f041b4839e245157319ba9"
+    },
+    {
+      "path": "skins/default/better_brake.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/default/better_brake.dds",
+      "size": 1310848,
+      "sha256": "eda8afd0caa247b04b50d0211c0e35abaff1f7fbc9ed9c111cf7b43153101c3d"
+    },
+    {
+      "path": "skins/default/board_f1.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/default/board_f1.dds",
+      "size": 524416,
+      "sha256": "f64110a1991d5295046196d3de91dedb4c51965c296589ce1a8d6e85867261ff"
+    },
+    {
+      "path": "skins/default/board_fly.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/default/board_fly.dds",
+      "size": 524416,
+      "sha256": "830caaeee364d451655b9d72a9065cc46d727fa217105750530976642f55a4f1"
+    },
+    {
+      "path": "skins/default/board_pz.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/default/board_pz.dds",
+      "size": 524416,
+      "sha256": "2f33e8cb41a274bc5082378ed2df3be3e2695abc3d505aa104284a53a6a8b4a6"
+    },
+    {
+      "path": "skins/default/board_r.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/default/board_r.dds",
+      "size": 524416,
+      "sha256": "91f3bce9e5bd37f5ce3bec48a9096296a760d6ffdb30786ec05edc0b1c9db367"
+    },
+    {
+      "path": "skins/default/board_visit.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/default/board_visit.dds",
+      "size": 524416,
+      "sha256": "3395393d08088b7fdc8b5b7845385649d02324f8dd14bbe32928988f58f3af9c"
+    },
+    {
+      "path": "skins/default/brake_marker_white_100_d.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/default/brake_marker_white_100_d.dds",
+      "size": 87504,
+      "sha256": "c374e8bd4a23f1f9ec5517a582d3d2d433e0f6cab5e6f0fca785cf9a0ff4a59a"
+    },
+    {
+      "path": "skins/default/brake_marker_white_150_d.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/default/brake_marker_white_150_d.dds",
+      "size": 87504,
+      "sha256": "bddaf41f9a5d2121e22a4d88b651febbd95fba1af6abb8cc9e67650047026fdc"
+    },
+    {
+      "path": "skins/default/brake_marker_white_50_d.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/default/brake_marker_white_50_d.dds",
+      "size": 87504,
+      "sha256": "abc5b17ba4658fb08c3d0af782552bf8e5035f276c3a1819854cf3ce726b09f9"
+    },
+    {
+      "path": "skins/default/branch5.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/default/branch5.dds",
+      "size": 262272,
+      "sha256": "6d73a4587b717f677711091a90781a71db2f3be0eb2cb824864e03dc188c6025"
+    },
+    {
+      "path": "skins/default/bridge_rolex.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/default/bridge_rolex.dds",
+      "size": 1398256,
+      "sha256": "2f08912d30bddb1e65c24f6c672c01d1cfde37fccc0f9dc292c2faa505d23c00"
+    },
+    {
+      "path": "skins/default/cm_skins_active.json",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/default/cm_skins_active.json",
+      "size": 31,
+      "sha256": "b52dc973e886e81d51570e57446b254a20511d86a6668f36c1b269d7c64f35c0"
+    },
+    {
+      "path": "skins/default/f1_hero_board_a.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/default/f1_hero_board_a.dds",
+      "size": 349712,
+      "sha256": "99fc3eeaf8df069fa72705f5d06461935520660b87c70f832a1e39f9362500ae"
+    },
+    {
+      "path": "skins/default/f1_jumbo.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/default/f1_jumbo.dds",
+      "size": 131200,
+      "sha256": "6674902556c85b7265a724f6ff2f4117a177f84bf5865251548282fc6f4ed7a4"
+    },
+    {
+      "path": "skins/default/grass-3 - copie.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/default/grass-3 - copie.dds",
+      "size": 4194432,
+      "sha256": "dd3d7ff21e592db3261ea7ed66419900fbdc616ef194af582a4dcb2ba3ed57e0"
+    },
+    {
+      "path": "skins/default/grass-3.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/default/grass-3.dds",
+      "size": 4194432,
+      "sha256": "cc47da6a52ac5b0ea6283e85d9bb1d73826eeb2afbf2c8e777b79ee950984159"
+    },
+    {
+      "path": "skins/default/grass_sp_a.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/default/grass_sp_a.dds",
+      "size": 5592560,
+      "sha256": "f1d754be7b6806ee61a8f5d052fc647f3cfc41b20d48afe5281007f2981106b6"
+    },
+    {
+      "path": "skins/default/haie_01.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/default/haie_01.dds",
+      "size": 262272,
+      "sha256": "9ecf0a2bd3dfe59f662e7d148e25d4cd4523bc1a2ab339bd4c52b0c0aff376ff"
+    },
+    {
+      "path": "skins/default/kerbs.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/default/kerbs.dds",
+      "size": 22369776,
+      "sha256": "c700baf5298ab1b5c63d5239ba7407d3241977dc102ba32b08e9d2cb935931e2"
+    },
+    {
+      "path": "skins/default/kerbs2.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/default/kerbs2.dds",
+      "size": 22369776,
+      "sha256": "de8844ad5e61c76417d560c297fb6d43f9f1a79c510722ffc61dd670d4bcffbf"
+    },
+    {
+      "path": "skins/default/marshal_sponsor_dhl.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/default/marshal_sponsor_dhl.dds",
+      "size": 696448,
+      "sha256": "9472ef9f22837740896d4824a3edc39de3d93c53fcd0b058c3e3b8674290740f"
+    },
+    {
+      "path": "skins/default/marshal_sponsor_fly.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/default/marshal_sponsor_fly.dds",
+      "size": 696448,
+      "sha256": "9bad0966d52a576c60b9b80ebcf88aecc2f66c3d052a75a599e5d6414123fcb8"
+    },
+    {
+      "path": "skins/default/marshal_sponsor_pzero.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/default/marshal_sponsor_pzero.dds",
+      "size": 696448,
+      "sha256": "3d5efab588659697535d9aa1e3e5a2e41aa8fcdf2f4bdb0a052f994d351ae51f"
+    },
+    {
+      "path": "skins/default/marshal_sponsor_rolex.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/default/marshal_sponsor_rolex.dds",
+      "size": 696448,
+      "sha256": "ceeb34959474b4fef1944ebcc3f4c7a72f20eef13db8c148f7bd4d66d467a057"
+    },
+    {
+      "path": "skins/default/newbridge.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/default/newbridge.dds",
+      "size": 5592560,
+      "sha256": "086db1d7009367cfe0f54cfd0c619fb774d3589917c38441235b43947d472cea"
+    },
+    {
+      "path": "skins/default/newbridge_fly.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/default/newbridge_fly.dds",
+      "size": 1048704,
+      "sha256": "1ff419037f83c37d0bfa323dc9eaa5be4a9a4a37c22b8969a546f103a7a89473"
+    },
+    {
+      "path": "skins/default/newbridge_l.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/default/newbridge_l.dds",
+      "size": 1048704,
+      "sha256": "aa167a8e3828cfb3d610914014c9b9898914d1f4b42d749e6685d6fa3eda5569"
+    },
+    {
+      "path": "skins/default/new_red.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/default/new_red.dds",
+      "size": 699192,
+      "sha256": "0d6ab940c08ab4a400301cfbc46cb42d70fc1add0f2fac967a58635c65f117ae"
+    },
+    {
+      "path": "skins/default/outdoor_aramco.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/default/outdoor_aramco.dds",
+      "size": 262272,
+      "sha256": "c7fc840a0d504d316f25b7b1d46847a05264d14655781dce77da78f05194f3cb"
+    },
+    {
+      "path": "skins/default/outdoor_aramcob.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/default/outdoor_aramcob.dds",
+      "size": 262272,
+      "sha256": "34ec53f9958acbc67126b25045ce279aa490aaa685813bb7c1b1f14ec3b5e16c"
+    },
+    {
+      "path": "skins/default/outdoor_aramcoc.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/default/outdoor_aramcoc.dds",
+      "size": 262272,
+      "sha256": "099b2ea24f894638dc734f0ba89a9b0060648d8316df43ff9850f0b0c1d87f40"
+    },
+    {
+      "path": "skins/default/outdoor_borders_beton.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/default/outdoor_borders_beton.dds",
+      "size": 2097280,
+      "sha256": "d1f38262f525d50426f524237f83dc5e8ddd7b5da432c449d3b8425268e1fb51"
+    },
+    {
+      "path": "skins/default/outdoor_borders_beton2.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/default/outdoor_borders_beton2.dds",
+      "size": 699192,
+      "sha256": "3a8197c2e97e962fc4f557ca047216e8b6d49f58579d8d02e65772418b6c4dad"
+    },
+    {
+      "path": "skins/default/outdoor_borders_blue.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/default/outdoor_borders_blue.dds",
+      "size": 8388736,
+      "sha256": "a7be1dc318ca8da388af348609e2074176807e592cf13a2fc72f448651c9df31"
+    },
+    {
+      "path": "skins/default/outdoor_borders_red.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/default/outdoor_borders_red.dds",
+      "size": 8388736,
+      "sha256": "2a75cda8d394b70121139a3e0ea782874100ace7a785de4997e6303a7067abf7"
+    },
+    {
+      "path": "skins/default/outdoor_rolex.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/default/outdoor_rolex.dds",
+      "size": 262272,
+      "sha256": "cf9f41248249786e5cb2449a37c2155a810ac8fd0f3372609b2f283c070ca44b"
+    },
+    {
+      "path": "skins/default/pin_foret_5.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/default/pin_foret_5.dds",
+      "size": 16777344,
+      "sha256": "1c4087713c27d08f3c5688f8ff0d5b95f76e0c550df55ae5b7c503281c7c69dc"
+    },
+    {
+      "path": "skins/default/pin_v2.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/default/pin_v2.dds",
+      "size": 4194432,
+      "sha256": "25a0083bf55b55932bb753c7f452f56671e884fa2736aad57432dc4209931916"
+    },
+    {
+      "path": "skins/default/pin_v4.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/default/pin_v4.dds",
+      "size": 4194432,
+      "sha256": "600781941cf35dd854ee18b390da25cb3ee87e79b6c0cd9364fa45e4b55c4972"
+    },
+    {
+      "path": "skins/default/pin_v5.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/default/pin_v5.dds",
+      "size": 4194432,
+      "sha256": "a7bd0b8ce45d8747dfc29f810b0d6dce5e3418527d2ae199dfb4de0d6ef4d438"
+    },
+    {
+      "path": "skins/default/portique.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/default/portique.dds",
+      "size": 87536,
+      "sha256": "1b6f7956f8eab172dcd6289cf2a6dec6e3fbcf969d940446d69d86277f5bf7ba"
+    },
+    {
+      "path": "skins/default/road_better.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/default/road_better.dds",
+      "size": 1048704,
+      "sha256": "ae945bb8d163fb281957afc3bfa2877ad51aba6fee80382a62c538bdf68a6161"
+    },
+    {
+      "path": "skins/default/road_better_blank.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/default/road_better_blank.dds",
+      "size": 1048704,
+      "sha256": "7b6f213f1140dbb154e1f5efb2f6f4e2071626f8599bb18f9117c9a8bfcb8964"
+    },
+    {
+      "path": "skins/default/rolex_brake.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/default/rolex_brake.dds",
+      "size": 1310848,
+      "sha256": "1e5efe22729e1d3bb4f8c7d4b6d5489ac3e4a4a8fae99b45ca1b7b2e30bfe10e"
+    },
+    {
+      "path": "skins/default/siege.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/default/siege.dds",
+      "size": 349680,
+      "sha256": "26b5dfb4e08d1341896e475f1695b21435ea6e6a24c3822a2ce6af61ff96e4dd"
+    },
+    {
+      "path": "skins/default/sponsors_dhl.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/default/sponsors_dhl.dds",
+      "size": 2097280,
+      "sha256": "8ed38991941f79cc9964de26e0211686947cf97467406b862af5d31e683f72bc"
+    },
+    {
+      "path": "skins/default/sponsors_f1.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/default/sponsors_f1.dds",
+      "size": 699216,
+      "sha256": "f87c725698f4ec2e9ed980151b8d9affea2fe7173c061822d3ead5a3a0ae751e"
+    },
+    {
+      "path": "skins/default/sponsors_liqui.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/default/sponsors_liqui.dds",
+      "size": 2796368,
+      "sha256": "024e08c12ed82a6dd06e89a28727ae641255cdcbf71341207342d6f242a1a730"
+    },
+    {
+      "path": "skins/default/sponsors_pirelli.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/default/sponsors_pirelli.dds",
+      "size": 2097280,
+      "sha256": "2f23ca37e2246d52fea7f3a513c371d02f80a461450b15ba93006e532f390302"
+    },
+    {
+      "path": "skins/default/sponsors_pzero.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/default/sponsors_pzero.dds",
+      "size": 2097280,
+      "sha256": "8f0e4acfa7ac910d7e3bfd9ab43d5fbf0074107a173310e6f29258aa50c6e9e4"
+    },
+    {
+      "path": "skins/default/sponsors_rolex.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/default/sponsors_rolex.dds",
+      "size": 2097280,
+      "sha256": "6c771901971525902c6f1d8f03aaca18a26ccdd9b494cd8984ea0110cc48ca69"
+    },
+    {
+      "path": "skins/default/sponsor_b.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/default/sponsor_b.dds",
+      "size": 288,
+      "sha256": "9e3da18ff8e53fc8ffa4b94ab50b1170ee9ce85e884cff058fab7bc7fdb6119c"
+    },
+    {
+      "path": "skins/default/sponsor_emib.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/default/sponsor_emib.dds",
+      "size": 4194432,
+      "sha256": "8168515456e257d358a890c89833b281b29339c63f386febf9fa2e1137bc980e"
+    },
+    {
+      "path": "skins/default/sponsor_fly.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/default/sponsor_fly.dds",
+      "size": 4194432,
+      "sha256": "7ef4c02c32ee77027813e858d914e7d3695a02f91956629db464c6a9a98ee0ec"
+    },
+    {
+      "path": "skins/default/sponsor_polystyrene_d.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/default/sponsor_polystyrene_d.dds",
+      "size": 699280,
+      "sha256": "dc2f6c1d1c78745cd968b311a4a681cd932b6a041b2d05080895e60c23aa88e0"
+    },
+    {
+      "path": "skins/default/treef.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/default/treef.dds",
+      "size": 1048704,
+      "sha256": "b9cd0c934705a7e506ab68263f7aba7621c013a9a77c407a83545b616bb535e2"
+    },
+    {
+      "path": "skins/default/wall.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/default/wall.dds",
+      "size": 4194432,
+      "sha256": "6d9b19058c61caed5d4c15ac78bf37a278d17749da1790beb10af4cfb8d64519"
+    },
+    {
+      "path": "skins/default/wall_aramco.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/default/wall_aramco.dds",
+      "size": 4194432,
+      "sha256": "521ac3083e51ee4ba25a62ef2c81a728b5cb788d00c3b161e4930e274599c181"
+    },
+    {
+      "path": "skins/default/wall_aramco_b.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/default/wall_aramco_b.dds",
+      "size": 4194432,
+      "sha256": "83aae3a6e9e03b2f3f534e93026aa46d75312ffb6f764152084a0ee6615ae01a"
+    },
+    {
+      "path": "skins/default/wall_fly.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/default/wall_fly.dds",
+      "size": 4194432,
+      "sha256": "31be7b12d252fae503b4a280e8414177129b3731afbc3626c952f037c765ffb1"
+    },
+    {
+      "path": "skins/default/wall_fly_b.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/default/wall_fly_b.dds",
+      "size": 4194432,
+      "sha256": "38ee8c45baed0a1d04823ed80db7dc84d29198264a23df81ca8954f9d3456014"
+    },
+    {
+      "path": "skins/default/wall_fly_blank.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/default/wall_fly_blank.dds",
+      "size": 4194432,
+      "sha256": "722d0c6c5e3c8693518a9815d920cf802afcb3d6fed51e904b23f09ea8a05efc"
+    },
+    {
+      "path": "skins/default/wall_pi.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/default/wall_pi.dds",
+      "size": 4194432,
+      "sha256": "e989a3fe20f6ab211d9612960806583a9b3bc5bfb48ae7ac3a186f7708b1d209"
+    },
+    {
+      "path": "skins/default/wall_workday.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/default/wall_workday.dds",
+      "size": 4194432,
+      "sha256": "8f11409a0b3aef3f4c7346fce4d889b6b6c70e4f637f801adc547604c623ca86"
+    },
+    {
+      "path": "skins/default/zoom_brake.dds",
+      "archivePath": "content/tracks/paul_ricard_2021/skins/default/zoom_brake.dds",
+      "size": 1310848,
+      "sha256": "1b9175eb61bcacbacf3eafc050fbc3514332dddcf720c1cbdcf58d33dacc72fd"
+    },
+    {
+      "path": "ui/layout_f1_2022/logo.png",
+      "archivePath": "content/tracks/paul_ricard_2021/ui/layout_f1_2022/logo.png",
+      "size": 13216,
+      "sha256": "43123bffa1a977c66454870da8ca1ac944728bd5491e33c9606179aade0d102c"
+    },
+    {
+      "path": "ui/layout_f1_2022/outline.png",
+      "archivePath": "content/tracks/paul_ricard_2021/ui/layout_f1_2022/outline.png",
+      "size": 56266,
+      "sha256": "d609626195780c7de4565e5a3f0d4248a34258348d9bdceb3589a4db53daab00"
+    },
+    {
+      "path": "ui/layout_f1_2022/outline_cropped.png",
+      "archivePath": "content/tracks/paul_ricard_2021/ui/layout_f1_2022/outline_cropped.png",
+      "size": 26742,
+      "sha256": "27bc623716391cba1b417b929eb0f433c0e86a1fce9877324d83cb2163041c4f"
+    },
+    {
+      "path": "ui/layout_f1_2022/preview.png",
+      "archivePath": "content/tracks/paul_ricard_2021/ui/layout_f1_2022/preview.png",
+      "size": 1138073,
+      "sha256": "a82b114860c38cc207a72e876bd1bae7cd0adf5029ba4b8cff33914f250121cd"
+    },
+    {
+      "path": "ui/layout_f1_2022/ui_track.json",
+      "archivePath": "content/tracks/paul_ricard_2021/ui/layout_f1_2022/ui_track.json",
+      "size": 531,
+      "sha256": "e231df826f1c997c0f09055fc001376a1bb07d915958ea679042ccabe9953a81"
+    },
+    {
+      "path": "ui/logo.png",
+      "archivePath": "content/tracks/paul_ricard_2021/ui/logo.png",
+      "size": 13216,
+      "sha256": "43123bffa1a977c66454870da8ca1ac944728bd5491e33c9606179aade0d102c"
+    },
+    {
+      "path": "ui/origpreview.png",
+      "archivePath": "content/tracks/paul_ricard_2021/ui/origpreview.png",
+      "size": 109179,
+      "sha256": "7f6a82377103800dd83a924ea4110a2b5168a9c5f554faa450683826200f2975"
+    },
+    {
+      "path": "ui/outline.png",
+      "archivePath": "content/tracks/paul_ricard_2021/ui/outline.png",
+      "size": 123679,
+      "sha256": "f57db60afb363c5603a18d7dab556074d87e2afa6f4430852e044b5c45b4ed43"
+    },
+    {
+      "path": "ui/outline_cropped.png",
+      "archivePath": "content/tracks/paul_ricard_2021/ui/outline_cropped.png",
+      "size": 23168,
+      "sha256": "7a8be297a835cd9dbbf796ba87c05df6fb92155db91db8ec703430d7ed977251"
+    },
+    {
+      "path": "ui/preview.png",
+      "archivePath": "content/tracks/paul_ricard_2021/ui/preview.png",
+      "size": 7239,
+      "sha256": "8ba08ade32d496c1771c629d58f7c52d8c24a172444ca6384e5cb5af52d7a297"
+    },
+    {
+      "path": "ui/ui_track.json",
+      "archivePath": "content/tracks/paul_ricard_2021/ui/ui_track.json",
+      "size": 517,
+      "sha256": "106ad13a3814ac48bfe6adbc7dec1d5730155d579cfcdb1d8cc5b4c9ecc1dc8c"
+    }
+  ]
+}
