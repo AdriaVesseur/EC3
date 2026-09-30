@@ -167,7 +167,7 @@ export default function App() {
       void refresh();
   }, [connected, snapshot?.catalog]);
   useEffect(() => {
-    if (page !== "results" || !connected) return;
+    if ((page !== "championship" && page !== "results") || !connected) return;
     let cancelled = false;
     setResultsLoading(true);
     setResultsError("");
@@ -977,6 +977,69 @@ export default function App() {
                   <ArrowRight size={16} />
                 </Button>
               </section>
+              <section className="results-section">
+                <div className="section-heading">
+                  <div>
+                    <p className="eyebrow">LIVE FROM MAKROBEASTS</p>
+                    <h2>Driver standings</h2>
+                  </div>
+                  <Button
+                    disabled={!connected || resultsLoading}
+                    onClick={async () => {
+                      setResultsLoading(true);
+                      setResultsError("");
+                      try {
+                        setResults(await api<ChampionshipResults>("/results?refresh=true"));
+                      } catch (e) {
+                        setResultsError(e instanceof Error ? e.message : "Could not refresh standings.");
+                      } finally {
+                        setResultsLoading(false);
+                      }
+                    }}
+                  >
+                    <RefreshCw size={15} className={resultsLoading ? "spin" : undefined} />
+                    Refresh standings
+                  </Button>
+                </div>
+                {results?.updatedAt && (
+                  <p className="results-updated">
+                    Updated {new Date(results.updatedAt).toLocaleString()}
+                  </p>
+                )}
+                {resultsError && (
+                  <div className="global-notice error-notice" role="alert">
+                    <AlertTriangle size={16} />
+                    <span>{resultsError}</span>
+                  </div>
+                )}
+                {resultsLoading && !results && (
+                  <EmptyState title="Loading driver standings">Connecting to MakroBeasts…</EmptyState>
+                )}
+                {!resultsLoading && !resultsError && results && (
+                  results.standings.length ? (
+                    <div className="results-table-wrap">
+                      <table className="results-table">
+                        <thead><tr><th>Pos</th><th>#</th><th>Driver</th><th>Points</th></tr></thead>
+                        <tbody>
+                          {results.standings.map((row) => (
+                            <tr key={`${row.position}-${row.driver}`}>
+                              <td><span className={row.position <= 3 ? `standing-position p${row.position}` : "standing-position"}>{row.position.toString().padStart(2, "0")}</span></td>
+                              <td className="driver-number">{row.number}</td>
+                              <td className="driver-name">{row.driver}</td>
+                              <td className="driver-points">{row.points}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  ) : <EmptyState title="No standings published">MakroBeasts has not published the driver classification yet.</EmptyState>
+                )}
+                {results?.sourceUrl && (
+                  <a className="text-link results-source-link" href={results.sourceUrl} target="_blank" rel="noreferrer">
+                    Open MakroBeasts championship <ExternalLink size={14} />
+                  </a>
+                )}
+              </section>
               <div className="section-heading">
                 <h2>Event packages</h2>
                 <span className="eyebrow">
@@ -1050,8 +1113,7 @@ export default function App() {
                   </Button>
                 </div>
                 <p>
-                  Driver standings and race podiums are loaded from the official
-                  championship page.
+                  Race results are loaded from the official championship page.
                 </p>
                 {results?.sourceUrl && (
                   <a className="text-link results-source-link" href={results.sourceUrl} target="_blank" rel="noreferrer">
@@ -1071,38 +1133,11 @@ export default function App() {
                 </div>
               )}
               {!resultsLoading && !resultsError && results && (
-                <>
-                  <section className="results-section">
+                <section className="results-section">
                     <div className="section-heading">
                       <div>
-                        <p className="eyebrow">CHAMPIONSHIP TABLE</p>
-                        <h2>Driver standings</h2>
-                      </div>
-                      <span className="eyebrow">{results.standings.length} DRIVERS</span>
-                    </div>
-                    {results.standings.length ? (
-                      <div className="results-table-wrap">
-                        <table className="results-table">
-                          <thead><tr><th>Pos</th><th>#</th><th>Driver</th><th>Points</th></tr></thead>
-                          <tbody>
-                            {results.standings.map((row) => (
-                              <tr key={`${row.position}-${row.driver}`}>
-                                <td><span className={row.position <= 3 ? `standing-position p${row.position}` : "standing-position"}>{row.position.toString().padStart(2, "0")}</span></td>
-                                <td className="driver-number">{row.number}</td>
-                                <td className="driver-name">{row.driver}</td>
-                                <td className="driver-points">{row.points}</td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
-                    ) : <EmptyState title="No standings published">MakroBeasts has not published the driver classification yet.</EmptyState>}
-                  </section>
-                  <section className="results-section">
-                    <div className="section-heading">
-                      <div>
-                        <p className="eyebrow">OFFICIAL RACE PODIUMS</p>
-                        <h2>Race podiums</h2>
+                        <p className="eyebrow">OFFICIAL RACE RESULTS</p>
+                        <h2>Race results</h2>
                       </div>
                       <span className="eyebrow">{results.races.length} ROUNDS</span>
                     </div>
@@ -1136,9 +1171,8 @@ export default function App() {
                           </article>
                         ))}
                       </div>
-                    ) : <EmptyState title="No race podiums published">Race podiums will appear here after MakroBeasts publishes them.</EmptyState>}
-                  </section>
-                </>
+                    ) : <EmptyState title="No race results published">Race results will appear here after MakroBeasts publishes them.</EmptyState>}
+                </section>
               )}
               {resultsLoading && <EmptyState title="Loading official results">Connecting to MakroBeasts…</EmptyState>}
               {!connected && <EmptyState title="Connect the desktop helper">The helper loads and caches championship results for this app.</EmptyState>}
