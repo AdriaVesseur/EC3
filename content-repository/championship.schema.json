@@ -13,6 +13,11 @@
     "season": { "type": "string", "pattern": "^[0-9]{4}$" },
     "build": { "type": "string" },
     "minimumHelperVersion": { "type": "string" },
+    "resultsUrl": {
+      "type": "string",
+      "format": "uri",
+      "pattern": "^https://(www\\.)?makrobeasts\\.com/championships/"
+    },
     "requiredContent": {
       "type": "array",
       "minItems": 0,

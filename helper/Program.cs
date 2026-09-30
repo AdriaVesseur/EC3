@@ -7,7 +7,7 @@ namespace Eurocup3;
 
 public static class Program
 {
-    public const string Version = "1.1.0";
+    public const string Version = "1.2.0";
 
     public static async Task Main(string[] args)
     {
@@ -43,6 +43,7 @@ public static class Program
         builder.Services.AddSingleton(config);
         builder.Services.AddSingleton<AssettoDetectionService>();
         builder.Services.AddSingleton<ManifestService>();
+        builder.Services.AddSingleton<ResultsService>();
         builder.Services.AddSingleton<DownloadService>();
         builder.Services.AddSingleton<ExtractionService>();
         builder.Services.AddSingleton<InstallationService>();
@@ -171,6 +172,11 @@ public static class Program
                     raceReady = c.RaceReady(),
                 };
             }
+        );
+        app.MapGet(
+            "/api/results",
+            async (bool? refresh, ManifestService m, ResultsService r, CancellationToken ct) =>
+                await r.Get(m.Require().Championship, refresh == true, ct)
         );
         app.MapGet(
             "/api/packages/{id}",

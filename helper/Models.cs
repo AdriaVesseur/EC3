@@ -72,7 +72,41 @@ public sealed record Championship(
     string Build,
     string MinimumHelperVersion,
     string[] RequiredContent,
-    EventSpec[] Events
+    EventSpec[] Events,
+    string? ResultsUrl = null
+);
+
+public sealed record ChampionshipStanding(
+    int Position,
+    string Number,
+    string Driver,
+    string Points
+);
+
+public sealed record RaceResultEntry(
+    int Position,
+    string Number,
+    string Driver,
+    string Car,
+    string Time
+);
+
+public sealed record RaceSessionResult(string Name, RaceResultEntry[] Results);
+
+public sealed record ChampionshipRaceResult(
+    string Id,
+    string Round,
+    string Name,
+    string Venue,
+    string Url,
+    RaceSessionResult[] Sessions
+);
+
+public sealed record ChampionshipResults(
+    string SourceUrl,
+    DateTimeOffset UpdatedAt,
+    ChampionshipStanding[] Standings,
+    ChampionshipRaceResult[] Races
 );
 
 public sealed record Catalog(

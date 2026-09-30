@@ -185,6 +185,8 @@ public sealed class ManifestService(ConfigService config)
             || !Versions.Valid(c.MinimumHelperVersion)
         )
             throw new AppFault("INVALID_MANIFEST", "Invalid or inconsistent championship build.");
+        if (c.ResultsUrl != null)
+            ResultsService.ValidateSourceUrl(c.ResultsUrl);
         var ids = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         var paths = new List<string>();
         foreach (var p in m.Content)

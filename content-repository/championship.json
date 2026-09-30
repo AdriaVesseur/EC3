@@ -1,7 +1,8 @@
 {
   "season": "2026",
   "build": "1.4.3",
-  "minimumHelperVersion": "1.1.0",
+  "minimumHelperVersion": "1.2.0",
+  "resultsUrl": "https://www.makrobeasts.com/championships/porsche-sprint-cup",
   "requiredContent": [],
   "events": []
 }

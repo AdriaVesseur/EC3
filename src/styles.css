@@ -926,6 +926,146 @@ main {
   width: 100%;
   justify-content: space-between;
 }
+.results-source-card .section-heading {
+  align-items: center;
+}
+.results-source-card .section-heading h2,
+.results-section .section-heading h2 {
+  font-size: 25px;
+}
+.error-notice {
+  border-color: #8f4545;
+  color: #f0b5b5;
+}
+.results-source-link,
+.race-result-heading .text-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+.results-updated {
+  margin: 14px 0 0 !important;
+  font-size: 11px !important;
+  color: #737b88 !important;
+}
+.results-section {
+  margin-top: 28px;
+}
+.results-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--ec3-border);
+  background: #15171a;
+}
+.results-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+.results-table th {
+  padding: 13px 18px;
+  color: #777f8d;
+  background: #191c20;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.results-table td {
+  padding: 12px 18px;
+  border-top: 1px solid #ffffff0b;
+  font-size: 13px;
+}
+.standing-position {
+  color: #9299a5;
+  font-family: "Transducer Condensed", "Transducer", sans-serif;
+  font-size: 18px;
+}
+.standing-position.p1 { color: #f3bd50; }
+.standing-position.p2 { color: #d7dde8; }
+.standing-position.p3 { color: #c98f62; }
+.driver-number {
+  color: #8b93a1;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.driver-name { font-weight: 650; }
+.driver-points {
+  color: var(--ec3-primary);
+  font-weight: 800;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.race-results-list {
+  display: grid;
+  gap: 12px;
+}
+.race-result-card {
+  border: 1px solid var(--ec3-border);
+  background: #15171a;
+}
+.race-result-heading {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  border-bottom: 1px solid #ffffff0b;
+}
+.race-result-heading > div { flex: 1; min-width: 0; }
+.race-result-heading h3 {
+  margin-top: 4px;
+  font-family: "Transducer Condensed", "Transducer", sans-serif;
+  font-size: 21px;
+  text-transform: uppercase;
+}
+.race-result-heading p {
+  margin: 3px 0 0;
+  color: #8b93a1;
+  font-size: 11px;
+}
+.podium-list { padding: 2px 18px 10px; }
+.podium-row {
+  display: grid;
+  grid-template-columns: 32px 52px minmax(0, 1fr) 100px;
+  align-items: center;
+  gap: 12px;
+  min-height: 46px;
+  border-bottom: 1px solid #ffffff0a;
+  font-size: 12px;
+}
+.podium-row:last-child { border-bottom: 0; }
+.podium-place {
+  color: #7c8491;
+  font-family: "Transducer Condensed", "Transducer", sans-serif;
+  font-size: 19px;
+}
+.podium-1 .podium-place { color: #f3bd50; }
+.podium-2 .podium-place { color: #d7dde8; }
+.podium-3 .podium-place { color: #c98f62; }
+.podium-time {
+  color: #a2a9b4;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+@media (max-width: 620px) {
+  .results-source-card .section-heading,
+  .race-result-heading {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+  .race-result-heading .text-link {
+    margin-left: 58px;
+  }
+  .results-table th,
+  .results-table td {
+    padding-right: 11px;
+    padding-left: 11px;
+  }
+  .podium-list { padding-right: 12px; padding-left: 12px; }
+  .podium-row {
+    grid-template-columns: 22px 38px minmax(0, 1fr) 78px;
+    gap: 8px;
+    font-size: 11px;
+  }
+}
 .event-art {
   height: 115px;
   position: relative;

@@ -62,6 +62,44 @@ try
     Assert(Versions.Compare("1.0.0+build1", "1.0.0+build2") == 0, "build metadata ignored");
     Assert(Versions.Compare("1.0.0-rc.1", "1.0.0") < 0, "release after prerelease");
     Assert(!Versions.Valid("1.0.0-01"), "reject leading-zero prerelease");
+    ResultsService.ValidateSourceUrl("https://www.makrobeasts.com/championships/porsche-sprint-cup");
+    Assert(true, "accept MakroBeasts championship results source");
+    Reject(
+        () => ResultsService.ValidateSourceUrl("https://example.com/championships/test"),
+        "reject untrusted results source"
+    );
+    var standingsHtml = """
+        <div id="standings-pane-pilots"><table><tbody>
+        <tr><td>1</td><td>#16</td><td><a>Samuel Fernández</a></td><td>Class</td><td>Car</td><td>64</td></tr>
+        </tbody></table></div>
+        """;
+    var standing = ResultsService.ParseStandings(standingsHtml).Single();
+    Assert(standing.Position == 1 && standing.Number == "#16" && standing.Driver == "Samuel Fernández" && standing.Points == "64", "parse championship standings");
+    var meta = ResultsService.ParseEventMeta(
+        "<span>R1</span><h3>Ronda 1 | Hockenheim GP</h3><span><i class=\"location-dot\"></i>Hockenheimring GP</span><a href=\"/events/e0cd5f39-2ced-42fe-9a8e-961c06b36e2d/results\">Results</a>",
+        "e0cd5f39-2ced-42fe-9a8e-961c06b36e2d",
+        1
+    );
+    Assert(meta.Round == "R1" && meta.Name.Contains("Hockenheim") && meta.Venue == "Hockenheimring GP", "parse event round and venue");
+    using (var podium = JsonDocument.Parse("""
+        {"sessions":[{"name":"Carrera","classes":{"all":[{"name":"Sergi Morera","car":"Porsche Cup","time":"26:12.232","raceNumber":8}]}}]}
+        """))
+    {
+        var entry = ResultsService.ParseSessions(podium.RootElement).Single().Results.Single();
+        Assert(entry.Position == 1 && entry.Driver == "Sergi Morera" && entry.Number == "8" && entry.Time == "26:12.232", "parse official race podium");
+    }
+    if (Environment.GetEnvironmentVariable("EC3_LIVE_RESULTS_TEST") == "1")
+    {
+        var live = await new ResultsService().Get(
+            new Championship(
+                "2026", "1.0.0", "1.0.0", [], [],
+                "https://www.makrobeasts.com/championships/porsche-sprint-cup"
+            ),
+            force: true
+        );
+        Assert(live.Standings.Length > 0, "load live MakroBeasts driver standings");
+        Assert(live.Races.Length > 0 && live.Races.All(r => r.Sessions.Length > 0), "load live MakroBeasts race podiums");
+    }
     foreach (
         var p in new[]
         {

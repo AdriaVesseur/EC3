@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
     <OutputType>WinExe</OutputType>
-    <Version>1.1.0</Version>
+    <Version>1.2.0</Version>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>NETSDK1138</NoWarn>
   </PropertyGroup>

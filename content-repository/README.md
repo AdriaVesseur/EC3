@@ -36,4 +36,8 @@ El índice generado contiene el destino de instalación y las huellas de cada ar
 
 La carpeta de contenido guarda el manifest, el calendario y los índices técnicos pequeños. Los ZIP grandes van en Releases. GitHub Actions valida los cambios; localmente puedes ejecutar `npm run validate:content`.
 
+## Resultados y clasificación
+
+`championship.json` incluye `resultsUrl`, que apunta a la página pública del campeonato en MakroBeasts. La app lee de ahí la clasificación de pilotos y los podios publicados por ronda. Al abrir **Results**, la app actualiza los datos y los conserva en caché durante cinco minutos. Cuando se publique Eurocup 3 en MakroBeasts, cambia este campo por la URL pública de ese campeonato.
+
 La entrada `ec3-car-template` es un ejemplo con URL `REPLACE-ME`; no aparece en el catálogo de la app hasta que sustituyas el enlace por una release real y la acción genere su índice.

@@ -44,6 +44,28 @@ export type EventPackage = {
   round: string;
   requiredContent: string[];
 };
+export type ChampionshipResults = {
+  sourceUrl: string;
+  updatedAt: string;
+  standings: { position: number; number: string; driver: string; points: string }[];
+  races: {
+    id: string;
+    round: string;
+    name: string;
+    venue: string;
+    url: string;
+    sessions: {
+      name: string;
+      results: {
+        position: number;
+        number: string;
+        driver: string;
+        car: string;
+        time: string;
+      }[];
+    }[];
+  }[];
+};
 export type Snapshot = {
   version: string;
   assettoPath: string | null;
@@ -59,6 +81,7 @@ export type Snapshot = {
     };
     championship: {
       minimumHelperVersion: string;
+      resultsUrl?: string | null;
       requiredContent: string[];
       events: EventPackage[];
     };
