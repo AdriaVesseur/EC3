@@ -1,7 +1,7 @@
 {
   "championship": "Eurocup 3",
   "season": "2026",
-  "build": "1.4.4",
+  "build": "1.4.5",
   "demo": true,
   "content": [
     {
@@ -11,6 +11,7 @@
       "version": "1.0.2",
       "required": false,
       "icon": "https://exclusivecarregistry.com/images/brands/preview/bid_60.png",
+      "image": "https://raw.githubusercontent.com/AdriaVesseur/EC3/main/content-repository/images/test-car.jpg",
       "download": "https://github.com/AdriaVesseur/EC3/releases/download/EC3Test/Test2.zip",
       "description": "Coche de prueba para validar la instalación automática desde su ZIP.",
       "changelog": [
@@ -24,6 +25,7 @@
       "version": "1.0.0",
       "required": true,
       "icon": "https://freesvg.org/img/RaceCircuitPaulRicard.png",
+      "image": "https://raw.githubusercontent.com/AdriaVesseur/EC3/main/content-repository/images/paul-ricard.png",
       "download": "https://github.com/AdriaVesseur/EC3/releases/download/ec3-paul-ricard-1.0.0/paul-ricard-2021-1.0.0.zip",
       "description": "Circuito Paul Ricard para el campeonato.",
       "changelog": [
@@ -37,6 +39,7 @@
       "version": "1.0.0",
       "required": true,
       "icon": "https://raw.githubusercontent.com/AdriaVesseur/EC3/main/content-repository/icons/mi-coche.png",
+      "image": "https://raw.githubusercontent.com/AdriaVesseur/EC3/main/content-repository/images/safety-car.jpg",
       "download": "https://github.com/AdriaVesseur/EC3/releases/download/EC3Test2/test3.zip",
       "description": "Coche de prueba para validar la instalación automática desde su ZIP.",
       "changelog": [

@@ -1,6 +1,6 @@
 # Publicar coches y circuitos
 
-El catálogo está en `manifest.json`. Los ZIP se suben a Releases del repo `AdriaVesseur/EC3`. En cada paquete editas estos ocho campos: `id`, `name`, `type`, `version`, `required`, `download`, `changelog` y `description`. Puedes añadir `icon` si quieres un logo propio.
+El catálogo está en `manifest.json`. Los ZIP se suben a Releases del repo `AdriaVesseur/EC3`. En cada paquete editas estos ocho campos: `id`, `name`, `type`, `version`, `required`, `download`, `changelog` y `description`. Puedes añadir `icon` para el logo pequeño e `image` para la foto de fondo de la tarjeta.
 
 ## Formato del ZIP
 
@@ -47,6 +47,20 @@ Sube una imagen PNG, WebP, JPG o SVG a la misma release que el ZIP y copia su en
 Usa la URL real de tu imagen publicada; no el enlace a la página de la release. También puedes subir imágenes pequeñas a `content-repository/icons/` en el repo y usar su enlace **Raw**, por ejemplo `https://raw.githubusercontent.com/AdriaVesseur/EC3/main/content-repository/icons/mi-coche.png`. El enlace debe ser público, HTTPS y sin credenciales. Una imagen cuadrada con fondo transparente funciona bien; 128 × 128 píxeles es suficiente.
 
 El logo aparece junto al nombre en **Content** y en los listados de **Home**. Si omites `icon` o no se puede cargar la imagen, aparece el icono habitual de coche, circuito, configuración o app. No necesitas cambiar la versión ni volver a subir el ZIP para añadir un logo: guarda el manifest y pulsa **Refresh catalog**. El logo es una imagen de la interfaz; no se instala como archivo del juego.
+
+## Foto de fondo de cada tarjeta
+
+Content muestra una cuadrícula de paquetes. Sube tu foto a `content-repository/images/` o como asset de una release y añade su URL pública HTTPS en `image`:
+
+```json
+"image": "https://raw.githubusercontent.com/AdriaVesseur/EC3/main/content-repository/images/mi-coche.jpg"
+```
+
+Usa el enlace **Raw** o el enlace directo al archivo, no a su página en GitHub. Se recomienda una foto horizontal de al menos 960 × 540 píxeles. La app la recorta visualmente para cubrir el fondo; el archivo original permanece intacto. Si no hay foto o falla la carga, aparece el icono de la categoría. `image` es opcional, no cambia el ZIP ni sus metadatos y no exige cambiar la versión del paquete.
+
+## Servidores y sponsors
+
+Rellena `servers.json` para configurar servidores y sus enlaces de live timing, y `sponsors.json` para los logos y webs que aparecen al pie de todas las páginas. Ambos empiezan con una lista vacía. Consulta [los ejemplos y los campos](portal-config.md).
 
 ## Resultados y clasificación
 

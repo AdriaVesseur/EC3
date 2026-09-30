@@ -54,6 +54,7 @@ public sealed class ManifestService(ConfigService config)
             foreach (var item in draft.Content)
             {
                 ValidateIcon(item.Icon);
+                ValidateImage(item.Image);
                 if (item.Download.Contains("REPLACE-ME", StringComparison.Ordinal))
                     continue;
 
@@ -134,6 +135,7 @@ public sealed class ManifestService(ConfigService config)
                 $"Generated metadata does not match {item.Id} v{item.Version}."
             );
         ValidateIcon(item.Icon);
+        ValidateImage(item.Image);
         return new Package(
             item.Id,
             item.Name,
@@ -148,7 +150,8 @@ public sealed class ManifestService(ConfigService config)
             [],
             item.Description,
             item.Changelog,
-            Icon: item.Icon
+            Icon: item.Icon,
+            Image: item.Image
         );
     }
 
@@ -167,6 +170,23 @@ public sealed class ManifestService(ConfigService config)
             || string.IsNullOrEmpty(uri.Host)
         )
             throw new AppFault("INVALID_ICON", "Package icons must use an HTTPS URL without credentials.");
+    }
+
+    public static void ValidateImage(string? url)
+    {
+        if (url is null)
+            return;
+        if (
+            url.Length > 2048
+            || url.Any(char.IsWhiteSpace)
+            || url.Contains('\\')
+            || Regex.IsMatch(url, @"^https://[^/?#]*@", RegexOptions.IgnoreCase)
+            || !Uri.TryCreate(url, UriKind.Absolute, out var uri)
+            || uri.Scheme != "https"
+            || uri.UserInfo != ""
+            || string.IsNullOrEmpty(uri.Host)
+        )
+            throw new AppFault("INVALID_IMAGE", "Package photos must use an HTTPS URL without credentials.");
     }
 
     void ValidateCatalogUrl(string url)
@@ -270,6 +290,7 @@ public sealed class ManifestService(ConfigService config)
             paths.Add(p.InstallPath);
             ValidateDownload(p.Download);
             ValidateIcon(p.Icon);
+            ValidateImage(p.Image);
             if (p.MinimumCspVersion != null && !Versions.Valid(p.MinimumCspVersion))
                 throw new AppFault("INVALID_VERSION", "Invalid CSP requirement.");
             var files = new HashSet<string>(StringComparer.OrdinalIgnoreCase);

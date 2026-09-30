@@ -6,8 +6,13 @@ try {
   if ($LASTEXITCODE -ne 0) { throw 'Web build failed' }
   dotnet publish helper/Eurocup3.Helper.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -o artifacts/helper
   if ($LASTEXITCODE -ne 0) { throw 'Helper publish failed' }
-  New-Item -ItemType Directory -Force artifacts/helper/wwwroot | Out-Null
-  Get-ChildItem -LiteralPath artifacts/helper/wwwroot -Force | Remove-Item -Recurse -Force
+  $webRootTarget = [IO.Path]::GetFullPath((Join-Path $projectRoot 'artifacts/helper/wwwroot'))
+  $publishRootTarget = [IO.Path]::GetFullPath((Join-Path $projectRoot 'artifacts/helper'))
+  if (-not $webRootTarget.StartsWith($publishRootTarget + [IO.Path]::DirectorySeparatorChar, [StringComparison]::OrdinalIgnoreCase)) {
+    throw 'The web resource cleanup target must stay inside the helper publication directory.'
+  }
+  New-Item -ItemType Directory -Force -Path $webRootTarget | Out-Null
+  Get-ChildItem -LiteralPath $webRootTarget -Force | Remove-Item -Recurse -Force
   Get-ChildItem -LiteralPath dist | Where-Object Name -ne 'helper' | Copy-Item -Destination artifacts/helper/wwwroot -Recurse -Force
   $compilerPath = 'C:\Program Files (x86)\Inno Setup 6\ISCC.exe'
   if (-not (Test-Path -LiteralPath $compilerPath)) { throw 'Install Inno Setup 6 to build the per-user Windows installer.' }

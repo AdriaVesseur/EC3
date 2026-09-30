@@ -56,6 +56,8 @@ Package P(string id, Dependency[]? deps = null) =>
     );
 try
 {
+    PortalTests.Run(Assert, Reject);
+    await AppUpdateTests.Run(Assert, RejectAsync);
     Assert(Versions.Valid("1.0.0+build-test"), "hyphens in build metadata");
     Assert(Versions.Compare("2.10.0", "2.9.0") > 0, "numeric version comparison");
     Assert(Versions.Compare("1.0.0-rc.2", "1.0.0-rc.10") < 0, "numeric prerelease ordering");
@@ -350,7 +352,7 @@ try
     var iconUrl = "https://raw.githubusercontent.com/AdriaVesseur/EC3/main/images/car-logo.png?version=1";
     var iconDraft = JsonSerializer.Deserialize<PackageDraft>(
         """
-        {"id":"icon-car","name":"Icon car","type":"car","version":"1.0.0","download":"https://github.com/AdriaVesseur/EC3/releases/download/v1/car.zip","required":false,"description":"Example car","changelog":["Initial release"],"icon":"https://raw.githubusercontent.com/AdriaVesseur/EC3/main/images/car-logo.png?version=1"}
+        {"id":"icon-car","name":"Icon car","type":"car","version":"1.0.0","download":"https://github.com/AdriaVesseur/EC3/releases/download/v1/car.zip","required":false,"description":"Example car","changelog":["Initial release"],"icon":"https://raw.githubusercontent.com/AdriaVesseur/EC3/main/images/car-logo.png?version=1","image":"https://example.com/car-photo.jpg"}
         """,
         Json.Options
     )!;
@@ -360,6 +362,7 @@ try
     );
     var iconPackage = ManifestService.NormalizePackage(iconDraft, iconMetadata);
     Assert(iconPackage.Icon == iconUrl, "preserve package icon through manifest deserialization and metadata normalization");
+    Assert(iconPackage.Image == "https://example.com/car-photo.jpg", "preserve card photo through deserialization and generated metadata normalization");
     var iconManifest = new Manifest("EC3", "2026", "1.0.0", [iconPackage]);
     var iconChampionship = new Championship("2026", "1.0.0", "1.0.0", [], []);
     service.Validate(iconManifest, iconChampionship);
@@ -371,12 +374,16 @@ try
             snapshotJson.RootElement.GetProperty("package").GetProperty("icon").GetString() == iconUrl,
             "include the original icon URL in the file-free helper status snapshot"
         );
+        Assert(snapshotJson.RootElement.GetProperty("package").GetProperty("image").GetString() == iconPackage.Image,
+            "include card photo in helper status delivered to the UI");
     }
     var withoutIcon = iconDraft with { Icon = null };
     Assert(
         ManifestService.NormalizePackage(withoutIcon, iconMetadata).Icon is null,
         "keep package icons optional for existing manifests"
     );
+    Assert(ManifestService.NormalizePackage(iconDraft with { Image = null }, iconMetadata).Image is null,
+        "keep card photos optional for existing manifests");
     Reject(
         () => ManifestService.NormalizePackage(iconDraft, iconMetadata with { Version = "2.0.0" }),
         "reject metadata from a different package version while preserving optional fields"
@@ -393,10 +400,14 @@ try
         "https://example.com/car logo.png",
         "",
     })
+    {
         Reject(
             () => service.Validate(iconManifest with { Content = [iconPackage with { Icon = invalidIcon }] }, iconChampionship),
             "reject invalid package icon " + invalidIcon
         );
+        Reject(() => service.Validate(iconManifest with { Content = [iconPackage with { Image = invalidIcon }] }, iconChampionship),
+            "reject invalid card photo " + invalidIcon);
+    }
     Reject(
         () => service.ValidateDownload("https://evil.example/mod.zip"),
         "untrusted download origin"

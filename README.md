@@ -2,7 +2,7 @@
 
 Aplicación funcional React + helper Windows .NET 8 para distribuir, instalar, actualizar y verificar contenido de Assetto Corsa. El navegador nunca escribe en la carpeta del juego: todas las operaciones pasan por el helper local.
 
-**Estado de contenido:** el repositorio público `AdriaVesseur/EC3` contiene la aplicación, el helper y el catálogo de ejemplo. No se han proporcionado coches/circuitos oficiales ni se han publicado paquetes de juego; la demo usa archivos inocuos locales y una instalación ficticia. No emplear la demo para preparar una carrera real.
+**Estado de contenido:** el repositorio público `AdriaVesseur/EC3` contiene la aplicación, el helper, el catálogo y ZIP de prueba publicados por el usuario, incluido Paul Ricard. El catálogo sigue marcado como ejemplo (`demo: true`). La demostración de desarrollo usa archivos de texto locales y una instalación ficticia; no emplearla para preparar una carrera real.
 
 ## Ejecutar la demostración
 
@@ -89,6 +89,16 @@ Al publicar una actualización, aumenta `version` y cambia `download` al asset n
 
 Cada paquete admite además `icon`, un campo opcional con la URL HTTPS pública de su logo. Puedes adjuntar la imagen a la release o guardarla en el repo y usar su enlace Raw. La app lo muestra en Content y en los listados de Home; si no hay imagen o falla la carga, conserva el icono de categoría. Consulta [las instrucciones de publicación](content-repository/README.md#logo-de-cada-paquete).
 
+La cuadrícula de **Content** usa también `image`, una URL HTTPS opcional para la foto de fondo de cada tarjeta. Las fotos de ejemplo viven en `content-repository/images/`. Consulta [cómo añadir fotos](content-repository/README.md#foto-de-fondo-de-cada-tarjeta).
+
+## Servidores, sponsors y actualizaciones de la app
+
+Edita `content-repository/servers.json` para añadir IP/host, puerto HTTP de AC y URL del live timing; **Servers** muestra el estado real de `/INFO` y abre Content Manager mediante **Join server**. El protocolo `acmanager` debe estar registrado en Windows. No se inicia una carrera ni se simula cronometraje desde el helper. El timing se abre mediante su enlace o, con `embedTiming: true`, dentro de la app si el proveedor admite iframes.
+
+`content-repository/sponsors.json` contiene nombre, logo HTTPS y web HTTPS de cada sponsor. Sus logos enlazados aparecen al pie de todas las páginas. Ambos JSON empiezan vacíos para que publiques tus datos. Hay ejemplos completos en [portal-config.md](content-repository/portal-config.md); la configuración se consulta cada cinco minutos y Servers refresca el estado cada treinta segundos mientras está visible.
+
+La app comprueba nuevas versiones al conectarse y cada treinta minutos. Una release estable `app-vX.Y.Z` con el asset `Eurocup3-Helper-Setup.exe` activa el aviso cuando es superior a la versión instalada. La actualización consiste en descargar y ejecutar el instalador; no hay instalación silenciosa automática. Los ZIP de contenido se actualizan por el catálogo y no activan este aviso. [UPDATES.md](UPDATES.md) explica cómo sincronizar versiones y preparar la release borrador en GitHub Actions.
+
 El helper vuelve a consultar el catálogo cada cinco minutos cuando no hay operaciones activas. También hay **Refresh catalog** y **Update all**. Al actualizar se verifican los archivos existentes y solo se descargan paquetes ausentes, distintos o corruptos. Las reparaciones actuales descargan el ZIP completo; `files` ya proporciona el inventario necesario para futuras actualizaciones por archivo. No hay implementación de deltas binarios.
 
 ## Añadir circuitos y eventos
@@ -154,11 +164,11 @@ El manifiesto público está en `content-repository/manifest.json` y el calendar
 Workflows incluidos:
 
 - `ci.yml`: typecheck, build, validación, tests de catálogo, helper y navegador Windows.
-- `release-helper.yml`: tags `v*`, build autocontenido e instalador; crea una **release borrador** para firma y revisión.
+- `release-helper.yml`: tags `app-v*` / `v*` o ejecución manual con versión; build autocontenido e instalador; crea una **release borrador** para revisión.
 - `deploy-web.yml`: despliegue manual a GitHub Pages. Incluye el instalador de la última release publicada; falla si aún no hay una release válida.
 - `content-repository/.github/workflows/validate.yml`: validación autónoma del repositorio de contenido.
 
-Para cambiar versión del helper actualizar `Program.Version`, `Eurocup3.Helper.csproj`, `installer/Eurocup3.iss` y el número visible de la web/package.json antes de crear el tag. Configurar GitHub Pages con origen GitHub Actions y añadir el dominio exacto a `allowedOrigins`. Los navegadores pueden pedir permiso de red local o bloquear determinadas combinaciones HTTPS→loopback: usar la interfaz servida por el propio helper como ruta de soporte universal.
+Para cambiar la versión ejecuta `node scripts/set-app-version.mjs X.Y.Z` antes de crear el tag. Configurar GitHub Pages con origen GitHub Actions y añadir el dominio exacto a `allowedOrigins`. Los navegadores pueden pedir permiso de red local o bloquear determinadas combinaciones HTTPS→loopback: usar la interfaz servida por el propio helper como ruta de soporte universal.
 
 ## Pruebas y QA
 
@@ -173,6 +183,6 @@ node scripts/integration.mjs
 npm run test:e2e
 ```
 
-El navegador de pruebas es Edge, disponible en Windows. `test:e2e` arranca Vite y la demo si no están ya iniciados; las pruebas operan exclusivamente sobre `work/demo`. Integración arranca su propio helper y servidor, por lo que debe ejecutarse sin demo activa. Capturas en `artifacts/`: 1920×1080, 1440×900, 1366×768 y móvil 390×844, biblioteca y estado desconectado. Los logs están en `%LOCALAPPDATA%/Eurocup3/logs/content-manager.log`, con rotación al superar 5 MB; en modo demo están en `work/demo/logs`.
+El navegador de pruebas es Edge, disponible en Windows. `test:e2e` arranca Vite en 5185 y su helper aislado en 32155; las pruebas operan exclusivamente sobre `work/demo`. La app instalada en 32145 puede seguir abierta. Integración usa 32147 y comparte el servidor de fixtures 32146 con E2E: ejecutarlas consecutivamente. El build de pruebas usa `VITE_EC3_API_URL`; el script de empaquetado vuelve a compilar con el endpoint normal 32145. Capturas en `artifacts/`: escritorio y móvil, biblioteca, servidores y estados desconectados. Los logs están en `%LOCALAPPDATA%/Eurocup3/logs/content-manager.log`, con rotación al superar 5 MB; en modo demo están en `work/demo/logs`.
 
 Referencias de implementación: [ASP.NET Core CORS](https://learn.microsoft.com/en-us/aspnet/core/security/cors?view=aspnetcore-8.0), [GitHub Release assets](https://docs.github.com/en/rest/releases/assets), [enlaces a releases](https://docs.github.com/en/repositories/releasing-projects-on-github/linking-to-releases). Revisión visual y accesibilidad documentadas en `DESIGN.md` y `QA.md`.

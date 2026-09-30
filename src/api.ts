@@ -1,6 +1,18 @@
 let token = "";
-const endpoint = "http://127.0.0.1:32145/api";
-export async function api<T>(path: string, body?: unknown): Promise<T> {
+const endpoint =
+  import.meta.env.VITE_EC3_API_URL ?? "http://127.0.0.1:32145/api";
+export async function api<T>(
+  path: string,
+  body?: unknown,
+  options: { signal?: AbortSignal } = {},
+): Promise<T> {
+  const timeout = AbortSignal.timeout(
+    path === "/select-folder"
+      ? 180000
+      : path.split("?")[0] === "/servers"
+        ? 90000
+        : 45000,
+  );
   const response = await fetch(endpoint + path, {
     method: body === undefined ? "GET" : "POST",
     headers: {
@@ -9,7 +21,9 @@ export async function api<T>(path: string, body?: unknown): Promise<T> {
       ...(body === undefined ? {} : { "Content-Type": "application/json" }),
     },
     body: body === undefined ? undefined : JSON.stringify(body),
-    signal: AbortSignal.timeout(path === "/select-folder" ? 180000 : 45000),
+    signal: options.signal
+      ? AbortSignal.any([options.signal, timeout])
+      : timeout,
   });
   if (!response.ok) {
     if (response.status === 401) token = "";

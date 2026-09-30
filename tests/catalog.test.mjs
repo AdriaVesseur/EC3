@@ -58,6 +58,29 @@ test("manifest accepts an optional HTTPS package icon without changing required 
   assert.equal(validate(manifest, championship), true);
   assert.equal(manifest.content[1].icon, undefined);
 });
+test("card photos are optional and accept a public HTTPS URL", () => {
+  const { manifest, championship } = publicCatalog();
+  manifest.content[0].image =
+    "https://raw.githubusercontent.com/AdriaVesseur/EC3/main/content-repository/images/car.jpg";
+  assert.equal(validate(manifest, championship), true);
+  assert.equal(manifest.content[1].image, undefined);
+});
+for (const image of [
+  "http://example.com/photo.jpg",
+  "data:image/png;base64,AAAA",
+  "/photo.jpg",
+  "https://user:secret@example.com/photo.jpg",
+  "https://@example.com/photo.jpg",
+  "https://example.com\\photo.jpg",
+  "https://example.com/car photo.jpg",
+  "",
+  42,
+])
+  test("rejects invalid card photo " + JSON.stringify(image), () => {
+    const { manifest, championship } = publicCatalog();
+    manifest.content[0].image = image;
+    assert.throws(() => validate(manifest, championship));
+  });
 for (const icon of [
   "http://example.com/car.png",
   "data:image/png;base64,AAAA",

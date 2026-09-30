@@ -97,6 +97,11 @@ export function validate(
       if (icon.protocol !== "https:" || icon.username || icon.password)
         throw Error("Package icons must use an HTTPS URL without credentials");
     }
+    if (p.image !== undefined) {
+      const image = new URL(p.image);
+      if (image.protocol !== "https:" || image.username || image.password)
+        throw Error("Package photos must use an HTTPS URL without credentials");
+    }
     const u = new URL(p.download);
     if (
       u.origin !== "https://github.com" ||
@@ -132,6 +137,22 @@ if (
     JSON.parse(fs.readFileSync(path.join(dir, "championship.json"))),
     process.env.EC3_CONTENT_REPOSITORY ?? "AdriaVesseur/EC3",
   );
+  const portalAjv = new Ajv({ allErrors: true, strict: false });
+  formats(portalAjv);
+  for (const name of ["servers", "sponsors"]) {
+    const configFile = path.join(dir, name + ".json");
+    if (!fs.existsSync(configFile)) continue;
+    const check = portalAjv.compile(
+      JSON.parse(
+        fs.readFileSync(
+          path.join(root, "content-repository", name + ".schema.json"),
+          "utf8",
+        ),
+      ),
+    );
+    if (!check(JSON.parse(fs.readFileSync(configFile, "utf8"))))
+      throw Error(name + ": " + portalAjv.errorsText(check.errors));
+  }
   console.log(
     "Catalog valid: schema, versions, package fields and release URLs.",
   );

@@ -121,6 +121,7 @@ test("all application sections render without overflow or accessibility violatio
     "content",
     "championship",
     "results",
+    "servers",
     "downloads",
     "installation",
     "settings",
@@ -325,7 +326,7 @@ test("race readiness explains a missing catalog instead of showing false zeroes"
 test("offline state never reports race ready and provides installation action", async ({
   page,
 }) => {
-  await page.route("http://127.0.0.1:32145/api/**", (r) => r.abort());
+  await page.route("http://127.0.0.1:32155/api/**", (r) => r.abort());
   await page.goto("/");
   await expect(page.getByText("Offline", { exact: true })).toBeVisible();
   await expect(
@@ -351,7 +352,7 @@ test("offline state never reports race ready and provides installation action", 
 test("bundled production web connects to the same-origin helper", async ({
   page,
 }) => {
-  await page.goto("http://127.0.0.1:32145");
+  await page.goto("http://127.0.0.1:32155");
   await expect(page.getByText("Online", { exact: true })).toBeVisible();
   await expect(
     page.getByRole("heading", { name: "Content hub." }),

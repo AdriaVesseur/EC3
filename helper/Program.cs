@@ -7,7 +7,7 @@ namespace Eurocup3;
 
 public static class Program
 {
-    public const string Version = "1.2.0";
+    public const string Version = "1.3.0";
 
     public static async Task Main(string[] args)
     {
@@ -26,6 +26,9 @@ public static class Program
             Environment.GetEnvironmentVariable("EC3_TEST_MODE") != "1"
             && Environment.GetEnvironmentVariable("EC3_NO_BROWSER") != "1";
         var webRoot = Path.Combine(AppContext.BaseDirectory, "wwwroot");
+        if (Environment.GetEnvironmentVariable("EC3_TEST_MODE") == "1" &&
+            Environment.GetEnvironmentVariable("EC3_TEST_WEB_ROOT") is { Length: > 0 } testWebRoot)
+            webRoot = Path.GetFullPath(testWebRoot);
         if (!Directory.Exists(webRoot))
             webRoot = Path.Combine(Directory.GetCurrentDirectory(), "dist");
         var builder = WebApplication.CreateBuilder(
@@ -48,6 +51,9 @@ public static class Program
         builder.Services.AddSingleton<ExtractionService>();
         builder.Services.AddSingleton<InstallationService>();
         builder.Services.AddSingleton<ContentService>();
+        builder.Services.AddSingleton<PortalConfigService>();
+        builder.Services.AddSingleton<ServerService>();
+        builder.Services.AddSingleton<AppUpdateService>();
         builder.Logging.AddFilter("Microsoft.AspNetCore", LogLevel.Warning);
         builder.Logging.AddProvider(new FileLoggerProvider(Path.Combine(config.DataRoot, "logs")));
         var app = builder.Build();
@@ -58,7 +64,7 @@ public static class Program
                 ctx.Response.Headers["X-Content-Type-Options"] = "nosniff";
                 ctx.Response.Headers["Referrer-Policy"] = "same-origin";
                 ctx.Response.Headers["Content-Security-Policy"] =
-                    $"default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' {apiOrigin}; frame-ancestors 'none'; base-uri 'self'; object-src 'none'";
+                    $"default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' {apiOrigin}; frame-src https:; frame-ancestors 'none'; base-uri 'self'; object-src 'none'";
                 if (
                     ctx.Connection.RemoteIpAddress is not { } ip
                     || !IPAddress.IsLoopback(ip)
@@ -177,6 +183,21 @@ public static class Program
             "/api/results",
             async (bool? refresh, ManifestService m, ResultsService r, CancellationToken ct) =>
                 await r.Get(m.Current?.Championship ?? await m.ReadChampionship(ct), refresh == true, ct)
+        );
+        app.MapGet(
+            "/api/portal",
+            async (bool? refresh, PortalConfigService portal, CancellationToken ct) =>
+                await portal.Get(refresh == true, ct)
+        );
+        app.MapGet(
+            "/api/servers",
+            async (bool? refresh, ServerService servers, CancellationToken ct) =>
+                await servers.Get(refresh == true, ct)
+        );
+        app.MapPost(
+            "/api/servers/{id}/join",
+            async (string id, ServerService servers, CancellationToken ct) =>
+                await servers.Join(id, ct)
         );
         app.MapGet(
             "/api/packages/{id}",
@@ -309,35 +330,7 @@ public static class Program
         );
         app.MapGet(
             "/api/helper-update",
-            async () =>
-            {
-                if (
-                    !System.Text.RegularExpressions.Regex.IsMatch(
-                        config.Value.HelperRepository,
-                        @"^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$"
-                    )
-                )
-                    throw new AppFault("INVALID_CONFIG", "Invalid helper repository.");
-                using var http = new HttpClient { Timeout = TimeSpan.FromSeconds(15) };
-                http.DefaultRequestHeaders.UserAgent.ParseAdd("Eurocup3-Helper/" + Version);
-                using var doc = JsonDocument.Parse(
-                    await http.GetStringAsync(
-                        "https://api.github.com/repos/"
-                            + config.Value.HelperRepository
-                            + "/releases/latest"
-                    )
-                );
-                var tag = doc.RootElement.GetProperty("tag_name").GetString()!.TrimStart('v');
-                return new
-                {
-                    version = tag,
-                    available = Versions.Valid(tag) && Versions.Compare(tag, Version) > 0,
-                    url = "https://github.com/"
-                        + config.Value.HelperRepository
-                        + "/releases/latest",
-                    automaticInstall = false,
-                };
-            }
+            async (AppUpdateService updates, CancellationToken ct) => await updates.Check(ct)
         );
         app.MapFallbackToFile("index.html");
         var detector = app.Services.GetRequiredService<AssettoDetectionService>();

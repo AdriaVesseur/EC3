@@ -1,0 +1,134 @@
+.app-update-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding: 20px;
+  border: 1px solid var(--ec3-border);
+  border-left: 3px solid var(--ec3-primary);
+  border-radius: 8px;
+  background: var(--ec3-surface);
+  color: var(--ec3-text);
+}
+
+.app-update-copy {
+  flex: 1;
+  min-width: 0;
+}
+
+.app-update-copy > p {
+  margin: 6px 0 0;
+  color: var(--ec3-muted);
+  font-size: 14px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.app-update-copy > .app-update-title {
+  margin-top: 0;
+  color: var(--ec3-text);
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.app-update-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  flex-shrink: 0;
+  text-decoration: none;
+}
+
+.app-update-dismiss {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--ec3-muted);
+  cursor: pointer;
+}
+
+.app-update-dismiss:hover {
+  border-color: var(--ec3-border);
+  background: var(--ec3-surface-raised);
+  color: var(--ec3-text);
+}
+
+.app-update-notes {
+  margin-top: 8px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.app-update-notes summary {
+  width: fit-content;
+  min-height: 44px;
+  padding: 10px 0;
+  color: var(--ec3-secondary);
+  cursor: pointer;
+}
+
+.app-update-notes summary:focus-visible {
+  outline: 2px solid var(--ec3-primary);
+  outline-offset: 3px;
+}
+
+.app-update-notes pre {
+  max-height: 260px;
+  margin: 0 0 12px;
+  padding: 12px;
+  overflow: auto;
+  border: 1px solid var(--ec3-border);
+  border-radius: 4px;
+  background: var(--ec3-bg);
+  color: var(--ec3-secondary);
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.app-update-notes a {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 44px;
+  color: var(--ec3-secondary);
+  text-underline-offset: 3px;
+}
+
+.app-update-error {
+  border-left-color: var(--ec3-warning);
+}
+
+@media (max-width: 720px) {
+  .app-update-notice {
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 16px;
+  }
+
+  .app-update-copy {
+    flex-basis: calc(100% - 60px);
+  }
+
+  .app-update-dismiss {
+    order: 1;
+  }
+
+  .app-update-copy {
+    order: 0;
+  }
+
+  .app-update-action {
+    order: 2;
+  }
+}

@@ -21,7 +21,8 @@ public sealed record Package(
     string Description = "",
     string[]? Changelog = null,
     string? MinimumCspVersion = null,
-    string? Icon = null
+    string? Icon = null,
+    string? Image = null
 );
 
 public sealed record Manifest(
@@ -49,7 +50,8 @@ public sealed record PackageDraft(
     bool Required,
     string Description = "",
     string[]? Changelog = null,
-    string? Icon = null
+    string? Icon = null,
+    string? Image = null
 );
 
 public sealed record GeneratedPackageMetadata(

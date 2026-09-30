@@ -13,6 +13,7 @@ export type Package = {
   dependencies: { id: string; minimumVersion: string }[];
   description: string;
   icon?: string | null;
+  image?: string | null;
   changelog?: string[];
   minimumCspVersion?: string;
 };

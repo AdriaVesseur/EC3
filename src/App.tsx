@@ -24,12 +24,12 @@ import {
   X,
   AlertTriangle,
   ExternalLink,
+  Server,
 } from "lucide-react";
 import { api, connect, bytes, active } from "./api";
 import {
   Badge,
   Button,
-  ContentRow,
   EmptyState,
   Modal,
   PackageArtwork,
@@ -38,12 +38,20 @@ import {
 } from "./components";
 import type { ChampionshipResults, Content, Package, Snapshot } from "./types";
 import { StandingsPreview } from "./StandingsPreview";
-type Page = "home" | "content" | "championship" | "results" | "settings";
+import { ContentCard } from "./ContentCard";
+import { ServersPage } from "./ServersPage";
+import { SponsorsFooter } from "./SponsorsFooter";
+import { usePortal } from "./usePortal";
+import { portalErrorMessage } from "./portal-types";
+import { AppUpdateNotice, useAppUpdate } from "./AppUpdateNotice";
+type Page =
+  "home" | "content" | "championship" | "results" | "servers" | "settings";
 const pages = [
   ["home", "Home", Home],
   ["content", "Content library", Layers],
   ["championship", "Championship", Flag],
   ["results", "Results", Trophy],
+  ["servers", "Servers", Server],
   ["settings", "Settings", Settings],
 ] as const;
 const getPage = () => {
@@ -72,12 +80,9 @@ export default function App() {
     [query, setQuery] = useState(""),
     [filter, setFilter] = useState("all"),
     [selected, setSelected] = useState<Package | null>(null),
-    [detailTab, setDetailTab] = useState("overview"),
-    [update, setUpdate] = useState<{
-      available: boolean;
-      version: string;
-      url: string;
-    } | null>(null);
+    [detailTab, setDetailTab] = useState("overview");
+  const appUpdate = useAppUpdate(connected);
+  const portal = usePortal(connected);
   const [results, setResults] = useState<ChampionshipResults | null>(null),
     [resultsLoading, setResultsLoading] = useState(false),
     [resultsError, setResultsError] = useState("");
@@ -270,13 +275,8 @@ export default function App() {
       </a>
       <header className="app-navigation">
         <div className="app-navigation-inner">
-          <a
-            href="#home"
-            className="brand"
-            aria-label="Eurocup 3 Content Hub home"
-          >
+          <a href="#home" className="brand" aria-label="Eurocup 3 home">
             <img src="./images/logo-dark.png" alt="" />
-            <span>Content Hub</span>
           </a>
           <span className="brand-divider" aria-hidden="true" />
           <nav className="primary-nav" aria-label="Main navigation">
@@ -349,7 +349,7 @@ export default function App() {
             </div>
           )}
         </div>
-        <main id="main" tabIndex={-1}>
+        <main id="main" tabIndex={-1} aria-label="Eurocup 3 portal">
           <div className="page-heading">
             <div>
               <p className="eyebrow">EUROCUP 3 / ASSETTO CORSA</p>
@@ -364,7 +364,9 @@ export default function App() {
                       ? "One grid. One standard."
                       : page === "results"
                         ? "The championship ledger."
-                        : "Your workspace."}
+                        : page === "servers"
+                          ? "Race servers."
+                          : "Your workspace."}
               </h1>
               <p className="subtitle">
                 {page === "home"
@@ -377,7 +379,9 @@ export default function App() {
                       ? "Prepare your championship or install a single event."
                       : page === "results"
                         ? "Official race results from MakroBeasts."
-                        : "Connection, support and application preferences."}
+                        : page === "servers"
+                          ? "Join the grid and follow the session live."
+                          : "Connection, support and application preferences."}
               </p>
             </div>
             <div className="build-label">
@@ -390,6 +394,26 @@ export default function App() {
               </strong>
             </div>
           </div>
+          <AppUpdateNotice {...appUpdate} />
+          {connected &&
+            page !== "servers" &&
+            (portal.error || !!portal.portal?.errors.length) && (
+              <div className="alert" role="status">
+                <AlertTriangle size={20} aria-hidden="true" />
+                <div>
+                  {portal.error && <p>{portal.error}</p>}
+                  {portal.portal?.errors.map((problem, index) => (
+                    <p key={index}>{portalErrorMessage(problem)}</p>
+                  ))}
+                </div>
+                <Button
+                  disabled={portal.loading}
+                  onClick={() => void portal.refresh()}
+                >
+                  Refresh services
+                </Button>
+              </div>
+            )}
           {error && (
             <div className="alert error" role="alert">
               <AlertTriangle size={20} />
@@ -899,19 +923,9 @@ export default function App() {
                   Update all
                 </Button>
               </div>
-              <div
-                className="content-table"
-                role="table"
-                aria-label="Official content"
-              >
-                <div className="content-row table-heading" role="row">
-                  <span role="columnheader">PACKAGE</span>
-                  <span role="columnheader">LATEST VERSION</span>
-                  <span role="columnheader">STATUS</span>
-                  <span role="columnheader">ACTION</span>
-                </div>
+              <section className="content-grid" aria-label="Official content">
                 {library.map((s) => (
-                  <ContentRow
+                  <ContentCard
                     key={s.package.id}
                     item={{ ...s, state: connected ? s.state : "offline" }}
                     disabled={
@@ -931,13 +945,16 @@ export default function App() {
                       : "Connect the helper and refresh the catalog."}
                   </EmptyState>
                 )}
-              </div>
+              </section>
               <p className="footnote">
                 <ShieldCheck size={15} />
                 Packages are installed only in validated Assetto Corsa content
                 folders.
               </p>
             </>
+          )}
+          {page === "servers" && (
+            <ServersPage connected={connected} active={page === "servers"} />
           )}
           {page === "content" && contentTab === "downloads" && (
             <>
@@ -1473,8 +1490,10 @@ export default function App() {
             <>
               <section className="settings-section">
                 <div className="section-heading">
-                  <h2>Local helper</h2>
-                  <Badge state={connected ? "ready" : "offline"} />
+                  <h2>Application updates</h2>
+                  <Badge state={connected ? "ready" : "offline"}>
+                    {connected ? "Connected" : "Offline"}
+                  </Badge>
                 </div>
                 <dl className="details-grid">
                   <div>
@@ -1487,7 +1506,7 @@ export default function App() {
                   </div>
                   <div>
                     <dt>Application version</dt>
-                    <dd>1.2.0</dd>
+                    <dd>{snapshot?.version ?? "Unavailable"}</dd>
                   </div>
                   <div>
                     <dt>Catalog last refreshed</dt>
@@ -1504,35 +1523,33 @@ export default function App() {
                 <div className="button-row">
                   <Button onClick={reconnect}>Reconnect helper</Button>
                   <Button
-                    disabled={!connected || pending}
-                    onClick={async () => {
-                      setPending(true);
-                      try {
-                        setUpdate(await api("/helper-update"));
-                      } catch (e) {
-                        setError((e as Error).message);
-                      } finally {
-                        setPending(false);
-                      }
-                    }}
+                    disabled={!connected || appUpdate.loading}
+                    onClick={() => void appUpdate.check()}
                   >
-                    Check helper updates
+                    {appUpdate.loading ? "Checking…" : "Check for app updates"}
                   </Button>
                 </div>
-                {update && (
+                {appUpdate.error && (
+                  <p className="job-error">{appUpdate.error}</p>
+                )}
+                {appUpdate.update && (
                   <p>
-                    {update.available
-                      ? `Version ${update.version} is available. `
-                      : "You have the latest published helper. "}
-                    <a
-                      className="text-link"
-                      href={update.url}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      View release
-                      <ArrowUpRight size={15} />
-                    </a>
+                    {appUpdate.update.available
+                      ? `Version ${appUpdate.update.version} is available. `
+                      : appUpdate.update.published
+                        ? "You have the latest published app. "
+                        : "No application release has been published yet. "}
+                    {appUpdate.update.url && (
+                      <a
+                        className="text-link"
+                        href={appUpdate.update.url}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        View release
+                        <ArrowUpRight size={15} />
+                      </a>
+                    )}
                   </p>
                 )}
               </section>
@@ -1585,6 +1602,7 @@ export default function App() {
               Support & diagnostics
             </a>
           </footer>
+          <SponsorsFooter sponsors={portal.portal?.sponsors ?? []} />
         </main>
       </div>
       {pending && (

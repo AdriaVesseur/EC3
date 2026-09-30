@@ -19,7 +19,9 @@ const settings = {
   championshipUrl: "http://127.0.0.1:32146/championship.json",
   allowedOrigins: [
     "http://127.0.0.1:32145",
+    "http://127.0.0.1:32155",
     "http://127.0.0.1:5183",
+    "http://127.0.0.1:5185",
     "http://localhost:5183",
   ],
   assettoPath: game,
@@ -30,6 +32,11 @@ fs.writeFileSync(
   JSON.stringify(settings, null, 2),
 );
 const server = http.createServer((req, res) => {
+  if (req.url === "/servers.json" || req.url === "/sponsors.json") {
+    res.setHeader("Content-Type", "application/json");
+    res.end(JSON.stringify(req.url === "/servers.json" ? { servers: [] } : { sponsors: [] }));
+    return;
+  }
   if (req.url === "/manifest.json" || req.url === "/championship.json") {
     res.setHeader("Content-Type", "application/json");
     res.end(
@@ -85,6 +92,7 @@ const child = spawn(
     env: {
       ...process.env,
       EC3_TEST_MODE: "1",
+      EC3_TEST_WEB_ROOT: path.join(root, "dist"),
       EC3_DATA: work,
       EC3_NO_BROWSER: "1",
     },
