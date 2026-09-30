@@ -1,0 +1,122 @@
+{
+  "championship": "Eurocup 3",
+  "season": "2026",
+  "build": "1.4.0",
+  "demo": true,
+  "content": [
+    {
+      "id": "ec3-dallara-326",
+      "name": "Eurocup 3 Dallara 326",
+      "type": "car",
+      "version": "2.3.1",
+      "installPath": "content/cars/ec3_dallara_326",
+      "required": true,
+      "download": "https://github.com/AdriaVesseur/EC3/releases/download/demo-1/ec3-dallara-326.zip",
+      "size": 223,
+      "sha256": "b2652ef22d1d732055dc01391d372ca5e5c00edeefc9c2097524ea912836b8c3",
+      "description": "Example package for Eurocup 3 Dallara 326. Replace this catalog entry with official release assets before championship use.",
+      "changelog": ["Safe demonstration package. No game assets are included."],
+      "files": [
+        {
+          "path": "ec3-demo.txt",
+          "size": 101,
+          "sha256": "6e05d7c943f5ff6b24e03c60059ea303de6ddd90e8b2c72d44e1a3853a06b48c"
+        }
+      ],
+      "dependencies": []
+    },
+    {
+      "id": "barcelona",
+      "name": "Barcelona GP",
+      "type": "track",
+      "version": "1.4.2",
+      "installPath": "content/tracks/ec3_barcelona",
+      "required": true,
+      "download": "https://github.com/AdriaVesseur/EC3/releases/download/demo-1/barcelona.zip",
+      "size": 214,
+      "sha256": "c04f4a21ea0c77cd34ab163559f93c673422abce8266372bb60da94c9b763651",
+      "description": "Example package for Barcelona GP. Replace this catalog entry with official release assets before championship use.",
+      "changelog": ["Safe demonstration package. No game assets are included."],
+      "files": [
+        {
+          "path": "ec3-demo.txt",
+          "size": 92,
+          "sha256": "f910734025fd9c49edc21fed66136f1f56bdcc47a6ec28c4a5aeaca8a4f355e0"
+        }
+      ],
+      "dependencies": []
+    },
+    {
+      "id": "spa",
+      "name": "Spa Francorchamps",
+      "type": "track",
+      "version": "1.6.0",
+      "installPath": "content/tracks/ec3_spa",
+      "required": true,
+      "download": "https://github.com/AdriaVesseur/EC3/releases/download/demo-1/spa.zip",
+      "size": 219,
+      "sha256": "5ada26f7ac35fcbb6acc161413ad667b39053ab67c8345e9d7fb719ff4a0f07b",
+      "description": "Example package for Spa Francorchamps. Replace this catalog entry with official release assets before championship use.",
+      "changelog": ["Safe demonstration package. No game assets are included."],
+      "files": [
+        {
+          "path": "ec3-demo.txt",
+          "size": 97,
+          "sha256": "111620fbc802abb46c5975c127c7c892bed53db5d6a11aecfc4d8434a60a2cef"
+        }
+      ],
+      "dependencies": []
+    },
+    {
+      "id": "paul-ricard",
+      "name": "Paul Ricard",
+      "type": "track",
+      "version": "1.2.0",
+      "installPath": "content/tracks/ec3_paul_ricard",
+      "required": true,
+      "download": "https://github.com/AdriaVesseur/EC3/releases/download/demo-1/paul-ricard.zip",
+      "size": 213,
+      "sha256": "819ede89629c77665c4a0519cdbc375b778f797172db102521eac1e66da98578",
+      "description": "Example package for Paul Ricard. Replace this catalog entry with official release assets before championship use.",
+      "changelog": ["Safe demonstration package. No game assets are included."],
+      "files": [
+        {
+          "path": "ec3-demo.txt",
+          "size": 91,
+          "sha256": "8c0a827628f823cac69ecd9389fcdc8a7b28326843d3b2e2fecc8f542598fdda"
+        }
+      ],
+      "dependencies": []
+    },
+    {
+      "id": "ec3-config",
+      "name": "Eurocup 3 Competition Config",
+      "type": "config",
+      "version": "1.4.0",
+      "installPath": "extension/config/ec3_competition",
+      "required": true,
+      "download": "https://github.com/AdriaVesseur/EC3/releases/download/demo-1/ec3-config.zip",
+      "size": 230,
+      "sha256": "2618a52f78ae74c3b53b7ce3e9758faa4b56294e6463061331af34c65525cbb1",
+      "description": "Example package for Eurocup 3 Competition Config. Replace this catalog entry with official release assets before championship use.",
+      "changelog": ["Safe demonstration package. No game assets are included."],
+      "files": [
+        {
+          "path": "ec3-demo.txt",
+          "size": 108,
+          "sha256": "9c9c7468e566865724a8a2d1973b15e34be524fed1bdd760ccd5dccc39e4abb0"
+        }
+      ],
+      "dependencies": [
+        {
+          "id": "ec3-dallara-326",
+          "minimumVersion": "2.3.1"
+        },
+        {
+          "id": "barcelona",
+          "minimumVersion": "1.4.2"
+        }
+      ]
+    }
+  ]
+}

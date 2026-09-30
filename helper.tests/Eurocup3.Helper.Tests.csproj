@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoWarn>NETSDK1138</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../helper/Eurocup3.Helper.csproj" />
+  </ItemGroup>
+</Project>

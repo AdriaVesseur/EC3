@@ -1,0 +1,21 @@
+{
+  "season": "2026",
+  "build": "1.4.0",
+  "minimumHelperVersion": "1.0.0",
+  "requiredContent": [
+    "ec3-dallara-326",
+    "barcelona",
+    "spa",
+    "paul-ricard",
+    "ec3-config"
+  ],
+  "events": [
+    {
+      "id": "round-04",
+      "name": "Round 4 · Example event",
+      "venue": "Barcelona",
+      "round": "4",
+      "requiredContent": ["ec3-dallara-326", "barcelona", "ec3-config"]
+    }
+  ]
+}

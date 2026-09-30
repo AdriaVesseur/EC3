@@ -1,0 +1,26 @@
+name: Release Windows helper
+on:
+  push:
+    tags: ["v*"]
+permissions:
+  contents: write
+jobs:
+  package:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with: { dotnet-version: "8.0.x" }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: npm test
+      - run: npm run helper:test
+      - name: Build self-contained Windows installer
+        shell: pwsh
+        run: ./scripts/package-helper.ps1
+      - name: Create draft release for signing and review
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: pwsh
+        run: gh release create $env:GITHUB_REF_NAME release/Eurocup3-Helper-Setup.exe release/SHA256SUMS.txt --draft --generate-notes --title "Eurocup 3 $env:GITHUB_REF_NAME"

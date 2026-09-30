@@ -1,0 +1,12 @@
+name: Validate championship catalog
+on: [push, pull_request]
+permissions: { contents: read }
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: npm install --prefix .ci ajv@8 ajv-formats@3 semver@7
+      - run: node .ci/validate.mjs

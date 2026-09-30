@@ -1,0 +1,14 @@
+node_modules/
+dist/
+**/bin/
+**/obj/
+work/
+test-results/
+playwright-report/
+*.user
+.env.local
+artifacts/
+release/
+public/helper/
+outputs/
+*.tsbuildinfo
