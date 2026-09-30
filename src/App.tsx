@@ -13,8 +13,8 @@ import {
   Home,
   Layers,
   LoaderCircle,
-  Menu,
   Pause,
+  Package as PackageIcon,
   Play,
   RefreshCw,
   Search,
@@ -44,7 +44,7 @@ type Page =
   | "installation"
   | "settings";
 const pages = [
-  ["home", "Overview", Home],
+  ["home", "Home", Home],
   ["content", "Content library", Layers],
   ["championship", "Championship", Flag],
   ["downloads", "Downloads", Download],
@@ -56,15 +56,6 @@ const getPage = () => {
   return pages.some((x) => x[0] === p) ? (p as Page) : "home";
 };
 export default function App() {
-  const [narrow, setNarrow] = useState(
-    () => matchMedia("(max-width:700px)").matches,
-  );
-  useEffect(() => {
-    const media = matchMedia("(max-width:700px)");
-    const change = () => setNarrow(media.matches);
-    media.addEventListener("change", change);
-    return () => media.removeEventListener("change", change);
-  }, []);
   const [page, setPage] = useState<Page>(getPage),
     [snapshot, setSnapshot] = useState<Snapshot | null>(null),
     [connected, setConnected] = useState(false),
@@ -76,7 +67,6 @@ export default function App() {
     [filter, setFilter] = useState("all"),
     [selected, setSelected] = useState<Package | null>(null),
     [detailTab, setDetailTab] = useState("overview"),
-    [mobile, setMobile] = useState(false),
     [update, setUpdate] = useState<{
       available: boolean;
       version: string;
@@ -104,7 +94,6 @@ export default function App() {
     void reconnect();
     const h = () => {
       setPage(getPage());
-      setMobile(false);
     };
     addEventListener("hashchange", h);
     return () => removeEventListener("hashchange", h);
@@ -211,106 +200,97 @@ export default function App() {
       ...content.filter((s) => s.package.required).map((s) => s.package.id),
     ]),
   ];
+  const requiredItems = raceIds
+    .map((id) => content.find((item) => item.package.id === id))
+    .filter((item): item is Content => !!item);
+  const pageLabel = page === "content" ? "Content" : pages.find((p) => p[0] === page)?.[1];
   return (
     <div className="app-shell">
       <a className="skip" href="#main">
         Skip to content
       </a>
-      <aside
-        inert={narrow && !mobile}
-        className={mobile ? "sidebar open" : "sidebar"}
-      >
-        {mobile && (
-          <Button
-            className="close-navigation"
-            aria-label="Close navigation"
-            onClick={() => setMobile(false)}
-          >
-            <X size={18} />
-          </Button>
-        )}
-        <a href="#home" className="brand" aria-label="Eurocup 3 overview">
-          <span className="brand-top">
-            EUROCUP<span>3</span>
-            <i />
-          </span>
-          <span className="brand-caption">CONTENT MANAGER</span>
-        </a>
-        <div className="workspace-label">
-          DRIVER WORKSPACE <span>2026</span>
+      <header className="app-navigation">
+        <div className="app-navigation-inner">
+          <a href="#home" className="brand" aria-label="Eurocup 3 Content Hub home">
+            <img src="./images/logo-dark.png" alt="" />
+            <span>Content Hub</span>
+          </a>
+          <span className="brand-divider" aria-hidden="true" />
+          <nav className="primary-nav" aria-label="Main navigation">
+            {pages.map(([id, label, Icon]) => (
+              <a
+                key={id}
+                href={"#" + id}
+                aria-current={page === id ? "page" : undefined}
+                className={page === id ? "nav-item selected" : "nav-item"}
+                aria-label={label}
+              >
+                <Icon size={16} aria-hidden="true" />
+                <span>{id === "content" ? "Content" : label}</span>
+                {id === "downloads" && ongoing.length > 0 && (
+                  <span className="nav-count">{ongoing.length}</span>
+                )}
+              </a>
+            ))}
+          </nav>
+          <a className="install-app-link" href="./helper/Eurocup3-Helper-Setup.exe">
+            <Download size={15} aria-hidden="true" />
+            Install app
+          </a>
         </div>
-        <nav aria-label="Main navigation">
-          {pages.map(([id, label, Icon]) => (
-            <a
-              key={id}
-              href={"#" + id}
-              aria-current={page === id ? "page" : undefined}
-              className={page === id ? "nav-item selected" : "nav-item"}
-            >
-              <Icon size={19} aria-hidden="true" />
-              {label}
-              {id === "downloads" && ongoing.length > 0 && (
-                <span className="nav-count">{ongoing.length}</span>
-              )}
-            </a>
-          ))}
-        </nav>
-        <div className="sidebar-bottom">
-          <div className="series-mark">
-            <Flag size={22} />
-            <span>
-              ONE CHAMPIONSHIP.
-              <br />
-              <strong>EVERY DETAIL.</strong>
-            </span>
-          </div>
-          <div className="helper-status">
-            <Badge state={connected ? "ready" : "offline"}>
-              {connected
-                ? "Helper connected"
-                : connecting
-                  ? "Connecting…"
-                  : "Helper offline"}
-            </Badge>
-            <span>
-              EC3 LOCAL HELPER <b>{snapshot?.version ?? "—"}</b>
-            </span>
-          </div>
-          <div className="sidebar-footer">
-            <span>CONTENT MANAGER</span>
-            <span>v1.0.0</span>
-          </div>
-        </div>
-      </aside>
+      </header>
       <div className="main-shell">
-        <header className="topbar">
-          <div>
-            <Button
-              className="mobile-menu"
-              aria-label="Toggle navigation"
-              onClick={() => setMobile(!mobile)}
-            >
-              <Menu size={20} />
-            </Button>
-            <span>EUROCUP 3</span>
-            <ChevronRight size={14} />
-            <strong>{pages.find((p) => p[0] === page)?.[1]}</strong>
+        <div className="page-utility" role="region" aria-label="Page utilities">
+          <div className="utility-bar">
+            <div className="breadcrumbs">
+              <span>{page === "home" ? "Driver portal" : "Eurocup 3"}</span>
+              <span aria-hidden="true">/</span>
+              <strong>{pageLabel}</strong>
+            </div>
+            <div className="utility-actions">
+              <span className={`online-status ${connected ? "online" : "offline"}`}>
+                <span className="online-dot" />
+                {connected ? "Online" : connecting ? "Connecting" : "Offline"}
+              </span>
+              <form
+                className="global-search"
+                role="search"
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  setPage("content");
+                  location.hash = "content";
+                }}
+              >
+                <Search size={17} aria-hidden="true" />
+                <input
+                  aria-label="Search all content"
+                  placeholder="Search the content library"
+                  value={query}
+                  onChange={(event) => setQuery(event.target.value)}
+                />
+                <kbd>↵</kbd>
+              </form>
+            </div>
           </div>
-          <div className="topbar-right">
-            <span className="season-dot" />
-            2026 SEASON
-            <span className="divider" />
-            <ShieldCheck size={16} />
-            <span>OFFICIAL CONTENT</span>
-          </div>
-        </header>
+          {snapshot?.testMode && (
+            <div className="global-notice demo-notice">
+              <RefreshCw size={15} aria-hidden="true" />
+              <span>ISOLATED TEST ENVIRONMENT</span>
+              <span>Harmless demo files · not playable championship content</span>
+            </div>
+          )}
+        </div>
         <main id="main" tabIndex={-1}>
-          <div className="page-heading">
+          <div className={page === "home" ? "page-heading home-heading" : "page-heading"}>
             <div>
-              <p className="eyebrow">EUROCUP 3 · DRIVER OPERATIONS</p>
+              <p className="eyebrow">
+                {page === "home"
+                  ? "EUROCUP 3 / ASSETTO CORSA"
+                  : "EUROCUP 3 · DRIVER OPERATIONS"}
+              </p>
               <h1>
                 {page === "home"
-                  ? "Your next race starts here."
+                  ? "CONTENT HUB"
                   : page === "content"
                     ? "Content library."
                     : page === "championship"
@@ -323,7 +303,7 @@ export default function App() {
               </h1>
               <p className="subtitle">
                 {page === "home"
-                  ? "The right content. The right version. Ready for the grid."
+                  ? "Everything you need to race."
                   : page === "content"
                     ? "Every official package, in one place."
                     : page === "championship"
@@ -335,13 +315,24 @@ export default function App() {
                           : "Connection, support and application preferences."}
               </p>
             </div>
-            <div className="build-label">
-              <span>CONTENT BUILD</span>
-              <strong>
-                {cat?.manifest.build ?? "—"}
-                <i />
-              </strong>
-            </div>
+            {page === "home" ? (
+              <a href="#championship" className="season-stamp">
+                <Flag size={18} aria-hidden="true" />
+                <span>
+                  2026 Season
+                  <strong>Build {cat?.manifest.build ?? "—"}</strong>
+                </span>
+                <ArrowUpRight size={16} aria-hidden="true" />
+              </a>
+            ) : (
+              <div className="build-label">
+                <span>CONTENT BUILD</span>
+                <strong>
+                  {cat?.manifest.build ?? "—"}
+                  <i />
+                </strong>
+              </div>
+            )}
           </div>
           {error && (
             <div className="alert error" role="alert">
@@ -379,12 +370,6 @@ export default function App() {
               </a>
             </div>
           )}
-          {snapshot?.testMode && (
-            <div className="demo-label">
-              <span>ISOLATED TEST ENVIRONMENT</span> Real installation flow ·
-              harmless demo files · not playable championship content
-            </div>
-          )}
           {cat?.manifest.demo && !snapshot?.testMode && (
             <div className="alert">
               <AlertTriangle size={18} />
@@ -396,106 +381,156 @@ export default function App() {
           )}
           {page === "home" && (
             <>
-              <section
-                className={`race-panel ${allReady ? "is-ready" : ""}`}
-                aria-labelledby="race-title"
-              >
-                <div className="race-copy">
-                  <div className="race-kicker">
-                    <span className="square" />
-                    PRE-RACE SYSTEM CHECK <span>01 / READINESS</span>
+              <div className="home-command-grid">
+                <section className="featured-package" aria-labelledby="core-package-title">
+                  <img
+                    className="featured-package-image"
+                    src="./images/race-action.jpg"
+                    alt="Eurocup 3 cars racing through a corner at Portimão"
+                    fetchPriority="high"
+                  />
+                  <div className="featured-package-shade" />
+                  <div className="featured-package-label">
+                    <PackageIcon size={17} aria-hidden="true" />
+                    <span>EUROCUP 3 CORE PACKAGE</span>
+                    {cat?.manifest.demo && <span className="demo-chip">Demo catalog</span>}
                   </div>
-                  <Badge
-                    state={
-                      allReady ? "ready" : connected ? "outdated" : "offline"
+                  <div className="featured-package-copy">
+                    <h2 id="core-package-title">
+                      ONE GRID.<br />ONE COMPLETE<br />SETUP.
+                    </h2>
+                    <p>Your car, circuits and every race essential.</p>
+                    <div className="featured-package-actions">
+                      <Button
+                        variant="primary"
+                        disabled={!canAct || ongoing.length > 0}
+                        onClick={() =>
+                          run(
+                            "/update",
+                            { ids: raceIds },
+                            "Championship preparation started.",
+                          )
+                        }
+                      >
+                        <Download size={17} aria-hidden="true" />
+                        {allReady ? "Check for updates" : "Download everything"}
+                      </Button>
+                      <a href="#content" className="featured-view-link">
+                        View packages <ArrowUpRight size={16} aria-hidden="true" />
+                      </a>
+                    </div>
+                  </div>
+                  <div className="featured-package-foot">
+                    <span>{ready?.total ?? requiredItems.length} required packages</span>
+                    <span>2026 / COMPETITION CONTENT</span>
+                  </div>
+                </section>
+                <section
+                  className={`race-ready-card ${allReady ? "is-ready" : ""}`}
+                  aria-labelledby="race-title"
+                >
+                  <div className="race-ready-heading">
+                    <div>
+                      <Flag size={19} aria-hidden="true" />
+                      <h2 id="race-title">Race Ready</h2>
+                    </div>
+                    <Badge
+                      state={
+                        allReady ? "ready" : connected ? "outdated" : "offline"
+                      }
+                    >
+                      {allReady
+                        ? "Ready"
+                        : !connected
+                          ? "Helper offline"
+                          : ongoing.length
+                            ? "In progress"
+                            : !cat
+                              ? "Catalog unavailable"
+                              : "Missing content"}
+                    </Badge>
+                  </div>
+                  <div className="race-ready-summary">
+                    <strong className="race-ready-count">
+                      {ready?.readyCount ?? "—"}
+                      <span>/ {ready?.total || "—"}</span>
+                    </strong>
+                    <p>
+                      Required packages installed
+                      <span>
+                        {allReady
+                          ? "Every required package is verified and ready."
+                          : `${Math.max(0, (ready?.total ?? requiredItems.length) - (ready?.readyCount ?? 0))} packages left to complete your setup.`}
+                      </span>
+                    </p>
+                  </div>
+                  <Progress
+                    value={
+                      ready?.total
+                        ? ((ready.readyCount ?? 0) / ready.total) * 100
+                        : 0
+                    }
+                    label="Required content confirmed"
+                  />
+                  <div className="race-ready-list">
+                    {requiredItems.slice(0, 5).map((item) => (
+                      <button
+                        key={item.package.id}
+                        onClick={() => select(item.package)}
+                        aria-label={`${item.package.name} v${item.package.version}`}
+                      >
+                        <span className={item.state === "ready" ? "ready-check checked" : "ready-check"}>
+                          {item.state === "ready" && <Check size={14} aria-hidden="true" />}
+                        </span>
+                        <span className="ready-item-name">{item.package.name}</span>
+                        <span className="ready-item-version">v{item.package.version}</span>
+                        <ChevronRight size={15} aria-hidden="true" />
+                      </button>
+                    ))}
+                    {!requiredItems.length && (
+                      <p className="race-ready-empty">
+                        {connected
+                          ? "Refresh the catalog to see required packages."
+                          : "Connect the helper to check your race setup."}
+                      </p>
+                    )}
+                  </div>
+                  <Button
+                    variant="primary"
+                    className="race-ready-download"
+                    disabled={!canAct || ongoing.length > 0}
+                    onClick={() =>
+                      run(
+                        "/update",
+                        { ids: raceIds },
+                        "Championship preparation started.",
+                      )
                     }
                   >
-                    {allReady
-                      ? "All systems ready"
-                      : !connected
-                        ? "Helper connection required"
-                        : ongoing.length
-                          ? "Preparation in progress"
-                          : !cat
-                            ? "Awaiting catalog"
-                            : ready?.reason || "Action required"}
-                  </Badge>
-                  <h2 id="race-title">
-                    RACE
-                    <br />
-                    <span>READY{allReady ? "." : "?"}</span>
-                  </h2>
-                  <p>
-                    {allReady
-                      ? "Your championship content is installed and verified. See you on the grid."
-                      : !connected
-                        ? "Connect your helper. We’ll take care of the content."
-                        : !snapshot?.assettoPath
-                          ? "Locate Assetto Corsa to prepare your championship."
-                          : "One click to install, update and verify your championship content."}
-                  </p>
-                  <div className="race-actions">
-                    <Button
-                      variant="primary"
-                      disabled={!canAct || ongoing.length > 0}
-                      onClick={() =>
-                        run(
-                          "/update",
-                          { ids: raceIds },
-                          "Championship preparation started.",
-                        )
-                      }
-                    >
-                      <Download size={18} />
-                      {allReady ? "Check for updates" : "Make me race ready"}
-                      <ArrowRight size={18} />
-                    </Button>
-                    <Button
-                      disabled={!canAct || ongoing.length > 0}
-                      onClick={() =>
-                        run(
-                          "/verify",
-                          { ids: raceIds },
-                          "Checking championship files.",
-                        )
-                      }
-                    >
-                      <ShieldCheck size={17} />
-                      Verify files
-                    </Button>
-                  </div>
+                    <Download size={17} aria-hidden="true" />
+                    {allReady ? "Check for updates" : "Download missing content"}
+                  </Button>
+                  <Button
+                    className="race-ready-verify"
+                    disabled={!canAct || ongoing.length > 0}
+                    onClick={() =>
+                      run(
+                        "/verify",
+                        { ids: raceIds },
+                        "Checking championship files.",
+                      )
+                    }
+                  >
+                    <ShieldCheck size={15} aria-hidden="true" />
+                    Verify all packages
+                  </Button>
                   <small className="action-hint">
-                    {!connected
-                      ? "Install and open the helper to enable automatic installation."
-                      : !cat
-                        ? "Refresh the catalog to load official packages."
-                        : !snapshot?.assettoPath
-                          ? "Choose your game folder in Installation."
-                          : ongoing.length
-                            ? "View progress and controls in Downloads."
-                            : "Packages are checked with SHA256 before installation."}
+                    {snapshot?.assettoPath
+                      ? "Based on files verified by your local helper."
+                      : "Choose your Assetto Corsa folder in Installation."}
                   </small>
-                </div>
-                <div className="race-visual" aria-hidden="true">
-                  <div className="technical-cross top">+</div>
-                  <div className="readiness-number">
-                    {ready?.readyCount ?? "—"}
-                    <span>/ {ready?.total || "—"}</span>
-                  </div>
-                  <div className="readiness-label">REQUIRED PACKAGES READY</div>
-                  <div className="readiness-lines">
-                    {Array.from({ length: ready?.total || 8 }, (_, i) => (
-                      <span
-                        key={i}
-                        className={i < (ready?.readyCount ?? 0) ? "filled" : ""}
-                      />
-                    ))}
-                  </div>
-                  <div className="big-three">3</div>
-                  <span className="visual-label">EC3 / SYSTEM STATUS</span>
-                  <div className="technical-cross bottom">+</div>
-                </div>
-              </section>
+                </section>
+              </div>
               <div className="status-strip">
                 {[
                   ["car", "Race car"],
@@ -535,6 +570,46 @@ export default function App() {
                   );
                 })}
               </div>
+              <section className="latest-content" aria-labelledby="latest-content-title">
+                <div className="section-heading">
+                  <div>
+                    <span className="eyebrow">AVAILABLE FOR YOUR GRID</span>
+                    <h2 id="latest-content-title">Latest content updates</h2>
+                  </div>
+                  <a href="#content">
+                    All packages <ArrowUpRight size={15} aria-hidden="true" />
+                  </a>
+                </div>
+                <div className="latest-content-list">
+                  {content.slice(0, 3).map((item) => (
+                    <article className="latest-content-item" key={item.package.id}>
+                      <span className="latest-content-icon">
+                        <TypeIcon type={item.package.type} />
+                      </span>
+                      <div className="latest-content-info">
+                        <span className="latest-content-type">
+                          {item.package.type} · {item.package.required ? "Required" : "Optional"}
+                        </span>
+                        <h3>{item.package.name}</h3>
+                        <span className="latest-content-version">Version <strong>{item.package.version}</strong></span>
+                      </div>
+                      <Badge state={connected ? item.state : "offline"} />
+                      <button
+                        className="latest-content-open"
+                        onClick={() => select(item.package)}
+                        aria-label={`View details for ${item.package.name}`}
+                      >
+                        Details <ArrowUpRight size={15} aria-hidden="true" />
+                      </button>
+                    </article>
+                  ))}
+                  {!content.length && (
+                    <EmptyState title="No catalog loaded">
+                      Connect the helper and refresh the catalog to see available packages.
+                    </EmptyState>
+                  )}
+                </div>
+              </section>
               <div className="overview-grid">
                 <section>
                   <div className="section-heading">
