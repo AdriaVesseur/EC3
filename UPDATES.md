@@ -17,6 +17,8 @@ Installation is manual. The app does not run the downloaded installer, stop the 
 
 ## App versions and content versions
 
+For upgrades from an older app, use the EC3 tray icon → **Exit helper** before running the installer; the window's X button hides it in the tray. Starting with 1.3.0, Windows installer shutdown requests can close the app normally, while the X button still hides it.
+
 App releases and championship content share a repository but have separate versions:
 
 - **App:** use `app-vX.Y.Z`, for example `app-v1.3.1`, with an uploaded `Eurocup3-Helper-Setup.exe` asset. Existing `vX.Y.Z` releases are accepted only when that exact installer asset is present.

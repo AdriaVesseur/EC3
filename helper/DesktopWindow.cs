@@ -99,7 +99,7 @@ sealed class DesktopWindow : Form
         Shown += (_, _) => ApplyDarkTitleBar();
         FormClosing += (_, args) =>
         {
-            if (exiting)
+            if (exiting || args.CloseReason != CloseReason.UserClosing)
                 return;
             args.Cancel = true;
             Hide();
