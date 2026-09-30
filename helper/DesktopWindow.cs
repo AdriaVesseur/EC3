@@ -112,7 +112,7 @@ sealed class DesktopWindow : Form
         if (DwmSetWindowAttribute(Handle, DwmwaUseImmersiveDarkMode, ref dark, sizeof(int)) < 0)
             DwmSetWindowAttribute(Handle, DwmwaUseImmersiveDarkModeBeforeWindows11, ref dark, sizeof(int));
 
-        int caption = ColorTranslator.ToWin32(Color.FromArgb(16, 20, 22));
+        int caption = ColorTranslator.ToWin32(Color.FromArgb(17, 18, 21));
         int text = ColorTranslator.ToWin32(Color.FromArgb(242, 244, 245));
         DwmSetWindowAttribute(Handle, DwmwaCaptionColor, ref caption, sizeof(int));
         DwmSetWindowAttribute(Handle, DwmwaTextColor, ref text, sizeof(int));

@@ -120,6 +120,7 @@ test("all application sections render without overflow or accessibility violatio
   for (const section of [
     "content",
     "championship",
+    "results",
     "downloads",
     "installation",
     "settings",
@@ -158,6 +159,8 @@ test("championship shows standings and results shows race classifications", asyn
         updatedAt: "2026-09-30T12:00:00Z",
         standings: [
           { position: 1, number: "16", driver: "Sofia Example", points: "42" },
+          { position: 2, number: "8", driver: "Alex Example", points: "37" },
+          { position: 3, number: "95", driver: "Sam Example", points: "31" },
         ],
         races: [
           {
@@ -177,6 +180,20 @@ test("championship shows standings and results shows race classifications", asyn
                     car: "Porsche Cup",
                     time: "26:12.232",
                   },
+                  {
+                    position: 2,
+                    number: "8",
+                    driver: "Alex Example",
+                    car: "Porsche Cup",
+                    time: "26:24.410",
+                  },
+                  {
+                    position: 3,
+                    number: "95",
+                    driver: "Sam Example",
+                    car: "Porsche Cup",
+                    time: "26:28.162",
+                  },
                 ],
               },
             ],
@@ -194,6 +211,12 @@ test("championship shows standings and results shows race classifications", asyn
   await expect(page.getByRole("heading", { name: "Race results" })).toHaveCount(
     0,
   );
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+  await page.screenshot({
+    path: "artifacts/championship-standings.png",
+    fullPage: true,
+    animations: "disabled",
+  });
 
   await page.getByRole("link", { name: "Results", exact: true }).click();
   await expect(
@@ -203,6 +226,12 @@ test("championship shows standings and results shows race classifications", asyn
   await expect(
     page.getByRole("heading", { name: "Driver standings" }),
   ).toHaveCount(0);
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+  await page.screenshot({
+    path: "artifacts/race-results.png",
+    fullPage: true,
+    animations: "disabled",
+  });
 });
 test("downloads are inside Content and installation controls are in Settings", async ({
   page,
