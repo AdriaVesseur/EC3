@@ -55,11 +55,14 @@ public sealed class ContentService(
                 {
                     if (root == null)
                         return new ContentStatus(p, "missing", null, 0, 0, null);
-                    if (status.TryGetValue(p.Id, out var s) && s.Package == p)
-                        return s;
                     if (!Directory.Exists(Paths.Under(root, p.InstallPath)))
                         return new ContentStatus(p, "missing", null, 0, 0, null);
                     var receipt = InstallationService.Receipt(root, p.Id);
+                    // Keep catalog changes visible even when this package was verified before.
+                    if (receipt?.Version is string installedVersion && installedVersion != p.Version)
+                        return new ContentStatus(p, "outdated", installedVersion, 0, 0, null);
+                    if (status.TryGetValue(p.Id, out var s) && s.Package == p)
+                        return s;
                     return new ContentStatus(
                         p,
                         receipt?.Version is string version && version != p.Version
@@ -256,6 +259,8 @@ public sealed class ContentService(
     {
         if (!folderExists)
             return ("missing", null);
+        if (receipt?.Version is string installedVersion && installedVersion != package.Version)
+            return ("outdated", installedVersion);
         if (invalidFiles == 0)
             return ("ready", package.Version);
         if (receipt?.Version == package.Version)

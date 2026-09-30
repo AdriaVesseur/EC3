@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using Microsoft.Web.WebView2.Core;
 using Microsoft.Web.WebView2.WinForms;
 
@@ -6,7 +7,7 @@ namespace Eurocup3;
 
 public sealed class DesktopWindowHost : IDisposable
 {
-    const string AppUrl = "http://127.0.0.1:32145";
+    const string AppUrl = "http://127.0.0.1:32145/?desktop=1";
     readonly ManualResetEventSlim ready = new();
     readonly TaskCompletionSource closed = new(TaskCreationOptions.RunContinuationsAsynchronously);
     readonly Thread thread;
@@ -76,8 +77,15 @@ public sealed class DesktopWindowHost : IDisposable
 
 sealed class DesktopWindow : Form
 {
+    const int DwmwaUseImmersiveDarkMode = 20;
+    const int DwmwaUseImmersiveDarkModeBeforeWindows11 = 19;
+    const int DwmwaCaptionColor = 35;
+    const int DwmwaTextColor = 36;
     readonly WebView2 browser = new() { Dock = DockStyle.Fill };
     bool exiting;
+
+    [DllImport("dwmapi.dll", PreserveSig = true)]
+    static extern int DwmSetWindowAttribute(IntPtr hwnd, int attribute, ref int value, int size);
 
     public DesktopWindow(string appUrl)
     {
@@ -87,6 +95,7 @@ sealed class DesktopWindow : Form
         Size = new Size(1480, 940);
         Icon = SystemIcons.Application;
         Controls.Add(browser);
+        Shown += (_, _) => ApplyDarkTitleBar();
         FormClosing += (_, args) =>
         {
             if (exiting)
@@ -95,6 +104,18 @@ sealed class DesktopWindow : Form
             Hide();
         };
         Shown += async (_, _) => await LoadApplication(appUrl);
+    }
+
+    void ApplyDarkTitleBar()
+    {
+        int dark = 1;
+        if (DwmSetWindowAttribute(Handle, DwmwaUseImmersiveDarkMode, ref dark, sizeof(int)) < 0)
+            DwmSetWindowAttribute(Handle, DwmwaUseImmersiveDarkModeBeforeWindows11, ref dark, sizeof(int));
+
+        int caption = ColorTranslator.ToWin32(Color.FromArgb(16, 20, 22));
+        int text = ColorTranslator.ToWin32(Color.FromArgb(242, 244, 245));
+        DwmSetWindowAttribute(Handle, DwmwaCaptionColor, ref caption, sizeof(int));
+        DwmSetWindowAttribute(Handle, DwmwaTextColor, ref text, sizeof(int));
     }
 
     async Task LoadApplication(string appUrl)

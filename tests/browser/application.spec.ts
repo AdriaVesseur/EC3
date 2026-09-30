@@ -139,6 +139,15 @@ test("all application sections render without overflow or accessibility violatio
     });
   }
 });
+test("the desktop shell hides the browser-only install link", async ({
+  page,
+}) => {
+  await page.goto("/?desktop=1");
+  await expect(page.getByRole("link", { name: "Install app" })).toHaveCount(0);
+
+  await page.goto("/");
+  await expect(page.getByRole("link", { name: "Install app" })).toBeVisible();
+});
 test("championship shows standings and results shows race classifications", async ({
   page,
 }) => {

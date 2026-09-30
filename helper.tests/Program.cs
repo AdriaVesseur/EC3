@@ -186,6 +186,10 @@ try
         ContentService.Classify(package, oldReceipt, true, 1) == ("outdated", "0.9.0"),
         "show the known installed version when an update is available"
     );
+    Assert(
+        ContentService.Classify(package, oldReceipt, true, 0) == ("outdated", "0.9.0"),
+        "do not report an older receipt as current even when its files happen to match"
+    );
     var currentReceipt = oldReceipt with { Version = package.Version };
     Assert(
         ContentService.Classify(package, currentReceipt, true, 1) == ("corrupted", package.Version),

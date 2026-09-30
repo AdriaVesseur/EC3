@@ -55,6 +55,8 @@ const getContentTab = () =>
     ? "downloads"
     : "library";
 export default function App() {
+  const isDesktopApp =
+    new URLSearchParams(window.location.search).get("desktop") === "1";
   const [page, setPage] = useState<Page>(getPage),
     [contentTab, setContentTab] = useState<"library" | "downloads">(
       getContentTab,
@@ -274,13 +276,15 @@ export default function App() {
               </a>
             ))}
           </nav>
-          <a
-            className="install-app-link"
-            href="./helper/Eurocup3-Helper-Setup.exe"
-          >
-            <Download size={15} aria-hidden="true" />
-            Install app
-          </a>
+          {!isDesktopApp && (
+            <a
+              className="install-app-link"
+              href="./helper/Eurocup3-Helper-Setup.exe"
+            >
+              <Download size={15} aria-hidden="true" />
+              Install app
+            </a>
+          )}
         </div>
       </header>
       <div className="main-shell">
