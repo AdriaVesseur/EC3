@@ -11,14 +11,20 @@ public static class Program
 
     public static async Task Main(string[] args)
     {
+        using var showWindow = new EventWaitHandle(
+            false,
+            EventResetMode.AutoReset,
+            "Local\\Eurocup3.ContentManager.ShowWindow"
+        );
         using var singleton = new Mutex(true, "Local\\Eurocup3.ContentManager", out bool first);
         if (!first && Environment.GetEnvironmentVariable("EC3_TEST_MODE") != "1")
         {
-            Process.Start(
-                new ProcessStartInfo("http://127.0.0.1:32145") { UseShellExecute = true }
-            );
+            showWindow.Set();
             return;
         }
+        bool desktopMode =
+            Environment.GetEnvironmentVariable("EC3_TEST_MODE") != "1"
+            && Environment.GetEnvironmentVariable("EC3_NO_BROWSER") != "1";
         var webRoot = Path.Combine(AppContext.BaseDirectory, "wwwroot");
         if (!Directory.Exists(webRoot))
             webRoot = Path.Combine(Directory.GetCurrentDirectory(), "dist");
@@ -325,14 +331,6 @@ public static class Program
         var detector = app.Services.GetRequiredService<AssettoDetectionService>();
         if (detector.Find() is string root)
             InstallationService.Recover(root);
-        if (!config.TestMode && Environment.GetEnvironmentVariable("EC3_NO_BROWSER") != "1")
-            app.Lifetime.ApplicationStarted.Register(() =>
-                Process.Start(
-                    new ProcessStartInfo("http://127.0.0.1:32145") { UseShellExecute = true }
-                )
-            );
-        if (!config.TestMode)
-            Tray.Start(app.Lifetime, config);
         var periodic = Task.Run(async () =>
         {
             using var timer = new PeriodicTimer(TimeSpan.FromMinutes(5));
@@ -367,7 +365,28 @@ public static class Program
             }
             catch (OperationCanceledException) { }
         });
-        await app.RunAsync();
+        if (!desktopMode)
+        {
+            await app.RunAsync();
+        }
+        else
+        {
+            await app.StartAsync();
+            using var window = DesktopWindowHost.Start();
+            Tray.Start(app.Lifetime, config, window.Show);
+            using var stopWindow = app.Lifetime.ApplicationStopping.Register(window.Close);
+            var showWindowWatcher = Task.Run(() =>
+            {
+                while (!app.Lifetime.ApplicationStopping.IsCancellationRequested)
+                {
+                    if (showWindow.WaitOne(400))
+                        window.Show();
+                }
+            });
+            await window.Closed;
+            await app.StopAsync();
+            await showWindowWatcher;
+        }
         await periodic;
     }
 

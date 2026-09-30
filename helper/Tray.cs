@@ -4,7 +4,11 @@ namespace Eurocup3;
 
 public static class Tray
 {
-    public static void Start(IHostApplicationLifetime lifetime, ConfigService config)
+    public static void Start(
+        IHostApplicationLifetime lifetime,
+        ConfigService config,
+        Action showWindow
+    )
     {
         var thread = new Thread(() =>
         {
@@ -13,12 +17,17 @@ public static class Tray
             menu.Items.Add(
                 "Open Eurocup 3 Content Manager",
                 null,
-                (_, _) => Open("http://127.0.0.1:32145")
+                (_, _) => showWindow()
             );
             menu.Items.Add(
                 "Open logs",
                 null,
-                (_, _) => Open(Path.Combine(config.DataRoot, "logs"))
+                (_, _) =>
+                {
+                    var path = Path.Combine(config.DataRoot, "logs");
+                    Directory.CreateDirectory(path);
+                    Process.Start(new ProcessStartInfo(path) { UseShellExecute = true });
+                }
             );
             menu.Items.Add("Exit helper", null, (_, _) => lifetime.StopApplication());
             using var icon = new System.Windows.Forms.NotifyIcon
@@ -28,7 +37,7 @@ public static class Tray
                 ContextMenuStrip = menu,
                 Visible = true,
             };
-            icon.DoubleClick += (_, _) => Open("http://127.0.0.1:32145");
+            icon.DoubleClick += (_, _) => showWindow();
             using var context = new System.Windows.Forms.ApplicationContext();
             using var timer = new System.Windows.Forms.Timer { Interval = 500 };
             timer.Tick += (_, _) =>
@@ -44,7 +53,4 @@ public static class Tray
         thread.IsBackground = true;
         thread.Start();
     }
-
-    static void Open(string path) =>
-        Process.Start(new ProcessStartInfo(path) { UseShellExecute = true });
 }

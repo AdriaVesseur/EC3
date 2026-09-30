@@ -6,7 +6,7 @@ Aplicación funcional React + helper Windows .NET 8 para distribuir, instalar, a
 
 ## Ejecutar la demostración
 
-Requisitos de desarrollo: Windows x64, Node 22+ y SDK .NET 8 o superior con el runtime .NET 8 instalado. El instalador final es autocontenido e incluye el runtime.
+Requisitos de desarrollo: Windows x64, Node 22+ y SDK .NET 8 o superior. El instalador final es autocontenido e incluye el runtime .NET; Windows debe tener Microsoft Edge WebView2 Runtime para mostrar la interfaz de escritorio.
 
 ```powershell
 npm install
@@ -51,7 +51,7 @@ championship.json                      |
 
 `helper/` contiene servicios separados de configuración, detección, manifiestos, descarga, extracción, instalación, hashing y estado/cola. `Program.cs` configura la API local y el refresco cada cinco minutos. `src/` contiene la aplicación. `content-repository/` contiene el manifiesto, el calendario y los esquemas, dentro del mismo repositorio Git. `scripts/` incluye validación, empaquetado y pruebas. No hay estado de instalación en localStorage ni progreso simulado.
 
-El helper puede servir la compilación web incluida en el instalador desde `http://127.0.0.1:32145`. El acceso directo abre esa interfaz y deja un icono en la bandeja para abrirla de nuevo, consultar logs o salir. Esto proporciona una experiencia unificada y evita depender del permiso del navegador para acceder a la red local desde una web pública. La web también puede alojarse en GitHub Pages con un origen aprobado explícitamente en el helper.
+El helper muestra la interfaz dentro de una ventana de Windows mediante WebView2 y sirve sus recursos localmente en `http://127.0.0.1:32145`; el usuario no tiene que abrir un navegador. La ventana se puede ocultar en la bandeja y volver a abrir desde el icono de EC3; desde allí también se pueden consultar los logs o salir. La misma interfaz puede alojarse por separado en GitHub Pages con un origen aprobado explícitamente en el helper.
 
 ## Configuración de producción
 

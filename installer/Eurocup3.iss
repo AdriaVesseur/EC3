@@ -17,7 +17,7 @@ ArchitecturesInstallIn64BitMode=x64compatible
 CloseApplications=yes
 
 [Files]
-Source: "..\artifacts\helper\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "..\artifacts\helper\*"; Excludes: "Eurocup3.Helper.exe.WebView2\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
 Name: "{group}\Eurocup 3 Content Manager"; Filename: "{app}\Eurocup3.Helper.exe"; WorkingDir: "{app}"
