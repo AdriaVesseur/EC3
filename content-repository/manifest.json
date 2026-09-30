@@ -10,6 +10,7 @@
       "type": "car",
       "version": "1.0.2",
       "required": false,
+      "icon": "https://exclusivecarregistry.com/images/brands/preview/bid_60.png",
       "download": "https://github.com/AdriaVesseur/EC3/releases/download/EC3Test/Test2.zip",
       "description": "Coche de prueba para validar la instalación automática desde su ZIP.",
       "changelog": [
@@ -22,6 +23,7 @@
       "type": "car",
       "version": "1.0.0",
       "required": true,
+      "icon": "https://raw.githubusercontent.com/AdriaVesseur/EC3/main/content-repository/icons/mi-coche.png",
       "download": "https://github.com/AdriaVesseur/EC3/releases/download/EC3Test2/test3.zip",
       "description": "Coche de prueba para validar la instalación automática desde su ZIP.",
       "changelog": [
