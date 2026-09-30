@@ -176,7 +176,7 @@ public static class Program
         app.MapGet(
             "/api/results",
             async (bool? refresh, ManifestService m, ResultsService r, CancellationToken ct) =>
-                await r.Get(m.Require().Championship, refresh == true, ct)
+                await r.Get(m.Current?.Championship ?? await m.ReadChampionship(ct), refresh == true, ct)
         );
         app.MapGet(
             "/api/packages/{id}",

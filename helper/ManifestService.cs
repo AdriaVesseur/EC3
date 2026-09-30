@@ -125,6 +125,27 @@ public sealed class ManifestService(ConfigService config)
         Current
         ?? throw new AppFault("CATALOG_UNAVAILABLE", "Refresh the championship catalog first.");
 
+    public async Task<Championship> ReadChampionship(CancellationToken ct = default)
+    {
+        ValidateCatalogUrl(config.Value.ChampionshipUrl);
+        using var http = new HttpClient(new HttpClientHandler { AllowAutoRedirect = false })
+        {
+            Timeout = TimeSpan.FromSeconds(20),
+        };
+        using var response = await http.GetAsync(config.Value.ChampionshipUrl, ct);
+        response.EnsureSuccessStatusCode();
+        if (response.Content.Headers.ContentLength > 1024 * 1024)
+            throw new AppFault("INVALID_CHAMPIONSHIP", "Championship configuration exceeds 1 MB.");
+        var json = await response.Content.ReadAsStringAsync(ct);
+        if (json.Length > 1024 * 1024)
+            throw new AppFault("INVALID_CHAMPIONSHIP", "Championship configuration exceeds 1 MB.");
+        var championship = JsonSerializer.Deserialize<Championship>(json, Json.Options)
+            ?? throw new AppFault("INVALID_CHAMPIONSHIP", "Championship configuration is empty.");
+        if (championship.ResultsUrl != null)
+            ResultsService.ValidateSourceUrl(championship.ResultsUrl);
+        return championship;
+    }
+
     void ValidateCatalogUrl(string url)
     {
         var u = new Uri(url);
