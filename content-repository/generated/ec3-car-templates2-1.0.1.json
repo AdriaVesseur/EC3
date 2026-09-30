@@ -1,0 +1,645 @@
+{
+  "id": "ec3-car-templates2",
+  "version": "1.0.1",
+  "installPath": "content/cars/fsr_ktm_xbow_gt2_endurance",
+  "size": 109464650,
+  "sha256": "2651894cdfc94f569c4cf6c7ca9364f3771aeebf6ac241856533f28575b50522",
+  "files": [
+    {
+      "path": "body_shadow.png",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/body_shadow.png",
+      "size": 70882,
+      "sha256": "827791a9a162e1903f807b6999735f1f4e4279a12f60bf34f622828458320fd7"
+    },
+    {
+      "path": "tyre_0_shadow.png",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/tyre_0_shadow.png",
+      "size": 2454,
+      "sha256": "fa2ffb0abfc0cb05422db2b1f9f4344853fb934a5668c48a44b354c281e268f4"
+    },
+    {
+      "path": "tyre_1_shadow.png",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/tyre_1_shadow.png",
+      "size": 2437,
+      "sha256": "3c9abfd95178836a455a9976083ab1311f25c51f35d9742fa89cc584b9acc18f"
+    },
+    {
+      "path": "tyre_2_shadow.png",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/tyre_2_shadow.png",
+      "size": 2371,
+      "sha256": "5c0922462f5463434abc0d04401a891d175ad81eee2aa4720674cd2734552bd2"
+    },
+    {
+      "path": "tyre_3_shadow.png",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/tyre_3_shadow.png",
+      "size": 2353,
+      "sha256": "38e76466c74c090120ef1c72b467dd5354ec49026daf85d9ded895f0244e6b52"
+    },
+    {
+      "path": "collider.kn5",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/collider.kn5",
+      "size": 4949,
+      "sha256": "a11d08ed6b62953595978a2ad5d1bae8af7241ab2bb5f4f78ee1827c5c355fc2"
+    },
+    {
+      "path": "driver_base_pos.knh",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/driver_base_pos.knh",
+      "size": 6594,
+      "sha256": "3432d2386026d248aea24acb093495579cd0acbfd534267bcecd0054f1c24a98"
+    },
+    {
+      "path": "logo.png",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/logo.png",
+      "size": 2204,
+      "sha256": "c753b446d2ab59dd1c6e8036efe1c033d76d5ebf54982ee542e01dbad1f4821b"
+    },
+    {
+      "path": "animations/car_door_L.ksanim",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/animations/car_door_L.ksanim",
+      "size": 56288,
+      "sha256": "a09105c2bd3671f815e4d7b8028a2aa6a9809a4b6a49ff07de37d7c9880f399d"
+    },
+    {
+      "path": "animations/car_door_r.ksanim",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/animations/car_door_r.ksanim",
+      "size": 56288,
+      "sha256": "a09105c2bd3671f815e4d7b8028a2aa6a9809a4b6a49ff07de37d7c9880f399d"
+    },
+    {
+      "path": "animations/car_shift_dw.ksanim",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/animations/car_shift_dw.ksanim",
+      "size": 12055,
+      "sha256": "c2a2507e26766afdffcdd1950cf91ee03490dfce7b096d8dfa74a33e3c9f33d5"
+    },
+    {
+      "path": "animations/car_shift_up.ksanim",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/animations/car_shift_up.ksanim",
+      "size": 12055,
+      "sha256": "f830fe49c2f49ea3bb34c4002f3d5ce136f3cf858924432042ca49fd6f2ba043"
+    },
+    {
+      "path": "animations/car_WIPER.ksanim",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/animations/car_WIPER.ksanim",
+      "size": 24114,
+      "sha256": "f05d86c0ca6888f49cfee15bac5e729204a80293bc95c6150974d14eef19a620"
+    },
+    {
+      "path": "animations/shift_dw.ksanim",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/animations/shift_dw.ksanim",
+      "size": 245600,
+      "sha256": "d956160db01f24ce6d28b2fe839a3b8d822e3b101a95e9c156414e96458be5fe"
+    },
+    {
+      "path": "animations/shift_UP.ksanim",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/animations/shift_UP.ksanim",
+      "size": 245600,
+      "sha256": "e867686683ece78690e99f1a4592cf70ea43e049c5eccecf03c04890c40f0103"
+    },
+    {
+      "path": "animations/steer.ksanim",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/animations/steer.ksanim",
+      "size": 241572,
+      "sha256": "656701844ee98cdc194846d51ef9b74038a0969fabb1d88c7665c9a1a91d910c"
+    },
+    {
+      "path": "extension/ext_config.ini",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/extension/ext_config.ini",
+      "size": 14090,
+      "sha256": "cd5e4180f65373e1acc790e92608fddbc4a5c2f6ec2303ef150ac25bf879ff6b"
+    },
+    {
+      "path": "extension/lumirank_font.zip",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/extension/lumirank_font.zip",
+      "size": 35629,
+      "sha256": "f4da660fa9d7432d5cbb4a5f6889b24bc2183c169fb88afbb89b989834f01a06"
+    },
+    {
+      "path": "sfx/GUIDs.txt",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/sfx/GUIDs.txt",
+      "size": 37154,
+      "sha256": "b4fccfbdb2b77b3a6199c60cb83f6b90ba05fdd7b89e81883dd308e8958b0a84"
+    },
+    {
+      "path": "sfx/fsr_ktm_xbow_gt2_endurance.bank",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/sfx/fsr_ktm_xbow_gt2_endurance.bank",
+      "size": 37261504,
+      "sha256": "c6c7ea02c21c1ff47a0653f76827525cae530a0f8d560ceff42a23da0c8f6abd"
+    },
+    {
+      "path": "texture/flames/1.png",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/texture/flames/1.png",
+      "size": 77185,
+      "sha256": "601dd0bad78d719a2513ba49059269bee0b46a613081b3864b94ffe3b02cc5bd"
+    },
+    {
+      "path": "texture/flames/10.png",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/texture/flames/10.png",
+      "size": 315966,
+      "sha256": "4f787bbe85c887dfc662ac48d9dec0ba7d93c4dff0702ac8b18d72078c6dca7b"
+    },
+    {
+      "path": "texture/flames/2.png",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/texture/flames/2.png",
+      "size": 90692,
+      "sha256": "6d99dfd141d17ea8077aac9430d591f351ffb7ef48afb67fda9757d286973956"
+    },
+    {
+      "path": "texture/flames/3.png",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/texture/flames/3.png",
+      "size": 82577,
+      "sha256": "3b0c8177a69c5a7d875703f951800379579e0277a5729ccdf0fbb170ed894298"
+    },
+    {
+      "path": "texture/flames/4.png",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/texture/flames/4.png",
+      "size": 66051,
+      "sha256": "601ff9d94108a619f6501349eaea2681f5b62b407400e82c5ad35cbc10172fdf"
+    },
+    {
+      "path": "texture/flames/5.png",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/texture/flames/5.png",
+      "size": 101589,
+      "sha256": "0f746f61950cf7239a085dfe5b98be3f7fe9c0072a931882a46359d522893c43"
+    },
+    {
+      "path": "texture/flames/6.png",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/texture/flames/6.png",
+      "size": 105769,
+      "sha256": "cb7df8608ad533a634731dac97f904817a997094eb4fff71a6a6f6b31920061e"
+    },
+    {
+      "path": "texture/flames/7.png",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/texture/flames/7.png",
+      "size": 31786,
+      "sha256": "b4bbd3595fc899aa586623ecc3ed8dc34b0a4fb69622c179fbda62db854ed129"
+    },
+    {
+      "path": "texture/flames/8.png",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/texture/flames/8.png",
+      "size": 9967,
+      "sha256": "3cfc0c971b280474c3244fd95bf932229e3054e6ca1a8aa54ba198482410ce6b"
+    },
+    {
+      "path": "texture/flames/9.png",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/texture/flames/9.png",
+      "size": 218205,
+      "sha256": "f6c7097cd8340c1fc02b3ac135f8ee32f093944453551bf4794baf69d2467b9b"
+    },
+    {
+      "path": "texture/flames/f2.dds",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/texture/flames/f2.dds",
+      "size": 5584,
+      "sha256": "64e45a3b772847743f8bd13749e648283ad49c2f137ecd345078f39f976fb0e9"
+    },
+    {
+      "path": "texture/flames/f3.dds",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/texture/flames/f3.dds",
+      "size": 4224,
+      "sha256": "8aee8919af51d314bcb4c2fb32204166c04cb05a1a7d7ede7b60a5cbbf2fcc9a"
+    },
+    {
+      "path": "texture/flames/f4.dds",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/texture/flames/f4.dds",
+      "size": 5584,
+      "sha256": "8cbfe1256c96e5295ba47de6c9050422294a4ac0b31334771012bea0ab94da56"
+    },
+    {
+      "path": "texture/flames/l3.dds",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/texture/flames/l3.dds",
+      "size": 16512,
+      "sha256": "019119a0a87da4e8e16f75270bc00107242844ee4398dc339fd53850b4fc636d"
+    },
+    {
+      "path": "texture/flames/l4.dds",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/texture/flames/l4.dds",
+      "size": 16512,
+      "sha256": "d0ccfc1fb668a6f13a86b93de3bea06f868f9e87ba207a28d0307e1a9b575ead"
+    },
+    {
+      "path": "texture/flames/l6.dds",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/texture/flames/l6.dds",
+      "size": 16512,
+      "sha256": "16f75b14b788ade534d852451ff36a53baf0fc20209f6aee14398d4764d5760d"
+    },
+    {
+      "path": "texture/flames/x0.dds",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/texture/flames/x0.dds",
+      "size": 1397888,
+      "sha256": "ed06e9998ebda1c5f2f4bec84d42cfe62ec476343d975ac45ecee0638ae2e9c9"
+    },
+    {
+      "path": "texture/flames/x1.dds",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/texture/flames/x1.dds",
+      "size": 1397888,
+      "sha256": "c1cf129be6237498b163c9ae66c08e0b199b3feb6341f5cbf723d13d61f4220c"
+    },
+    {
+      "path": "texture/flames/x5.dds",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/texture/flames/x5.dds",
+      "size": 1397888,
+      "sha256": "48256456b59123bcbcdcf6e3a48f8fa568f93e2613b6ac68ca053767db4c2e8c"
+    },
+    {
+      "path": "texture/flames/x7.dds",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/texture/flames/x7.dds",
+      "size": 1397888,
+      "sha256": "7b1a5853fc63461c7406697c1a07055e2cdc909bb5d1d4155ccf52ae945426b4"
+    },
+    {
+      "path": "texture/flames/x8.dds",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/texture/flames/x8.dds",
+      "size": 1397888,
+      "sha256": "afa45801ef50443fef68002938e40089e0a3ed89c5e5f037f03a02d3a08fdfa8"
+    },
+    {
+      "path": "ui/badge.png",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/ui/badge.png",
+      "size": 14873,
+      "sha256": "6f02aa5b9b83d2d499be4cbfa1a9be61d6483648805c3adb6be412600366f20e"
+    },
+    {
+      "path": "ui/ui_car.json",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/ui/ui_car.json",
+      "size": 4760,
+      "sha256": "8e7f7215afa71909671e5a48a49ee05f35ba3f8416b2cdeb8ca403ee331fdb74"
+    },
+    {
+      "path": "ui/cm_lods_generation.json",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/ui/cm_lods_generation.json",
+      "size": 3161,
+      "sha256": "c916e42a3856e177f0260a16cba514c7f5ed5b8916180e629c58f257f95adc27"
+    },
+    {
+      "path": "skins/#15_true_racing/Blancpain_Numberplate_Pro_Colour.dds",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/skins/#15_true_racing/Blancpain_Numberplate_Pro_Colour.dds",
+      "size": 1398256,
+      "sha256": "915850aa2fba692c8305540f184fb70be780e1fb47c3a4a7d3820373ca7ce55c"
+    },
+    {
+      "path": "skins/#16_true_racing/Blancpain_Numberplate_Pro_Colour.dds",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/skins/#16_true_racing/Blancpain_Numberplate_Pro_Colour.dds",
+      "size": 1048704,
+      "sha256": "2218553f4d1d8cf15ee8fcc27291fdbcb10db11cf91d1de04ec252394732fffc"
+    },
+    {
+      "path": "skins/#812_MZR_Motorsportzentrum/Blancpain_Numberplate_Pro_Colour.dds",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/skins/#812_MZR_Motorsportzentrum/Blancpain_Numberplate_Pro_Colour.dds",
+      "size": 1048704,
+      "sha256": "1e247a5c290addb67228294e1d49baee04797332e5854139543d61d931516211"
+    },
+    {
+      "path": "skins/#89_RTR_Project/Blancpain_Numberplate_Pro_Colour.dds",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/skins/#89_RTR_Project/Blancpain_Numberplate_Pro_Colour.dds",
+      "size": 1048704,
+      "sha256": "6548bc7985ee3daddd356c0b9c49e8ff7d026819b9991ebc8c325592c1028fc5"
+    },
+    {
+      "path": "skins/#15_true_racing/EXT_Skin.dds",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/skins/#15_true_racing/EXT_Skin.dds",
+      "size": 16777344,
+      "sha256": "b8148b4caed76354b2bbd5cf20e058d7e149573ed9f0f42f16554c9b8747ecca"
+    },
+    {
+      "path": "skins/#16_true_racing/EXT_Skin.dds",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/skins/#16_true_racing/EXT_Skin.dds",
+      "size": 16777344,
+      "sha256": "cf6204d553b183a0ecfae4799d2fc620365e870663189b41bef91fa509ef76da"
+    },
+    {
+      "path": "skins/#812_MZR_Motorsportzentrum/EXT_Skin.dds",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/skins/#812_MZR_Motorsportzentrum/EXT_Skin.dds",
+      "size": 22369776,
+      "sha256": "be1d711bacc74868ddd9f1d2e15863608b1c86b7e4126c56dfd3c6d3acd194cc"
+    },
+    {
+      "path": "skins/#89_RTR_Project/EXT_Skin.dds",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/skins/#89_RTR_Project/EXT_Skin.dds",
+      "size": 16777344,
+      "sha256": "a0b931f0dda8b564dbafe9c1cd133088ece6fc02705a1faf2c7fde6753199002"
+    },
+    {
+      "path": "skins/GasGas/EXT_Skin.dds",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/skins/GasGas/EXT_Skin.dds",
+      "size": 16777344,
+      "sha256": "accd3d7b704d75a7aa8a00854c0cd80b2ac6793986214023fce0e355031ccb53"
+    },
+    {
+      "path": "skins/Husqvarna/EXT_Skin.dds",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/skins/Husqvarna/EXT_Skin.dds",
+      "size": 16777344,
+      "sha256": "c9c93d620b1865a42210a0456973961c52bbf797e79f7d6e21fd93334399ce6e"
+    },
+    {
+      "path": "skins/KTM Factory Livery 2 ACC/EXT_Skin.dds",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/skins/KTM Factory Livery 2 ACC/EXT_Skin.dds",
+      "size": 67108992,
+      "sha256": "701da1955c4d7b0e2ae47ed771f7ad12a38957add422be7fbb8e74344c2c70e4"
+    },
+    {
+      "path": "skins/KTM Factory Livery ACC/EXT_Skin.dds",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/skins/KTM Factory Livery ACC/EXT_Skin.dds",
+      "size": 67108992,
+      "sha256": "13b668dfb12b71c175a104148bbda4d9bdb57ec6b8052f7fea858eefcb4f4f54"
+    },
+    {
+      "path": "skins/Onid/EXT_Skin.dds",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/skins/Onid/EXT_Skin.dds",
+      "size": 16777344,
+      "sha256": "baa3a5d46650203b28c7b742b274e518f4f2fdee5cf26375de85bab8744c5922"
+    },
+    {
+      "path": "skins/PurpleGoose/EXT_Skin.dds",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/skins/PurpleGoose/EXT_Skin.dds",
+      "size": 16777344,
+      "sha256": "3ced217471e1f40cce545a8ea3c32810cb16dc92586ab51d1fb802ec66420ec2"
+    },
+    {
+      "path": "skins/SPX/EXT_Skin.dds",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/skins/SPX/EXT_Skin.dds",
+      "size": 16777344,
+      "sha256": "61d1ac0d4fe388103a8e52f09a14b754d90eba44b052ce0a4f82973e074f65dc"
+    },
+    {
+      "path": "skins/Teichmann Racing/EXT_Skin.dds",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/skins/Teichmann Racing/EXT_Skin.dds",
+      "size": 16777344,
+      "sha256": "7f65fb25ea3606c87e8f73eeaa05aea1a05015409730281996e3d3d448784395"
+    },
+    {
+      "path": "skins/#15_true_racing/L_Numberplate.dds",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/skins/#15_true_racing/L_Numberplate.dds",
+      "size": 1048704,
+      "sha256": "f9436d31f9614b61e3dfc294cd10b91f8283fdc96ca2988721cb813e8062feed"
+    },
+    {
+      "path": "skins/#16_true_racing/L_Numberplate.dds",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/skins/#16_true_racing/L_Numberplate.dds",
+      "size": 1048704,
+      "sha256": "44daa7df58384cb050a737e66ab4a826f92be07bff538f05a69e52cc1d1d75c2"
+    },
+    {
+      "path": "skins/#812_MZR_Motorsportzentrum/L_Numberplate.dds",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/skins/#812_MZR_Motorsportzentrum/L_Numberplate.dds",
+      "size": 1048704,
+      "sha256": "4a4183315dd9323844b2149d23f3b95a56aee1a228b9b56d9e68dc77236a99bc"
+    },
+    {
+      "path": "skins/#89_RTR_Project/L_Numberplate.dds",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/skins/#89_RTR_Project/L_Numberplate.dds",
+      "size": 1048704,
+      "sha256": "1a5d031f693359495285667cfaa412bfd432593c6f07623da849c28c1c6b7dca"
+    },
+    {
+      "path": "skins/#15_true_racing/EXT_Banner_Colour.dds",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/skins/#15_true_racing/EXT_Banner_Colour.dds",
+      "size": 262272,
+      "sha256": "97d60396b2b83292b3bdb4a71ebdba5f0834565b2205d07972d4188c6a2dae8a"
+    },
+    {
+      "path": "skins/#16_true_racing/EXT_Banner_Colour.dds",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/skins/#16_true_racing/EXT_Banner_Colour.dds",
+      "size": 699216,
+      "sha256": "30037d46932ac00a1e66a5dd1e7fd79cdae293df07979d6d2401a74a8a6f9456"
+    },
+    {
+      "path": "skins/#812_MZR_Motorsportzentrum/EXT_Banner_Colour.dds",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/skins/#812_MZR_Motorsportzentrum/EXT_Banner_Colour.dds",
+      "size": 262272,
+      "sha256": "97d60396b2b83292b3bdb4a71ebdba5f0834565b2205d07972d4188c6a2dae8a"
+    },
+    {
+      "path": "skins/#89_RTR_Project/EXT_Banner_Colour.dds",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/skins/#89_RTR_Project/EXT_Banner_Colour.dds",
+      "size": 524416,
+      "sha256": "3579fa0f15cb38abe292ccfa74e998d119f5f1333e8199d584abb77d11c7cb25"
+    },
+    {
+      "path": "skins/#15_true_racing/livery.png",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/skins/#15_true_racing/livery.png",
+      "size": 6475,
+      "sha256": "eb970b6f8e52a67541c2dfc10301b37bdecc8dd8563d34284c4e3d9d1ede5ea7"
+    },
+    {
+      "path": "skins/#16_true_racing/livery.png",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/skins/#16_true_racing/livery.png",
+      "size": 6319,
+      "sha256": "393fb39c3c0b2ab59bffa28aa920c2e7dbfe2a9baf66f6b2d11edfc2cd077a89"
+    },
+    {
+      "path": "skins/#812_MZR_Motorsportzentrum/livery.png",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/skins/#812_MZR_Motorsportzentrum/livery.png",
+      "size": 7294,
+      "sha256": "88034683dc789076c489cafe6b8409d3ff15161c1fcc12e05f1f2ada11c4747b"
+    },
+    {
+      "path": "skins/#89_RTR_Project/livery.png",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/skins/#89_RTR_Project/livery.png",
+      "size": 6537,
+      "sha256": "ee1130fdcda78dc30e420f4ee45cfe5d799ec4956c2a39f532b0f793456a9750"
+    },
+    {
+      "path": "skins/GasGas/livery.png",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/skins/GasGas/livery.png",
+      "size": 4089,
+      "sha256": "0c51c3d3373cd030fa4729c92fdb0cfc97ec79ec3388dcca2e2a33ea27f5e1fa"
+    },
+    {
+      "path": "skins/Husqvarna/livery.png",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/skins/Husqvarna/livery.png",
+      "size": 4113,
+      "sha256": "dcad1b6b91dc5d3ae449708c4207752f167b72a6ad426f5fc96866a57b565201"
+    },
+    {
+      "path": "skins/KTM Factory Livery 2 ACC/livery.png",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/skins/KTM Factory Livery 2 ACC/livery.png",
+      "size": 4567,
+      "sha256": "d67dc1560750daaffafc6d356ad8ea539801f64e284a0b11d2963b9225c0590b"
+    },
+    {
+      "path": "skins/KTM Factory Livery ACC/livery.png",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/skins/KTM Factory Livery ACC/livery.png",
+      "size": 4800,
+      "sha256": "366a8e884ca9e37b8be12c88bdc261a43bf5bcde20345570202c0832ee1415a7"
+    },
+    {
+      "path": "skins/Onid/livery.png",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/skins/Onid/livery.png",
+      "size": 4041,
+      "sha256": "190355c28eada9336bc3c3cf8c598385de9b5d715201d59c6740388b18e9e253"
+    },
+    {
+      "path": "skins/PurpleGoose/livery.png",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/skins/PurpleGoose/livery.png",
+      "size": 4259,
+      "sha256": "0c29155d1c01db5b13be68b5697ecf26e7a7ddaeff5ba08d9580e35084eb7786"
+    },
+    {
+      "path": "skins/SPX/livery.png",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/skins/SPX/livery.png",
+      "size": 4257,
+      "sha256": "a617e530b2e7e90752c79e2eec9185f863790c5521da8379bee030e55ae9b9de"
+    },
+    {
+      "path": "skins/Teichmann Racing/livery.png",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/skins/Teichmann Racing/livery.png",
+      "size": 4259,
+      "sha256": "35539cad0b3ca475e449e60fe81426adc322a72d0ba4a0d9d01c25c248509335"
+    },
+    {
+      "path": "skins/#15_true_racing/preview.jpg",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/skins/#15_true_racing/preview.jpg",
+      "size": 439960,
+      "sha256": "ef2457763c78bda880ab9551749d1b2b50cbe318620b6528e7b960aa1a8262ff"
+    },
+    {
+      "path": "skins/#16_true_racing/preview.jpg",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/skins/#16_true_racing/preview.jpg",
+      "size": 427995,
+      "sha256": "2fde818f816f17e8c8376d2c6ab3e9b48eb40fbf759345ff4a8357ecf17a93f3"
+    },
+    {
+      "path": "skins/#812_MZR_Motorsportzentrum/preview.jpg",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/skins/#812_MZR_Motorsportzentrum/preview.jpg",
+      "size": 409663,
+      "sha256": "6086e7ddff4d5e341b062b8d6a2ddada236c64c8d644bca083ab50338dfd5c97"
+    },
+    {
+      "path": "skins/#89_RTR_Project/preview.jpg",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/skins/#89_RTR_Project/preview.jpg",
+      "size": 345250,
+      "sha256": "f842615e9e69c80ee45fda7db8d0251d8df5d346bbc63a637cf4a305796c4109"
+    },
+    {
+      "path": "skins/GasGas/preview.jpg",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/skins/GasGas/preview.jpg",
+      "size": 396954,
+      "sha256": "af1fcd2b160f398d55464406d30feb47f0d25a2edc6ef4c0f4c7e44bdd725b1a"
+    },
+    {
+      "path": "skins/Husqvarna/preview.jpg",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/skins/Husqvarna/preview.jpg",
+      "size": 393270,
+      "sha256": "278127d6e40d57db8d6ca3f8aba5f307e72d4d1e43cf47f2d5a457689897619e"
+    },
+    {
+      "path": "skins/KTM Factory Livery 2 ACC/preview.jpg",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/skins/KTM Factory Livery 2 ACC/preview.jpg",
+      "size": 364249,
+      "sha256": "1474e6461e334927b89e9cf98740ccbfe69ccdf538703b7dfb9479f9bb4114c3"
+    },
+    {
+      "path": "skins/KTM Factory Livery ACC/preview.jpg",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/skins/KTM Factory Livery ACC/preview.jpg",
+      "size": 376188,
+      "sha256": "ed570eaa1dbe6dbbb8ac76423d7f284b577b91b5e4d4d48330e86bc6b40ee9ad"
+    },
+    {
+      "path": "skins/Onid/preview.jpg",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/skins/Onid/preview.jpg",
+      "size": 377205,
+      "sha256": "9ca4a6c7f6aefc6105d53b260bd17cabea6e241137c80f95458b4d1f39d1e42e"
+    },
+    {
+      "path": "skins/PurpleGoose/preview.jpg",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/skins/PurpleGoose/preview.jpg",
+      "size": 368225,
+      "sha256": "590cd47ec53e7b0f84eb727354970e164ad2980cfa998ec62a2893da98f318a7"
+    },
+    {
+      "path": "skins/SPX/preview.jpg",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/skins/SPX/preview.jpg",
+      "size": 369463,
+      "sha256": "a95863302b912888ef7a00d4c0c6d58f42bf1d3126fd37825e00a80268b5e0cf"
+    },
+    {
+      "path": "skins/Teichmann Racing/preview.jpg",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/skins/Teichmann Racing/preview.jpg",
+      "size": 326307,
+      "sha256": "bf248a7406f0b17fffacd1a265689ae6d9082903d6b79a37b6d8a53a5f07bdaf"
+    },
+    {
+      "path": "skins/#15_true_racing/ui_skin.json",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/skins/#15_true_racing/ui_skin.json",
+      "size": 121,
+      "sha256": "b5be0bc9d2927832a6887ecca3cfd9e3e3579778fd2bc573ac59fa3038791c6e"
+    },
+    {
+      "path": "skins/#16_true_racing/ui_skin.json",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/skins/#16_true_racing/ui_skin.json",
+      "size": 122,
+      "sha256": "22b774c3832d260d4c18609e48c5e84e57c2f47b370b737e64415480ce2c1962"
+    },
+    {
+      "path": "skins/#812_MZR_Motorsportzentrum/ui_skin.json",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/skins/#812_MZR_Motorsportzentrum/ui_skin.json",
+      "size": 155,
+      "sha256": "3752b3485de09b588d74ff4b1542d339c15f646b491bf3f86728dd6c3c8dd8e2"
+    },
+    {
+      "path": "skins/#89_RTR_Project/ui_skin.json",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/skins/#89_RTR_Project/ui_skin.json",
+      "size": 131,
+      "sha256": "e80fa3f4a3e97676ecd64675bde1aa3a27b0790187fa3f21ca6fa0e5816cc5ce"
+    },
+    {
+      "path": "skins/#15_true_racing/ext_config.ini",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/skins/#15_true_racing/ext_config.ini",
+      "size": 94,
+      "sha256": "13119dd56a69629f2e93af76a41a4d70c09aa7c550e2cfd531532dd4f6e19dd0"
+    },
+    {
+      "path": "skins/#16_true_racing/ext_config.ini",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/skins/#16_true_racing/ext_config.ini",
+      "size": 94,
+      "sha256": "13119dd56a69629f2e93af76a41a4d70c09aa7c550e2cfd531532dd4f6e19dd0"
+    },
+    {
+      "path": "skins/#812_MZR_Motorsportzentrum/ext_config.ini",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/skins/#812_MZR_Motorsportzentrum/ext_config.ini",
+      "size": 94,
+      "sha256": "f938ec0819483f5bfe653e4b5c54f91f95ffe60e6527995b8882b178463465d9"
+    },
+    {
+      "path": "skins/#89_RTR_Project/ext_config.ini",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/skins/#89_RTR_Project/ext_config.ini",
+      "size": 94,
+      "sha256": "13119dd56a69629f2e93af76a41a4d70c09aa7c550e2cfd531532dd4f6e19dd0"
+    },
+    {
+      "path": "data.acd",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/data.acd",
+      "size": 156873,
+      "sha256": "02290837e25e3f3a780250232ab13d1288d0520c622904aec6ddf01550bf81cc"
+    },
+    {
+      "path": "ktm_gt2_endurance.kn5",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/ktm_gt2_endurance.kn5",
+      "size": 167429179,
+      "sha256": "94cb99c15bcad78d4db6fc2b3223e408cf6de1d0cedc7a30bffbe7457481d127"
+    },
+    {
+      "path": "ktm_gt2_endurance_lod_b.kn5",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/ktm_gt2_endurance_lod_b.kn5",
+      "size": 1825570,
+      "sha256": "28b87c80d664533532e94d52dda4ecb40779b1b412877bbd247fd6f9a14a8139"
+    },
+    {
+      "path": "ktm_gt2_endurance_lod_c.kn5",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/ktm_gt2_endurance_lod_c.kn5",
+      "size": 950996,
+      "sha256": "b1f116092bc8cb1ec9e622985d4d4696a59d06182348fab6129c934a5ec19dc9"
+    },
+    {
+      "path": "ktm_gt2_endurance_lod_d.kn5",
+      "archivePath": "content/cars/fsr_ktm_xbow_gt2_endurance/ktm_gt2_endurance_lod_d.kn5",
+      "size": 247661,
+      "sha256": "166bc96f2d2faaf30470922dca14eac1fb43fb6c4892554acb220f6d53d943dd"
+    },
+    {
+      "path": "ReadMe.txt",
+      "archivePath": "ReadMe.txt",
+      "size": 243,
+      "sha256": "796f5474500c942be268798d0a168533b90565bf18c0e386e37a9444e6bad221"
+    }
+  ]
+}
