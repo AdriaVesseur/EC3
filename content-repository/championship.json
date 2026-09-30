@@ -4,10 +4,7 @@
   "minimumHelperVersion": "1.0.0",
   "requiredContent": [
     "ec3-dallara-326",
-    "barcelona",
-    "spa",
-    "paul-ricard",
-    "ec3-config"
+    "barcelona"
   ],
   "events": [
     {
@@ -15,7 +12,10 @@
       "name": "Round 4 · Example event",
       "venue": "Barcelona",
       "round": "4",
-      "requiredContent": ["ec3-dallara-326", "barcelona", "ec3-config"]
+      "requiredContent": [
+        "ec3-dallara-326",
+        "barcelona"
+      ]
     }
   ]
 }
