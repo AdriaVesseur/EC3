@@ -9,7 +9,6 @@ import {
   Download,
   Flag,
   FolderOpen,
-  HardDrive,
   Home,
   Layers,
   LoaderCircle,
@@ -37,29 +36,29 @@ import {
   TypeIcon,
 } from "./components";
 import type { ChampionshipResults, Content, Package, Snapshot } from "./types";
-type Page =
-  | "home"
-  | "content"
-  | "championship"
-  | "results"
-  | "downloads"
-  | "installation"
-  | "settings";
+type Page = "home" | "content" | "championship" | "results" | "settings";
 const pages = [
   ["home", "Home", Home],
   ["content", "Content library", Layers],
   ["championship", "Championship", Flag],
   ["results", "Results", Trophy],
-  ["downloads", "Downloads", Download],
-  ["installation", "Installation", HardDrive],
   ["settings", "Settings", Settings],
 ] as const;
 const getPage = () => {
   const p = location.hash.slice(1).split("?")[0];
+  if (p === "downloads") return "content";
+  if (p === "installation") return "settings";
   return pages.some((x) => x[0] === p) ? (p as Page) : "home";
 };
+const getContentTab = () =>
+  location.hash.slice(1).split("?")[0] === "downloads"
+    ? "downloads"
+    : "library";
 export default function App() {
   const [page, setPage] = useState<Page>(getPage),
+    [contentTab, setContentTab] = useState<"library" | "downloads">(
+      getContentTab,
+    ),
     [snapshot, setSnapshot] = useState<Snapshot | null>(null),
     [connected, setConnected] = useState(false),
     [connecting, setConnecting] = useState(true),
@@ -100,6 +99,9 @@ export default function App() {
     void reconnect();
     const h = () => {
       setPage(getPage());
+      const target = location.hash.slice(1).split("?")[0];
+      if (target === "downloads") setContentTab("downloads");
+      else if (target === "content") setContentTab("library");
     };
     addEventListener("hashchange", h);
     return () => removeEventListener("hashchange", h);
@@ -177,7 +179,11 @@ export default function App() {
       })
       .catch((e) => {
         if (!cancelled)
-          setResultsError(e instanceof Error ? e.message : "Could not load championship results.");
+          setResultsError(
+            e instanceof Error
+              ? e.message
+              : "Could not load championship results.",
+          );
       })
       .finally(() => {
         if (!cancelled) setResultsLoading(false);
@@ -229,7 +235,12 @@ export default function App() {
   const requiredItems = raceIds
     .map((id) => content.find((item) => item.package.id === id))
     .filter((item): item is Content => !!item);
-  const pageLabel = page === "content" ? "Content" : pages.find((p) => p[0] === page)?.[1];
+  const pageLabel =
+    page === "content"
+      ? contentTab === "downloads"
+        ? "Downloads"
+        : "Content"
+      : pages.find((p) => p[0] === page)?.[1];
   return (
     <div className="app-shell">
       <a className="skip" href="#main">
@@ -237,7 +248,11 @@ export default function App() {
       </a>
       <header className="app-navigation">
         <div className="app-navigation-inner">
-          <a href="#home" className="brand" aria-label="Eurocup 3 Content Hub home">
+          <a
+            href="#home"
+            className="brand"
+            aria-label="Eurocup 3 Content Hub home"
+          >
             <img src="./images/logo-dark.png" alt="" />
             <span>Content Hub</span>
           </a>
@@ -253,13 +268,13 @@ export default function App() {
               >
                 <Icon size={16} aria-hidden="true" />
                 <span>{id === "content" ? "Content" : label}</span>
-                {id === "downloads" && ongoing.length > 0 && (
-                  <span className="nav-count">{ongoing.length}</span>
-                )}
               </a>
             ))}
           </nav>
-          <a className="install-app-link" href="./helper/Eurocup3-Helper-Setup.exe">
+          <a
+            className="install-app-link"
+            href="./helper/Eurocup3-Helper-Setup.exe"
+          >
             <Download size={15} aria-hidden="true" />
             Install app
           </a>
@@ -274,7 +289,9 @@ export default function App() {
               <strong>{pageLabel}</strong>
             </div>
             <div className="utility-actions">
-              <span className={`online-status ${connected ? "online" : "offline"}`}>
+              <span
+                className={`online-status ${connected ? "online" : "offline"}`}
+              >
                 <span className="online-dot" />
                 {connected ? "Online" : connecting ? "Connecting" : "Offline"}
               </span>
@@ -302,12 +319,18 @@ export default function App() {
             <div className="global-notice demo-notice">
               <RefreshCw size={15} aria-hidden="true" />
               <span>ISOLATED TEST ENVIRONMENT</span>
-              <span>Harmless demo files · not playable championship content</span>
+              <span>
+                Harmless demo files · not playable championship content
+              </span>
             </div>
           )}
         </div>
         <main id="main" tabIndex={-1}>
-          <div className={page === "home" ? "page-heading home-heading" : "page-heading"}>
+          <div
+            className={
+              page === "home" ? "page-heading home-heading" : "page-heading"
+            }
+          >
             <div>
               <p className="eyebrow">
                 {page === "home"
@@ -318,31 +341,27 @@ export default function App() {
                 {page === "home"
                   ? "CONTENT HUB"
                   : page === "content"
-                    ? "Content library."
-                  : page === "championship"
+                    ? contentTab === "downloads"
+                      ? "Downloads."
+                      : "Content library."
+                    : page === "championship"
                       ? "One grid. One standard."
                       : page === "results"
                         ? "The championship ledger."
-                      : page === "downloads"
-                        ? "Download control."
-                        : page === "installation"
-                          ? "Your race environment."
-                          : "Your workspace."}
+                        : "Your workspace."}
               </h1>
               <p className="subtitle">
                 {page === "home"
                   ? "Everything you need to race."
                   : page === "content"
-                    ? "Every official package, in one place."
+                    ? contentTab === "downloads"
+                      ? "Track every transfer and file check."
+                      : "Every official package, in one place."
                     : page === "championship"
                       ? "Prepare your championship or install a single event."
                       : page === "results"
-                        ? "Official standings and race podiums from MakroBeasts."
-                      : page === "downloads"
-                        ? "Follow every download, installation and file check."
-                        : page === "installation"
-                          ? "Assetto Corsa and your local helper, working together."
-                          : "Connection, support and application preferences."}
+                        ? "Official race results from MakroBeasts."
+                        : "Connection, support and application preferences."}
               </p>
             </div>
             {page === "home" ? (
@@ -412,7 +431,10 @@ export default function App() {
           {page === "home" && (
             <>
               <div className="home-command-grid">
-                <section className="featured-package" aria-labelledby="core-package-title">
+                <section
+                  className="featured-package"
+                  aria-labelledby="core-package-title"
+                >
                   <img
                     className="featured-package-image"
                     src="./images/race-action.jpg"
@@ -423,11 +445,17 @@ export default function App() {
                   <div className="featured-package-label">
                     <PackageIcon size={17} aria-hidden="true" />
                     <span>EUROCUP 3 CORE PACKAGE</span>
-                    {cat?.manifest.demo && <span className="demo-chip">Demo catalog</span>}
+                    {cat?.manifest.demo && (
+                      <span className="demo-chip">Demo catalog</span>
+                    )}
                   </div>
                   <div className="featured-package-copy">
                     <h2 id="core-package-title">
-                      ONE GRID.<br />ONE COMPLETE<br />SETUP.
+                      ONE GRID.
+                      <br />
+                      ONE COMPLETE
+                      <br />
+                      SETUP.
                     </h2>
                     <p>Your car, circuits and every race essential.</p>
                     <div className="featured-package-actions">
@@ -446,12 +474,15 @@ export default function App() {
                         {allReady ? "Check for updates" : "Download everything"}
                       </Button>
                       <a href="#content" className="featured-view-link">
-                        View packages <ArrowUpRight size={16} aria-hidden="true" />
+                        View packages{" "}
+                        <ArrowUpRight size={16} aria-hidden="true" />
                       </a>
                     </div>
                   </div>
                   <div className="featured-package-foot">
-                    <span>{ready?.total ?? requiredItems.length} required packages</span>
+                    <span>
+                      {ready?.total ?? requiredItems.length} required packages
+                    </span>
                     <span>2026 / COMPETITION CONTENT</span>
                   </div>
                 </section>
@@ -509,11 +540,23 @@ export default function App() {
                         onClick={() => select(item.package)}
                         aria-label={`${item.package.name} v${item.package.version}`}
                       >
-                        <span className={item.state === "ready" ? "ready-check checked" : "ready-check"}>
-                          {item.state === "ready" && <Check size={14} aria-hidden="true" />}
+                        <span
+                          className={
+                            item.state === "ready"
+                              ? "ready-check checked"
+                              : "ready-check"
+                          }
+                        >
+                          {item.state === "ready" && (
+                            <Check size={14} aria-hidden="true" />
+                          )}
                         </span>
-                        <span className="ready-item-name">{item.package.name}</span>
-                        <span className="ready-item-version">v{item.package.version}</span>
+                        <span className="ready-item-name">
+                          {item.package.name}
+                        </span>
+                        <span className="ready-item-version">
+                          v{item.package.version}
+                        </span>
                         <ChevronRight size={15} aria-hidden="true" />
                       </button>
                     ))}
@@ -538,7 +581,9 @@ export default function App() {
                     }
                   >
                     <Download size={17} aria-hidden="true" />
-                    {allReady ? "Check for updates" : "Download missing content"}
+                    {allReady
+                      ? "Check for updates"
+                      : "Download missing content"}
                   </Button>
                   <Button
                     className="race-ready-verify"
@@ -600,7 +645,10 @@ export default function App() {
                   );
                 })}
               </div>
-              <section className="latest-content" aria-labelledby="latest-content-title">
+              <section
+                className="latest-content"
+                aria-labelledby="latest-content-title"
+              >
                 <div className="section-heading">
                   <div>
                     <span className="eyebrow">AVAILABLE FOR YOUR GRID</span>
@@ -612,16 +660,22 @@ export default function App() {
                 </div>
                 <div className="latest-content-list">
                   {content.slice(0, 3).map((item) => (
-                    <article className="latest-content-item" key={item.package.id}>
+                    <article
+                      className="latest-content-item"
+                      key={item.package.id}
+                    >
                       <span className="latest-content-icon">
                         <TypeIcon type={item.package.type} />
                       </span>
                       <div className="latest-content-info">
                         <span className="latest-content-type">
-                          {item.package.type} · {item.package.required ? "Required" : "Optional"}
+                          {item.package.type} ·{" "}
+                          {item.package.required ? "Required" : "Optional"}
                         </span>
                         <h3>{item.package.name}</h3>
-                        <span className="latest-content-version">Version <strong>{item.package.version}</strong></span>
+                        <span className="latest-content-version">
+                          Version <strong>{item.package.version}</strong>
+                        </span>
                       </div>
                       <Badge state={connected ? item.state : "offline"} />
                       <button
@@ -635,7 +689,8 @@ export default function App() {
                   ))}
                   {!content.length && (
                     <EmptyState title="No catalog loaded">
-                      Connect the helper and refresh the catalog to see available packages.
+                      Connect the helper and refresh the catalog to see
+                      available packages.
                     </EmptyState>
                   )}
                 </div>
@@ -741,6 +796,26 @@ export default function App() {
             </>
           )}
           {page === "content" && (
+            <nav className="content-tabs" aria-label="Content sections">
+              <a
+                href="#content"
+                aria-current={contentTab === "library" ? "page" : undefined}
+              >
+                Library
+              </a>
+              <a
+                href="#downloads"
+                aria-current={contentTab === "downloads" ? "page" : undefined}
+              >
+                <Download size={15} aria-hidden="true" />
+                Downloads
+                {ongoing.length > 0 && (
+                  <span className="nav-count">{ongoing.length}</span>
+                )}
+              </a>
+            </nav>
+          )}
+          {page === "content" && contentTab === "library" && (
             <>
               <div className="library-toolbar">
                 <div className="filter-tabs" aria-label="Content type">
@@ -827,7 +902,7 @@ export default function App() {
               </p>
             </>
           )}
-          {page === "downloads" && (
+          {page === "content" && contentTab === "downloads" && (
             <>
               <div className="download-summary">
                 <span>
@@ -989,15 +1064,26 @@ export default function App() {
                       setResultsLoading(true);
                       setResultsError("");
                       try {
-                        setResults(await api<ChampionshipResults>("/results?refresh=true"));
+                        setResults(
+                          await api<ChampionshipResults>(
+                            "/results?refresh=true",
+                          ),
+                        );
                       } catch (e) {
-                        setResultsError(e instanceof Error ? e.message : "Could not refresh standings.");
+                        setResultsError(
+                          e instanceof Error
+                            ? e.message
+                            : "Could not refresh standings.",
+                        );
                       } finally {
                         setResultsLoading(false);
                       }
                     }}
                   >
-                    <RefreshCw size={15} className={resultsLoading ? "spin" : undefined} />
+                    <RefreshCw
+                      size={15}
+                      className={resultsLoading ? "spin" : undefined}
+                    />
                     Refresh standings
                   </Button>
                 </div>
@@ -1013,17 +1099,38 @@ export default function App() {
                   </div>
                 )}
                 {resultsLoading && !results && (
-                  <EmptyState title="Loading driver standings">Connecting to MakroBeasts…</EmptyState>
+                  <EmptyState title="Loading driver standings">
+                    Connecting to MakroBeasts…
+                  </EmptyState>
                 )}
-                {!resultsLoading && !resultsError && results && (
-                  results.standings.length ? (
+                {!resultsLoading &&
+                  !resultsError &&
+                  results &&
+                  (results.standings.length ? (
                     <div className="results-table-wrap">
                       <table className="results-table">
-                        <thead><tr><th>Pos</th><th>#</th><th>Driver</th><th>Points</th></tr></thead>
+                        <thead>
+                          <tr>
+                            <th>Pos</th>
+                            <th>#</th>
+                            <th>Driver</th>
+                            <th>Points</th>
+                          </tr>
+                        </thead>
                         <tbody>
                           {results.standings.map((row) => (
                             <tr key={`${row.position}-${row.driver}`}>
-                              <td><span className={row.position <= 3 ? `standing-position p${row.position}` : "standing-position"}>{row.position.toString().padStart(2, "0")}</span></td>
+                              <td>
+                                <span
+                                  className={
+                                    row.position <= 3
+                                      ? `standing-position p${row.position}`
+                                      : "standing-position"
+                                  }
+                                >
+                                  {row.position.toString().padStart(2, "0")}
+                                </span>
+                              </td>
                               <td className="driver-number">{row.number}</td>
                               <td className="driver-name">{row.driver}</td>
                               <td className="driver-points">{row.points}</td>
@@ -1032,10 +1139,19 @@ export default function App() {
                         </tbody>
                       </table>
                     </div>
-                  ) : <EmptyState title="No standings published">MakroBeasts has not published the driver classification yet.</EmptyState>
-                )}
+                  ) : (
+                    <EmptyState title="No standings published">
+                      MakroBeasts has not published the driver classification
+                      yet.
+                    </EmptyState>
+                  ))}
                 {results?.sourceUrl && (
-                  <a className="text-link results-source-link" href={results.sourceUrl} target="_blank" rel="noreferrer">
+                  <a
+                    className="text-link results-source-link"
+                    href={results.sourceUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
                     Open MakroBeasts championship <ExternalLink size={14} />
                   </a>
                 )}
@@ -1100,15 +1216,26 @@ export default function App() {
                       setResultsLoading(true);
                       setResultsError("");
                       try {
-                        setResults(await api<ChampionshipResults>("/results?refresh=true"));
+                        setResults(
+                          await api<ChampionshipResults>(
+                            "/results?refresh=true",
+                          ),
+                        );
                       } catch (e) {
-                        setResultsError(e instanceof Error ? e.message : "Could not refresh results.");
+                        setResultsError(
+                          e instanceof Error
+                            ? e.message
+                            : "Could not refresh results.",
+                        );
                       } finally {
                         setResultsLoading(false);
                       }
                     }}
                   >
-                    <RefreshCw size={15} className={resultsLoading ? "spin" : undefined} />
+                    <RefreshCw
+                      size={15}
+                      className={resultsLoading ? "spin" : undefined}
+                    />
                     Refresh results
                   </Button>
                 </div>
@@ -1116,7 +1243,12 @@ export default function App() {
                   Race results are loaded from the official championship page.
                 </p>
                 {results?.sourceUrl && (
-                  <a className="text-link results-source-link" href={results.sourceUrl} target="_blank" rel="noreferrer">
+                  <a
+                    className="text-link results-source-link"
+                    href={results.sourceUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
                     Open MakroBeasts championship <ExternalLink size={14} />
                   </a>
                 )}
@@ -1134,51 +1266,88 @@ export default function App() {
               )}
               {!resultsLoading && !resultsError && results && (
                 <section className="results-section">
-                    <div className="section-heading">
-                      <div>
-                        <p className="eyebrow">OFFICIAL RACE RESULTS</p>
-                        <h2>Race results</h2>
-                      </div>
-                      <span className="eyebrow">{results.races.length} ROUNDS</span>
+                  <div className="section-heading">
+                    <div>
+                      <p className="eyebrow">OFFICIAL RACE RESULTS</p>
+                      <h2>Race results</h2>
                     </div>
-                    {results.races.length ? (
-                      <div className="race-results-list">
-                        {results.races.map((race) => (
-                          <article className="race-result-card" key={race.id}>
-                            <div className="race-result-heading">
-                              <span className="round-number">{race.round.replace("R", "").padStart(2, "0")}</span>
-                              <div>
-                                <span className="eyebrow">{race.round} · {race.sessions.map((session) => session.name).join(" / ")}</span>
-                                <h3>{race.name}</h3>
-                                {race.venue && <p>{race.venue}</p>}
-                              </div>
-                              <a className="text-link" href={race.url} target="_blank" rel="noreferrer" aria-label={`Open ${race.name} results on MakroBeasts`}>
-                                Official page <ExternalLink size={14} />
-                              </a>
+                    <span className="eyebrow">
+                      {results.races.length} ROUNDS
+                    </span>
+                  </div>
+                  {results.races.length ? (
+                    <div className="race-results-list">
+                      {results.races.map((race) => (
+                        <article className="race-result-card" key={race.id}>
+                          <div className="race-result-heading">
+                            <span className="round-number">
+                              {race.round.replace("R", "").padStart(2, "0")}
+                            </span>
+                            <div>
+                              <span className="eyebrow">
+                                {race.round} ·{" "}
+                                {race.sessions
+                                  .map((session) => session.name)
+                                  .join(" / ")}
+                              </span>
+                              <h3>{race.name}</h3>
+                              {race.venue && <p>{race.venue}</p>}
                             </div>
-                            {race.sessions.map((session) => (
-                              <div className="podium-list" key={session.name}>
-                                {session.results.map((entry) => (
-                                  <div className={`podium-row podium-${entry.position}`} key={`${entry.position}-${entry.driver}`}>
-                                    <span className="podium-place">{entry.position}</span>
-                                    <span className="driver-number">{entry.number}</span>
-                                    <strong>{entry.driver}</strong>
-                                    <span className="podium-time">{entry.time}</span>
-                                  </div>
-                                ))}
-                              </div>
-                            ))}
-                          </article>
-                        ))}
-                      </div>
-                    ) : <EmptyState title="No race results published">Race results will appear here after MakroBeasts publishes them.</EmptyState>}
+                            <a
+                              className="text-link"
+                              href={race.url}
+                              target="_blank"
+                              rel="noreferrer"
+                              aria-label={`Open ${race.name} results on MakroBeasts`}
+                            >
+                              Official page <ExternalLink size={14} />
+                            </a>
+                          </div>
+                          {race.sessions.map((session) => (
+                            <div className="podium-list" key={session.name}>
+                              {session.results.map((entry) => (
+                                <div
+                                  className={`podium-row podium-${entry.position}`}
+                                  key={`${entry.position}-${entry.driver}`}
+                                >
+                                  <span className="podium-place">
+                                    {entry.position}
+                                  </span>
+                                  <span className="driver-number">
+                                    {entry.number}
+                                  </span>
+                                  <strong>{entry.driver}</strong>
+                                  <span className="podium-time">
+                                    {entry.time}
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
+                          ))}
+                        </article>
+                      ))}
+                    </div>
+                  ) : (
+                    <EmptyState title="No race results published">
+                      Race results will appear here after MakroBeasts publishes
+                      them.
+                    </EmptyState>
+                  )}
                 </section>
               )}
-              {resultsLoading && <EmptyState title="Loading official results">Connecting to MakroBeasts…</EmptyState>}
-              {!connected && <EmptyState title="Connect the desktop helper">The helper loads and caches championship results for this app.</EmptyState>}
+              {resultsLoading && (
+                <EmptyState title="Loading official results">
+                  Connecting to MakroBeasts…
+                </EmptyState>
+              )}
+              {!connected && (
+                <EmptyState title="Connect the desktop helper">
+                  The helper loads and caches championship results for this app.
+                </EmptyState>
+              )}
             </>
           )}
-          {page === "installation" && (
+          {page === "settings" && (
             <>
               <section className="settings-section">
                 <div className="section-heading">

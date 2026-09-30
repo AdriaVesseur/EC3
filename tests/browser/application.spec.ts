@@ -8,9 +8,7 @@ test("real helper: install, verify corruption, repair, details and responsive la
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
   await page.goto("/");
-  await expect(
-    page.getByText("Online", { exact: true }),
-  ).toBeVisible();
+  await expect(page.getByText("Online", { exact: true })).toBeVisible();
   await expect(page.getByText("ISOLATED TEST ENVIRONMENT")).toBeVisible();
   const prepare = page
     .getByRole("region", { name: "ONE GRID. ONE COMPLETE SETUP." })
@@ -32,14 +30,18 @@ test("real helper: install, verify corruption, repair, details and responsive la
     );
   });
   await expect(
-    page.getByText("Every required package is verified and ready.", { exact: true }),
+    page.getByText("Every required package is verified and ready.", {
+      exact: true,
+    }),
   ).toBeVisible({ timeout: 30000 });
   const file = path.resolve(
     "work/demo/assettocorsa/content/tracks/ec3_barcelona/ec3-demo.txt",
   );
   expect(fs.existsSync(file)).toBeTruthy();
   fs.writeFileSync(file, "CORRUPTED BY INTEGRATION TEST");
-  await page.getByRole("button", { name: "Verify all packages", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Verify all packages", exact: true })
+    .click();
   await expect(prepare).toBeEnabled();
   await page
     .getByRole("link", { name: "Content library", exact: true })
@@ -48,9 +50,10 @@ test("real helper: install, verify corruption, repair, details and responsive la
     page.getByText("Repair required", { exact: true }).first(),
   ).toBeVisible({ timeout: 15000 });
   await page.getByRole("button", { name: "Repair", exact: true }).click();
-  await expect(
-    page.getByText("Repair required", { exact: true }),
-  ).toHaveCount(0, { timeout: 15000 });
+  await expect(page.getByText("Repair required", { exact: true })).toHaveCount(
+    0,
+    { timeout: 15000 },
+  );
   expect(fs.readFileSync(file, "utf8")).toContain("SAFE TEST FIXTURE");
   await page
     .getByRole("button", { name: "Barcelona GP", exact: false })
@@ -122,9 +125,7 @@ test("all application sections render without overflow or accessibility violatio
     "settings",
   ]) {
     await page.goto("/#" + section);
-    await expect(
-      page.getByText("Online", { exact: true }),
-    ).toBeVisible();
+    await expect(page.getByText("Online", { exact: true })).toBeVisible();
     expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
     expect(
       await page.evaluate(
@@ -177,14 +178,53 @@ test("championship shows standings and results shows race classifications", asyn
   );
 
   await page.goto("/#championship");
-  await expect(page.getByRole("heading", { name: "Driver standings" })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Driver standings" }),
+  ).toBeVisible();
   await expect(page.getByText("Sofia Example", { exact: true })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Race results" })).toHaveCount(0);
+  await expect(page.getByRole("heading", { name: "Race results" })).toHaveCount(
+    0,
+  );
 
   await page.getByRole("link", { name: "Results", exact: true }).click();
-  await expect(page.getByRole("heading", { name: "Race results" })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Race results" }),
+  ).toBeVisible();
   await expect(page.getByText("Sofia Example", { exact: true })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Driver standings" })).toHaveCount(0);
+  await expect(
+    page.getByRole("heading", { name: "Driver standings" }),
+  ).toHaveCount(0);
+});
+test("downloads are inside Content and installation controls are in Settings", async ({
+  page,
+}) => {
+  await page.goto("/#content");
+  const contentNav = page.getByRole("navigation", { name: "Content sections" });
+  await contentNav.getByRole("link", { name: "Downloads" }).click();
+  await expect(page.getByRole("heading", { name: "Downloads." })).toBeVisible();
+  await expect(
+    page
+      .getByRole("navigation", { name: "Main navigation" })
+      .getByRole("link", { name: "Downloads" }),
+  ).toHaveCount(0);
+
+  await page.goto("/#settings");
+  await expect(
+    page.getByRole("heading", { name: "Assetto Corsa" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Custom Shaders Patch" }),
+  ).toBeVisible();
+  await expect(
+    page
+      .getByRole("navigation", { name: "Main navigation" })
+      .getByRole("link", { name: "Installation" }),
+  ).toHaveCount(0);
+
+  await page.goto("/#installation");
+  await expect(
+    page.getByRole("heading", { name: "Your workspace." }),
+  ).toBeVisible();
 });
 test("offline state never reports race ready and provides installation action", async ({
   page,
@@ -199,7 +239,9 @@ test("offline state never reports race ready and provides installation action", 
     page.getByRole("button", { name: "Download missing content" }),
   ).toBeDisabled();
   await expect(
-    page.getByText("Every required package is verified and ready.", { exact: true }),
+    page.getByText("Every required package is verified and ready.", {
+      exact: true,
+    }),
   ).toHaveCount(0);
   await page.screenshot({
     path: "artifacts/offline.png",
@@ -211,9 +253,7 @@ test("bundled production web connects to the same-origin helper", async ({
   page,
 }) => {
   await page.goto("http://127.0.0.1:32145");
-  await expect(
-    page.getByText("Online", { exact: true }),
-  ).toBeVisible();
+  await expect(page.getByText("Online", { exact: true })).toBeVisible();
   await expect(
     page.getByRole("heading", { name: "CONTENT HUB" }),
   ).toBeVisible();
