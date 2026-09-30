@@ -124,7 +124,7 @@ Un circuito nuevo requiere una entrada `type: "track"`, ruta como `content/track
   "name": "Round 4",
   "venue": "Barcelona",
   "round": "4",
-  "requiredContent": ["ec3-dallara-326", "barcelona", "ec3-config"]
+  "requiredContent": ["barcelona"]
 }
 ```
 

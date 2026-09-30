@@ -29,4 +29,4 @@ La carpeta de contenido solo guarda los JSON, esquemas y documentación; los ZIP
 
 ## Estado actual
 
-El catálogo tiene el Dallara 326 EC3 publicado y Barcelona como paquete de demostración. `manifest.json` define los paquetes; `championship.json` define el contenido requerido y los eventos.
+El catálogo contiene la plantilla `ec3-car-template` y Barcelona como paquete de demostración. La plantilla no es instalable: sustituye también `size`, `sha256` y `files` por los generados para el ZIP que subas; cambiar solo el enlace no basta. `manifest.json` define los paquetes; `championship.json` define el contenido requerido y los eventos.

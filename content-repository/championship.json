@@ -1,9 +1,8 @@
 {
   "season": "2026",
-  "build": "1.4.1",
+  "build": "1.4.2",
   "minimumHelperVersion": "1.0.0",
   "requiredContent": [
-    "ec3-dallara-326",
     "barcelona"
   ],
   "events": [
@@ -13,7 +12,6 @@
       "venue": "Barcelona",
       "round": "4",
       "requiredContent": [
-        "ec3-dallara-326",
         "barcelona"
       ]
     }
