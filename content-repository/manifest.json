@@ -8,9 +8,21 @@
       "id": "ec3-car-template",
       "name": "Coche de prueba",
       "type": "car",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "required": false,
       "download": "https://github.com/AdriaVesseur/EC3/releases/download/EC3Test/Test2.zip",
+      "description": "Coche de prueba para validar la instalación automática desde su ZIP.",
+      "changelog": [
+        "Primera release para probar la instalación automática."
+      ]
+    },
+    {
+      "id": "ec3-car-template2",
+      "name": "Safety Car",
+      "type": "car",
+      "version": "1.0.0",
+      "required": true,
+      "download": "https://github.com/AdriaVesseur/EC3/releases/download/EC3Test2/test3.zip",
       "description": "Coche de prueba para validar la instalación automática desde su ZIP.",
       "changelog": [
         "Primera release para probar la instalación automática."
