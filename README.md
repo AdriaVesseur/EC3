@@ -78,6 +78,8 @@ El helper busca Steam en el registro de Windows, analiza `steamapps/libraryfolde
 
 ## Publicar contenido
 
+Clona `AdriaVesseur/EC3` en tu PC con GitHub Desktop y abre su carpeta local. En PowerShell, desde esa carpeta, ejecuta `npm ci` una vez para preparar las herramientas.
+
 1. Mantener el catálogo en `content-repository/` dentro de `AdriaVesseur/EC3`. Ajustar el manifest, las URLs y `EC3_CONTENT_REPOSITORY` al publicar.
 2. Preparar una carpeta con **los archivos internos del paquete**, sin `content/cars/...` como prefijo del ZIP. Cada paquete posee una carpeta exclusiva. No usar rutas compartidas como `content/cars` o `extension/config`.
 3. Generar el ZIP y los hashes:
@@ -89,14 +91,19 @@ Get-FileHash C:/staging/barcelona-1.4.3.zip -Algorithm SHA256
 
 El script produce `.metadata.json` con `size`, `sha256` e inventario `files`. Usa memoria proporcional al paquete; para archivos muy grandes usar un ZIP estándar y generar el inventario mediante una herramienta de publicación en streaming. Cada asset debe ajustarse al límite de GitHub Releases y al límite de 2 GiB del validador.
 
-4. Crear una release del repositorio de contenido y adjuntar el ZIP:
+4. Crear una release de `AdriaVesseur/EC3` y adjuntar el ZIP compatible. Copiar el enlace directo del asset (debe incluir `/releases/download/`):
 
 ```powershell
 gh release create content-1.4.1 C:/staging/barcelona-1.4.3.zip --repo AdriaVesseur/EC3 --title "EC3 Content Build 1.4.1"
 ```
 
-5. Actualizar la entrada de `manifest.json`: ID estable, versión semver, URL exacta del asset, tamaño, SHA256, `files`, `installPath`, dependencias y notas. Cambiar `build` también en `championship.json`. `demo` debe pasar a `false` solo con assets oficiales.
-6. Ejecutar la validación, revisar el diff y publicar **ambos JSON en el mismo commit**. La lectura puede coincidir con un cambio de rama; si los builds no coinciden, el helper lo rechaza y reintentará en el siguiente refresco.
+5. Registrar el asset en el manifiesto. `create-package.mjs` genera el sidecar `.metadata.json`; `content:register` comprueba que el enlace directo sirve ese ZIP, copia el tamaño, SHA256 e inventario, y actualiza el `build` en los dos JSON:
+
+```powershell
+npm run content:register -- --id ec3-barcelona --name "Barcelona GP" --type track --version 1.4.3 --install-path content/tracks/ec3_barcelona --download "https://github.com/AdriaVesseur/EC3/releases/download/content-1.4.3/barcelona-1.4.3.zip" --metadata "C:/staging/barcelona-1.4.3.zip.metadata.json" --description "Circuito de Barcelona para EC3." --required
+```
+
+6. Ejecutar `npm run validate:content`, revisar el diff y publicar **ambos JSON en el mismo commit**. `demo` debe pasar a `false` solo cuando todos los assets sean oficiales. La app encontrará el paquete al pulsar **Refresh catalog**.
 
 Para un coche, usa `type: "car"` y un `installPath` exclusivo como `content/cars/ec3_barcelona_gt3`. La carpeta de staging contiene los archivos que van dentro de esa carpeta del coche (por ejemplo, `ui/`, `data/` y `sfx/`), no el prefijo `content/cars/ec3_barcelona_gt3`. `manifest.json` es quien define la versión publicada: al sacar una actualización, aumenta `version`, crea un ZIP/release nuevo y reemplaza el inventario generado. Assetto Corsa no proporciona un campo de versión estándar para todos los coches y mods. Por eso el helper valida la versión instalada comparando los SHA256 de los archivos reales en `installPath` con `files` del manifiesto. También reconoce coches instalados manualmente: si coinciden quedan como actuales; si la carpeta existe y no coincide, aparecen como desactualizados para poder actualizarlos desde la app.
 
