@@ -60,6 +60,12 @@
           "format": "uri",
           "pattern": "^https://github\\.com/[^/]+/[^/]+/releases/download/"
         },
+        "icon": {
+          "type": "string",
+          "format": "uri",
+          "maxLength": 2048,
+          "pattern": "^[Hh][Tt][Tt][Pp][Ss]://(?![^/?#]*@)(?!.*[\\\\\\s])[^/?#]+(?:[/?#].*)?$"
+        },
         "required": { "type": "boolean" },
         "description": { "type": "string" },
         "changelog": { "type": "array", "items": { "type": "string" } }

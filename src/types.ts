@@ -12,6 +12,7 @@ export type Package = {
   files: FileSpec[];
   dependencies: { id: string; minimumVersion: string }[];
   description: string;
+  icon?: string | null;
   changelog?: string[];
   minimumCspVersion?: string;
 };
@@ -47,7 +48,12 @@ export type EventPackage = {
 export type ChampionshipResults = {
   sourceUrl: string;
   updatedAt: string;
-  standings: { position: number; number: string; driver: string; points: string }[];
+  standings: {
+    position: number;
+    number: string;
+    driver: string;
+    points: string;
+  }[];
   races: {
     id: string;
     round: string;

@@ -58,7 +58,7 @@ public static class Program
                 ctx.Response.Headers["X-Content-Type-Options"] = "nosniff";
                 ctx.Response.Headers["Referrer-Policy"] = "same-origin";
                 ctx.Response.Headers["Content-Security-Policy"] =
-                    $"default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' {apiOrigin}; frame-ancestors 'none'; base-uri 'self'; object-src 'none'";
+                    $"default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' {apiOrigin}; frame-ancestors 'none'; base-uri 'self'; object-src 'none'";
                 if (
                     ctx.Connection.RemoteIpAddress is not { } ip
                     || !IPAddress.IsLoopback(ip)

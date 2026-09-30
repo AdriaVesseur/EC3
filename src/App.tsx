@@ -32,6 +32,7 @@ import {
   ContentRow,
   EmptyState,
   Modal,
+  PackageArtwork,
   Progress,
   TypeIcon,
 } from "./components";
@@ -724,9 +725,10 @@ export default function App() {
                       className="latest-content-item"
                       key={item.package.id}
                     >
-                      <span className="latest-content-icon">
-                        <TypeIcon type={item.package.type} />
-                      </span>
+                      <PackageArtwork
+                        package={item.package}
+                        className="latest-content-icon"
+                      />
                       <div className="latest-content-info">
                         <span className="latest-content-type">
                           {item.package.type} ·{" "}
@@ -774,9 +776,7 @@ export default function App() {
                           onClick={() => select(s.package)}
                           key={s.package.id}
                         >
-                          <span className="type-icon">
-                            <TypeIcon type={s.package.type} />
-                          </span>
+                          <PackageArtwork package={s.package} />
                           <span className="compact-name">
                             {s.package.name}
                             <small>

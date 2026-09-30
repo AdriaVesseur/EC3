@@ -10,8 +10,25 @@ import { fixtures } from "../scripts/fixtures.mjs";
 function publicCatalog() {
   const { manifest, championship } = fixtures();
   manifest.content = manifest.content.map(
-    ({ id, name, type, version, required, download, description, changelog }) =>
-      ({ id, name, type, version, required, download, description, changelog }),
+    ({
+      id,
+      name,
+      type,
+      version,
+      required,
+      download,
+      description,
+      changelog,
+    }) => ({
+      id,
+      name,
+      type,
+      version,
+      required,
+      download,
+      description,
+      changelog,
+    }),
   );
   return { manifest, championship };
 }
@@ -34,6 +51,30 @@ test("manifest asks only for the eight hand-edited package fields", () => {
   ]);
   assert.equal(validate(manifest, championship), true);
 });
+test("manifest accepts an optional HTTPS package icon without changing required fields", () => {
+  const { manifest, championship } = publicCatalog();
+  manifest.content[0].icon =
+    "https://raw.githubusercontent.com/AdriaVesseur/EC3/main/images/car-logo.png?version=1";
+  assert.equal(validate(manifest, championship), true);
+  assert.equal(manifest.content[1].icon, undefined);
+});
+for (const icon of [
+  "http://example.com/car.png",
+  "data:image/png;base64,AAAA",
+  "/images/car.png",
+  "https://user:secret@example.com/car.png",
+  "https://user@example.com/car.png",
+  "https://@example.com/car.png",
+  "https://example.com\\car.png",
+  "https://example.com/car logo.png",
+  "",
+  42,
+])
+  test("rejects an invalid package icon " + JSON.stringify(icon), () => {
+    const { manifest, championship } = publicCatalog();
+    manifest.content[0].icon = icon;
+    assert.throws(() => validate(manifest, championship));
+  });
 test("semver correctly handles numeric versions and prereleases", () => {
   assert.ok(semver.gt("2.10.0", "2.9.0"));
   assert.ok(semver.lt("2.3.1-rc.1", "2.3.1"));
@@ -82,10 +123,7 @@ test("cycles and unsatisfied versions rejected", () => {
 });
 for (const [name, mutate] of [
   ["duplicate ID", (m) => (m.content[1].id = m.content[0].id)],
-  [
-    "automatic fields cannot be set manually",
-    (m) => (m.content[0].size = 123),
-  ],
+  ["automatic fields cannot be set manually", (m) => (m.content[0].size = 123)],
   [
     "untrusted download",
     (m) => (m.content[0].download = "https://evil.example/car.zip"),

@@ -20,7 +20,8 @@ public sealed record Package(
     Dependency[] Dependencies,
     string Description = "",
     string[]? Changelog = null,
-    string? MinimumCspVersion = null
+    string? MinimumCspVersion = null,
+    string? Icon = null
 );
 
 public sealed record Manifest(
@@ -47,7 +48,8 @@ public sealed record PackageDraft(
     string Download,
     bool Required,
     string Description = "",
-    string[]? Changelog = null
+    string[]? Changelog = null,
+    string? Icon = null
 );
 
 public sealed record GeneratedPackageMetadata(

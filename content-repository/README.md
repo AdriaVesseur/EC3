@@ -1,6 +1,6 @@
 # Publicar coches y circuitos
 
-El catálogo está en `manifest.json`. Los ZIP se suben a Releases del repo `AdriaVesseur/EC3`. En cada paquete solo editas estos ocho campos: `id`, `name`, `type`, `version`, `required`, `download`, `changelog` y `description`.
+El catálogo está en `manifest.json`. Los ZIP se suben a Releases del repo `AdriaVesseur/EC3`. En cada paquete editas estos ocho campos: `id`, `name`, `type`, `version`, `required`, `download`, `changelog` y `description`. Puedes añadir `icon` si quieres un logo propio.
 
 ## Formato del ZIP
 
@@ -35,6 +35,18 @@ El instalador extrae esos archivos bajo la carpeta de Assetto Corsa. Todos los a
 El índice generado contiene el destino de instalación y las huellas de cada archivo; no tienes que editarlo. Al publicar una actualización, cambia `version` y `download`. También aumenta `build` en `manifest.json` y pon el mismo valor en `championship.json`. Si el contenido es obligatorio para una ronda concreta, añade su ID a `requiredContent` en ese archivo. Mantén `demo: true` mientras el catálogo incluya ejemplos.
 
 La carpeta de contenido guarda el manifest, el calendario y los índices técnicos pequeños. Los ZIP grandes van en Releases. GitHub Actions valida los cambios; localmente puedes ejecutar `npm run validate:content`.
+
+## Logo de cada paquete
+
+Sube una imagen PNG, WebP, JPG o SVG a la misma release que el ZIP y copia su enlace directo. Añade el campo opcional `icon` dentro de ese paquete en el manifest, junto a `description`:
+
+```json
+"icon": "https://github.com/AdriaVesseur/EC3/releases/download/v1.0.0/mi-coche.png"
+```
+
+Usa la URL real de tu imagen publicada; no el enlace a la página de la release. También puedes subir imágenes pequeñas a `content-repository/icons/` en el repo y usar su enlace **Raw**, por ejemplo `https://raw.githubusercontent.com/AdriaVesseur/EC3/main/content-repository/icons/mi-coche.png`. El enlace debe ser público, HTTPS y sin credenciales. Una imagen cuadrada con fondo transparente funciona bien; 128 × 128 píxeles es suficiente.
+
+El logo aparece junto al nombre en **Content** y en los listados de **Home**. Si omites `icon` o no se puede cargar la imagen, aparece el icono habitual de coche, circuito, configuración o app. No necesitas cambiar la versión ni volver a subir el ZIP para añadir un logo: guarda el manifest y pulsa **Refresh catalog**. El logo es una imagen de la interfaz; no se instala como archivo del juego.
 
 ## Resultados y clasificación
 

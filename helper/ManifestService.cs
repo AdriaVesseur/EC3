@@ -53,6 +53,7 @@ public sealed class ManifestService(ConfigService config)
             var packages = new List<Package>();
             foreach (var item in draft.Content)
             {
+                ValidateIcon(item.Icon);
                 if (item.Download.Contains("REPLACE-ME", StringComparison.Ordinal))
                     continue;
 
@@ -63,28 +64,7 @@ public sealed class ManifestService(ConfigService config)
                     item.Version
                 );
                 var metadata = await Read<GeneratedPackageMetadata>(metadataUrl);
-                if (metadata.Id != item.Id || metadata.Version != item.Version)
-                    throw new AppFault(
-                        "INVALID_PACKAGE_METADATA",
-                        $"Generated metadata does not match {item.Id} v{item.Version}."
-                    );
-                packages.Add(
-                    new Package(
-                        item.Id,
-                        item.Name,
-                        item.Type,
-                        item.Version,
-                        item.Download,
-                        metadata.Size,
-                        metadata.Sha256,
-                        metadata.InstallPath,
-                        item.Required,
-                        metadata.Files,
-                        [],
-                        item.Description,
-                        item.Changelog
-                    )
-                );
+                packages.Add(NormalizePackage(item, metadata));
             }
             var m = new Manifest(draft.Championship, draft.Season, draft.Build, packages.ToArray(), draft.Demo);
             Validate(m, c);
@@ -144,6 +124,49 @@ public sealed class ManifestService(ConfigService config)
         if (championship.ResultsUrl != null)
             ResultsService.ValidateSourceUrl(championship.ResultsUrl);
         return championship;
+    }
+
+    public static Package NormalizePackage(PackageDraft item, GeneratedPackageMetadata metadata)
+    {
+        if (metadata.Id != item.Id || metadata.Version != item.Version)
+            throw new AppFault(
+                "INVALID_PACKAGE_METADATA",
+                $"Generated metadata does not match {item.Id} v{item.Version}."
+            );
+        ValidateIcon(item.Icon);
+        return new Package(
+            item.Id,
+            item.Name,
+            item.Type,
+            item.Version,
+            item.Download,
+            metadata.Size,
+            metadata.Sha256,
+            metadata.InstallPath,
+            item.Required,
+            metadata.Files,
+            [],
+            item.Description,
+            item.Changelog,
+            Icon: item.Icon
+        );
+    }
+
+    public static void ValidateIcon(string? url)
+    {
+        if (url is null)
+            return;
+        if (
+            url.Length > 2048
+            || url.Any(char.IsWhiteSpace)
+            || url.Contains('\\')
+            || Regex.IsMatch(url, @"^https://[^/?#]*@", RegexOptions.IgnoreCase)
+            || !Uri.TryCreate(url, UriKind.Absolute, out var uri)
+            || uri.Scheme != "https"
+            || uri.UserInfo != ""
+            || string.IsNullOrEmpty(uri.Host)
+        )
+            throw new AppFault("INVALID_ICON", "Package icons must use an HTTPS URL without credentials.");
     }
 
     void ValidateCatalogUrl(string url)
@@ -246,6 +269,7 @@ public sealed class ManifestService(ConfigService config)
                 throw new AppFault("PATH_COLLISION", "Package folders overlap.");
             paths.Add(p.InstallPath);
             ValidateDownload(p.Download);
+            ValidateIcon(p.Icon);
             if (p.MinimumCspVersion != null && !Versions.Valid(p.MinimumCspVersion))
                 throw new AppFault("INVALID_VERSION", "Invalid CSP requirement.");
             var files = new HashSet<string>(StringComparer.OrdinalIgnoreCase);

@@ -1,6 +1,7 @@
 import {
   useEffect,
   useRef,
+  useState,
   type ButtonHTMLAttributes,
   type ReactNode,
 } from "react";
@@ -13,7 +14,7 @@ import {
   Blocks,
 } from "lucide-react";
 import { bytes } from "./api";
-import type { Content } from "./types";
+import type { Content, Package } from "./types";
 export function Button({
   children,
   variant = "",
@@ -119,6 +120,36 @@ export const TypeIcon = ({ type }: { type: string }) => {
           : Blocks;
   return <Icon size={20} aria-hidden="true" />;
 };
+export function PackageArtwork({
+  package: item,
+  className = "",
+}: {
+  package: Pick<Package, "type" | "icon">;
+  className?: string;
+}) {
+  const [failedIcon, setFailedIcon] = useState<string>();
+  const icon = item.icon;
+  const showImage = !!icon && /^https:\/\//i.test(icon) && icon !== failedIcon;
+  return (
+    <span
+      className={`type-icon package-artwork ${item.type} ${showImage ? "has-artwork" : ""} ${className}`}
+      aria-hidden="true"
+    >
+      {showImage ? (
+        <img
+          src={icon}
+          alt=""
+          loading="lazy"
+          decoding="async"
+          referrerPolicy="no-referrer"
+          onError={() => setFailedIcon(icon)}
+        />
+      ) : (
+        <TypeIcon type={item.type} />
+      )}
+    </span>
+  );
+}
 export function ContentRow({
   item,
   onSelect,
@@ -134,9 +165,7 @@ export function ContentRow({
   return (
     <div className="content-row" role="row">
       <div role="cell" className="package-name">
-        <span className={`type-icon ${p.type}`}>
-          <TypeIcon type={p.type} />
-        </span>
+        <PackageArtwork package={p} />
         <button className="text-button" onClick={onSelect}>
           {p.name}
           <span>

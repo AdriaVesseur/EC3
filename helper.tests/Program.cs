@@ -347,6 +347,56 @@ try
     Environment.SetEnvironmentVariable("EC3_DATA", Path.Combine(work, "config"));
     var config = new ConfigService();
     var service = new ManifestService(config);
+    var iconUrl = "https://raw.githubusercontent.com/AdriaVesseur/EC3/main/images/car-logo.png?version=1";
+    var iconDraft = JsonSerializer.Deserialize<PackageDraft>(
+        """
+        {"id":"icon-car","name":"Icon car","type":"car","version":"1.0.0","download":"https://github.com/AdriaVesseur/EC3/releases/download/v1/car.zip","required":false,"description":"Example car","changelog":["Initial release"],"icon":"https://raw.githubusercontent.com/AdriaVesseur/EC3/main/images/car-logo.png?version=1"}
+        """,
+        Json.Options
+    )!;
+    var iconMetadata = new GeneratedPackageMetadata(
+        iconDraft.Id, iconDraft.Version, "content/cars/icon-car", 1,
+        new string('a', 64), [new("test.txt", new string('a', 64), 3)]
+    );
+    var iconPackage = ManifestService.NormalizePackage(iconDraft, iconMetadata);
+    Assert(iconPackage.Icon == iconUrl, "preserve package icon through manifest deserialization and metadata normalization");
+    var iconManifest = new Manifest("EC3", "2026", "1.0.0", [iconPackage]);
+    var iconChampionship = new Championship("2026", "1.0.0", "1.0.0", [], []);
+    service.Validate(iconManifest, iconChampionship);
+    Assert(true, "accept an HTTPS icon from a public image host");
+    var iconSnapshot = new ContentStatus(iconPackage with { Files = [] }, "missing", null, 0, 0, null);
+    using (var snapshotJson = JsonDocument.Parse(JsonSerializer.Serialize(iconSnapshot, Json.Options)))
+    {
+        Assert(
+            snapshotJson.RootElement.GetProperty("package").GetProperty("icon").GetString() == iconUrl,
+            "include the original icon URL in the file-free helper status snapshot"
+        );
+    }
+    var withoutIcon = iconDraft with { Icon = null };
+    Assert(
+        ManifestService.NormalizePackage(withoutIcon, iconMetadata).Icon is null,
+        "keep package icons optional for existing manifests"
+    );
+    Reject(
+        () => ManifestService.NormalizePackage(iconDraft, iconMetadata with { Version = "2.0.0" }),
+        "reject metadata from a different package version while preserving optional fields"
+    );
+    foreach (var invalidIcon in new[]
+    {
+        "http://example.com/car.png",
+        "data:image/png;base64,AAAA",
+        "/images/car.png",
+        "https://user:secret@example.com/car.png",
+        "https://user@example.com/car.png",
+        "https://@example.com/car.png",
+        "https://example.com\\car.png",
+        "https://example.com/car logo.png",
+        "",
+    })
+        Reject(
+            () => service.Validate(iconManifest with { Content = [iconPackage with { Icon = invalidIcon }] }, iconChampionship),
+            "reject invalid package icon " + invalidIcon
+        );
     Reject(
         () => service.ValidateDownload("https://evil.example/mod.zip"),
         "untrusted download origin"

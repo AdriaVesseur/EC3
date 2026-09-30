@@ -85,6 +85,8 @@ Publica ese ZIP como asset en una [release de `AdriaVesseur/EC3`](https://github
 
 Al publicar una actualización, aumenta `version` y cambia `download` al asset nuevo. Aumenta también `build` en el manifest y usa el mismo `build` en `content-repository/championship.json`. Para incluir el paquete en el contenido obligatorio de una carrera, añade su ID en `requiredContent` en el calendario. Mantén `demo: true` mientras quede contenido de ejemplo.
 
+Cada paquete admite además `icon`, un campo opcional con la URL HTTPS pública de su logo. Puedes adjuntar la imagen a la release o guardarla en el repo y usar su enlace Raw. La app lo muestra en Content y en los listados de Home; si no hay imagen o falla la carga, conserva el icono de categoría. Consulta [las instrucciones de publicación](content-repository/README.md#logo-de-cada-paquete).
+
 El helper vuelve a consultar el catálogo cada cinco minutos cuando no hay operaciones activas. También hay **Refresh catalog** y **Update all**. Al actualizar se verifican los archivos existentes y solo se descargan paquetes ausentes, distintos o corruptos. Las reparaciones actuales descargan el ZIP completo; `files` ya proporciona el inventario necesario para futuras actualizaciones por archivo. No hay implementación de deltas binarios.
 
 ## Añadir circuitos y eventos

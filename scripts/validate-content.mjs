@@ -92,6 +92,11 @@ export function validate(
     ids.add(p.id);
     if (!p.description || !Array.isArray(p.changelog))
       throw Error("Each package needs a description and changelog");
+    if (p.icon !== undefined) {
+      const icon = new URL(p.icon);
+      if (icon.protocol !== "https:" || icon.username || icon.password)
+        throw Error("Package icons must use an HTTPS URL without credentials");
+    }
     const u = new URL(p.download);
     if (
       u.origin !== "https://github.com" ||
@@ -127,5 +132,7 @@ if (
     JSON.parse(fs.readFileSync(path.join(dir, "championship.json"))),
     process.env.EC3_CONTENT_REPOSITORY ?? "AdriaVesseur/EC3",
   );
-  console.log("Catalog valid: schema, versions, package fields and release URLs.");
+  console.log(
+    "Catalog valid: schema, versions, package fields and release URLs.",
+  );
 }
