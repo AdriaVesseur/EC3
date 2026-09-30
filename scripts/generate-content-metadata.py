@@ -119,18 +119,25 @@ def generate(item, output_dir):
 
             expected_root = TYPE_ROOT[item["type"]]
             prefix = expected_root + "/"
-            full_paths = all(name.startswith(prefix) for name, _ in entries)
-            if not full_paths:
-                raise ValueError(f"ZIP files must start with {prefix}<folder>/")
-            roots = {"/".join(name.split("/")[:3]) for name, _ in entries}
+            content_entries = [(name, info) for name, info in entries if name.startswith(prefix)]
+            loose_entries = [(name, info) for name, info in entries if not name.startswith(prefix)]
+            if not content_entries:
+                raise ValueError(f"ZIP files must include paths under {prefix}<folder>/")
+            allowed_docs = {"readme.txt", "readme.md", "license.txt", "license.md", "changelog.txt"}
+            if any("/" in name or name.casefold() not in allowed_docs for name, _ in loose_entries):
+                raise ValueError(f"Files outside {prefix}<folder>/ must be root-level README/license/changelog files")
+            roots = {"/".join(name.split("/")[:3]) for name, _ in content_entries}
             if len(roots) != 1:
                 raise ValueError("All ZIP files must belong to one car/track/app/config folder")
             install_path = roots.pop()
             files = []
             for name, info in entries:
-                if not name.startswith(install_path + "/"):
+                if name.startswith(install_path + "/"):
+                    relative = name[len(install_path) + 1 :]
+                elif ("/" not in name and name.casefold() in allowed_docs):
+                    relative = name
+                else:
                     raise ValueError(f"File is outside the package folder: {name}")
-                relative = name[len(install_path) + 1 :]
                 if not relative:
                     raise ValueError(f"Invalid package file path: {name}")
                 with zf.open(info) as stream:

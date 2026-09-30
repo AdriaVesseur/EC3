@@ -6,14 +6,14 @@
   "content": [
     {
       "id": "ec3-car-template",
-      "name": "Coche de prueba (plantilla)",
+      "name": "Coche de prueba",
       "type": "car",
       "version": "1.0.0",
       "required": false,
       "download": "https://github.com/AdriaVesseur/EC3/releases/download/EC3Test/Test2.zip",
       "description": "Coche de prueba para validar la instalación automática desde su ZIP.",
       "changelog": [
-        "Entry template for manual manifest editing."
+        "Primera release para probar la instalación automática."
       ]
     }
   ]

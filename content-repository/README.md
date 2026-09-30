@@ -12,7 +12,7 @@ content/cars/mi_coche/ui/ui_car.json
 content/cars/mi_coche/skins/default/...
 ```
 
-El instalador extrae esos archivos bajo la carpeta de Assetto Corsa. Todos los archivos del ZIP deben pertenecer a una única carpeta de coche, circuito, app o configuración, y esa carpeta debe concordar con `type`. No añadas una carpeta contenedora como `mi_coche-v1/` por encima de `content/`.
+El instalador extrae esos archivos bajo la carpeta de Assetto Corsa. Todos los archivos del juego deben pertenecer a una única carpeta de coche, circuito, app o configuración, y esa carpeta debe concordar con `type`. No añadas una carpeta contenedora como `mi_coche-v1/` por encima de `content/`. Puede haber un `ReadMe.txt`, `ReadMe.md`, `License.txt`, `License.md` o `Changelog.txt` suelto en la raíz; se instalará dentro de la carpeta del coche o circuito. Otros archivos sueltos se rechazan.
 
 ## Publicación
 

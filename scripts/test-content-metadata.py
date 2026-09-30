@@ -52,6 +52,7 @@ class MetadataTests(unittest.TestCase):
         contents = make_zip({
             "content/cars/test_car/data.acd": payload,
             "content/cars/test_car/ui/ui_car.json": b"{}",
+            "ReadMe.txt": b"Install notes",
         })
         with tempfile.TemporaryDirectory() as tmp:
             with patch.object(generator.urllib.request, "urlopen", return_value=Response(contents)):
@@ -63,6 +64,8 @@ class MetadataTests(unittest.TestCase):
         self.assertEqual(result["files"][0]["path"], "data.acd")
         self.assertEqual(result["files"][0]["archivePath"], "content/cars/test_car/data.acd")
         self.assertEqual(result["files"][0]["sha256"], hashlib.sha256(payload).hexdigest())
+        self.assertEqual(result["files"][2]["path"], "ReadMe.txt")
+        self.assertEqual(result["files"][2]["archivePath"], "ReadMe.txt")
 
     def test_rejects_zip_slip_paths(self):
         contents = make_zip({"content/cars/test_car/../../evil.txt": b"bad"})
