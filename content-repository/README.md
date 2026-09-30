@@ -1,33 +1,32 @@
-# Catálogo de contenido de Eurocup 3
+# Publicar coches y circuitos
 
-El catálogo vive en este repositorio (`AdriaVesseur/EC3`). La app consulta `manifest.json`; cada paquete apunta a un ZIP de una Release de GitHub. Ahora hay un coche publicado (`ec3-dallara-326`) y Barcelona continúa como ejemplo de demostración.
+El catálogo de la app está en `manifest.json`; los ZIP se suben a Releases del mismo repo (`AdriaVesseur/EC3`). La app solo descarga paquetes que estén descritos en el manifiesto.
 
-## Publicar un coche o circuito
+## Flujo manual
 
-1. Extrae el ZIP original. Para un coche, localiza su carpeta, por ejemplo `content/cars/zr_zallara_z320`. El ZIP que distribuirá la app debe tener los archivos del coche directamente en la raíz (`data.acd`, `ui/`, `skins/`, etc.), sin el prefijo `content/cars/zr_zallara_z320/`. Para un circuito usa del mismo modo el contenido interno de `content/tracks/<id>`.
-2. En la carpeta local del repo, genera el ZIP compatible y sus hashes:
-
-   ```powershell
-   node scripts/create-package.mjs C:/staging/original/content/cars/zr_zallara_z320 C:/staging/zr-zallara-z320-0.2.0.zip
-   ```
-
-   Se crea también `zr-zallara-z320-0.2.0.zip.metadata.json`. No edites su tamaño, SHA256 ni inventario `files` a mano.
-
-3. En GitHub, crea una Release en `AdriaVesseur/EC3` y adjunta el ZIP generado. Publica la Release; puedes marcarla como pre-release para distinguirla de una versión del gestor. Copia el enlace directo al asset ZIP, cuya ruta incluye `/releases/download/`.
-4. Desde la raíz local del repo, registra el paquete con ese enlace y el archivo de metadata:
+1. Prepara el ZIP final. Sus archivos deben estar dentro de la carpeta propia del coche o circuito, no bajo un prefijo `content/cars/<id>/` o `content/tracks/<id>/`. Por ejemplo, dentro de un ZIP de coche deben aparecer `data.acd`, `ui/`, `skins/`, etc. Si recibes un ZIP con rutas completas de Assetto Corsa, extráelo y usa como paquete la carpeta interna del coche o circuito.
+2. Desde la carpeta local del repositorio, crea el ZIP compatible y el archivo de metadata:
 
    ```powershell
-   npm run content:register -- --id zr-zallara-z320 --name "Zallara Z320" --type car --version 0.2.0 --install-path content/cars/zr_zallara_z320 --download "https://github.com/AdriaVesseur/EC3/releases/download/ec3-content-zallara-0.2.0/zr-zallara-z320-0.2.0.zip" --metadata "C:/staging/zr-zallara-z320-0.2.0.zip.metadata.json" --description "Coche EC3 para Assetto Corsa." --required
+   node scripts/create-package.mjs C:/staging/coche C:/staging/coche-1.0.0.zip
    ```
 
-   El comando descarga ese enlace y confirma que el ZIP coincide con el `.metadata.json`; después rellena tamaño, SHA256 y `files`, agrega o reemplaza el paquete, aumenta `build` y actualiza el mismo build en `championship.json`. Usa `--optional` en lugar de `--required` si el paquete es opcional.
+   El comando genera `coche-1.0.0.zip.metadata.json`. Guarda el ZIP generado: será el que subas a GitHub. El metadata contiene `size` (del ZIP), `sha256` (del ZIP) y `files` (ruta, tamaño y SHA256 de cada archivo). No rellenes esos valores a mano ni uses los de otro ZIP.
+3. En GitHub, abre **Releases → Draft a new release**, elige una etiqueta y título, y adjunta el ZIP generado en **Attach binaries**. Publica la release. Copia el enlace directo del archivo `.zip`; debe incluir `/releases/download/`, no `/releases/tag/`.
+4. Abre `content-repository/manifest.json` en el repo, pulsa el lápiz y edita el JSON tú mismo. Para un paquete nuevo, copia una entrada del mismo tipo; para actualizar uno existente, edita la entrada que ya tiene ese `id`. Rellena:
 
-5. Ejecuta `npm run validate:content`, revisa el cambio, y confirma y sube juntos `manifest.json` y `championship.json` a `main`. La app encontrará el paquete al pulsar **Refresh catalog**. Si debe aparecer en un evento concreto, añade su ID a `championship.events[].requiredContent` antes de validar.
+   - `id`: identificador estable en minúsculas, con guiones.
+   - `name`, `version` y `description`: datos que verá el usuario. Usa versión semántica, por ejemplo `1.0.0`.
+   - `installPath`: carpeta de Assetto Corsa, por ejemplo `content/cars/mi_coche` o `content/tracks/mi_circuito`.
+   - `download`: enlace directo que copiaste del ZIP en la release.
+   - `size`, `sha256` y `files`: copia estos campos del `.metadata.json` generado para ese ZIP.
+   - `required`: `true` si el paquete debe estar instalado para correr.
 
-El catálogo valida que la URL pertenezca a una Release de este repo, que los directorios de instalación sean exclusivos y seguros, y que los hashes e inventarios sean válidos. `demo` solo debe cambiar a `false` cuando todos los paquetes sean contenido oficial listo para usar.
+5. Aumenta `build` en `manifest.json` y pon exactamente el mismo valor en `championship.json`. Si debe formar parte del campeonato, agrega su ID a `requiredContent` y al evento correspondiente. Mantén `demo: true` mientras quede algún paquete de demostración.
+6. Guarda los cambios en `main`. GitHub Actions valida el catálogo; también puedes validarlo localmente con `npm run validate:content`. Luego pulsa **Refresh catalog** en la app.
 
-## Ficheros del catálogo
+La carpeta de contenido solo guarda los JSON, esquemas y documentación; los ZIP grandes van en Releases. GitHub limita a 25 MiB los archivos subidos al repo desde el navegador, mientras que Releases admite assets individuales de hasta 2 GiB.
 
-- `manifest.json`: paquetes disponibles, versiones, URLs y hashes.
-- `championship.json`: contenido obligatorio, eventos y versión mínima del gestor.
-- `manifest.schema.json` y `championship.schema.json`: esquemas que CI y el comando de validación aplican.
+## Estado actual
+
+El catálogo tiene el Dallara 326 EC3 publicado y Barcelona como paquete de demostración. `manifest.json` define los paquetes; `championship.json` define el contenido requerido y los eventos.

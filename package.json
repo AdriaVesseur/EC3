@@ -9,7 +9,6 @@
     "typecheck": "tsc --noEmit",
     "test": "node --test tests/*.test.mjs",
     "validate:content": "node scripts/validate-content.mjs",
-    "content:register": "node scripts/register-release.mjs",
     "test:e2e": "playwright test",
     "helper:build": "dotnet build helper/Eurocup3.Helper.csproj -c Release",
     "helper:test": "dotnet run --project helper.tests/Eurocup3.Helper.Tests.csproj -c Release",
