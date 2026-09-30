@@ -291,7 +291,7 @@ export default function App() {
         <div className="page-utility" role="region" aria-label="Page utilities">
           <div className="utility-bar">
             <div className="breadcrumbs">
-              <span>{page === "home" ? "Driver portal" : "Eurocup 3"}</span>
+              <span>Eurocup 3</span>
               <span aria-hidden="true">/</span>
               <strong>{pageLabel}</strong>
             </div>
@@ -333,20 +333,12 @@ export default function App() {
           )}
         </div>
         <main id="main" tabIndex={-1}>
-          <div
-            className={
-              page === "home" ? "page-heading home-heading" : "page-heading"
-            }
-          >
+          <div className="page-heading">
             <div>
-              <p className="eyebrow">
-                {page === "home"
-                  ? "EUROCUP 3 / ASSETTO CORSA"
-                  : "EUROCUP 3 · DRIVER OPERATIONS"}
-              </p>
+              <p className="eyebrow">EUROCUP 3 / ASSETTO CORSA</p>
               <h1>
                 {page === "home"
-                  ? "CONTENT HUB"
+                  ? "Content hub."
                   : page === "content"
                     ? contentTab === "downloads"
                       ? "Downloads."
@@ -371,24 +363,15 @@ export default function App() {
                         : "Connection, support and application preferences."}
               </p>
             </div>
-            {page === "home" ? (
-              <a href="#championship" className="season-stamp">
-                <Flag size={18} aria-hidden="true" />
-                <span>
-                  2026 Season
-                  <strong>Build {cat?.manifest.build ?? "—"}</strong>
-                </span>
-                <ArrowUpRight size={16} aria-hidden="true" />
-              </a>
-            ) : (
-              <div className="build-label">
-                <span>CONTENT BUILD</span>
-                <strong>
-                  {cat?.manifest.build ?? "—"}
-                  <i />
-                </strong>
-              </div>
-            )}
+            <div className="build-label">
+              <span>
+                {cat?.manifest.season ?? "2026"} SEASON · CONTENT BUILD
+              </span>
+              <strong>
+                {cat?.manifest.build ?? "—"}
+                <i />
+              </strong>
+            </div>
           </div>
           {error && (
             <div className="alert error" role="alert">

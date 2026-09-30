@@ -15,6 +15,10 @@
   --ec3-line: rgb(226 231 246 / 9%);
   --ec3-highlight: rgb(246 248 255 / 5%);
   --ec3-ease: cubic-bezier(0.22, 0.68, 0, 1);
+  --ec3-page-title: clamp(30px, 3vw, 38px);
+  --ec3-section-title: 20px;
+  --ec3-item-title: 18px;
+  --ec3-package-title: 14px;
 }
 
 body {
@@ -42,14 +46,30 @@ svg.lucide {
 h1,
 h2,
 h3 {
-  font-weight: 700;
+  font-weight: 500;
 }
-.page-heading h1 {
+.page-heading {
+  align-items: center;
+  margin-bottom: 28px;
+}
+.page-heading h1,
+.page-heading:not(.home-heading) h1 {
   color: #f5f5f7;
-  letter-spacing: -0.04em;
+  font-family: "Transducer", sans-serif;
+  font-size: var(--ec3-page-title);
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -0.035em;
+  text-transform: none;
 }
-.home-heading h1 {
-  font-weight: 900;
+.page-heading .eyebrow {
+  margin-bottom: 8px;
+  font-size: 10px;
+}
+.page-heading .subtitle {
+  margin-top: 10px;
+  font-size: 15px;
+  line-height: 1.55;
 }
 .subtitle,
 .settings-section > p,
@@ -65,9 +85,18 @@ h3 {
   letter-spacing: 0.085em;
 }
 .section-heading h2,
+.settings-section > h2,
+.empty h2,
+.results-source-card .section-heading h2,
+.results-section .section-heading h2,
+.latest-content .section-heading h2,
+.event-panel .section-heading h2,
 .race-ready-heading h2 {
   color: var(--ec3-text);
-  font-weight: 700;
+  font-family: "Transducer", sans-serif;
+  font-size: var(--ec3-section-title);
+  font-weight: 500;
+  line-height: 1.3;
   letter-spacing: -0.025em;
 }
 
@@ -137,7 +166,14 @@ h3 {
 .season-stamp strong,
 .build-label strong {
   color: #f2f3f6;
-  font-weight: 700;
+  font-weight: 500;
+}
+.build-label > span {
+  font-weight: 500;
+  letter-spacing: 0.085em;
+}
+.build-label strong {
+  font-size: 28px;
 }
 .season-stamp > svg:first-child {
   color: #e57582;
@@ -394,7 +430,10 @@ input:focus-visible {
     linear-gradient(0deg, rgb(9 10 13 / 82%), transparent 55%);
 }
 .featured-package-copy h2 {
-  font-weight: 900;
+  font-size: clamp(36px, 3.4vw, 48px);
+  font-weight: 500;
+  line-height: 1.05;
+  letter-spacing: -0.015em;
   text-shadow: 0 2px 18px rgb(5 6 9 / 15%);
 }
 .featured-package-copy p,
@@ -404,7 +443,10 @@ input:focus-visible {
 }
 .featured-package-actions .button {
   border-radius: 6px;
-  font-weight: 700;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
 }
 .featured-package-foot {
   border-color: rgb(244 246 253 / 20%);
@@ -430,7 +472,7 @@ input:focus-visible {
 }
 .race-ready-count {
   color: #f5f6f8;
-  font-weight: 700;
+  font-weight: 500;
 }
 .race-ready-count span {
   color: #8d929f;
@@ -524,6 +566,14 @@ input:focus-visible {
 .latest-content-info h3 {
   color: #eceef4;
   font-weight: 500;
+}
+.latest-content-info h3,
+.compact-name,
+.text-button {
+  font-family: "Transducer", sans-serif;
+  font-size: var(--ec3-package-title);
+  line-height: 1.4;
+  letter-spacing: -0.01em;
 }
 .latest-content-version,
 .compact-name small {
@@ -689,12 +739,12 @@ input:focus-visible {
   background: linear-gradient(160deg, #3a252e, #2a2129);
   box-shadow: inset 0 1px 0 rgb(239 164 176 / 8%);
   color: #e9bdc5;
-  font-weight: 700;
+  font-weight: 500;
 }
 .race-result-heading h3 {
   color: #edf0f6;
   font-family: "Transducer", sans-serif;
-  font-size: 17px;
+  font-size: var(--ec3-item-title);
   font-weight: 500;
   letter-spacing: -0.015em;
   text-transform: none;
@@ -725,16 +775,23 @@ input:focus-visible {
 .event-row {
   border-color: var(--ec3-line);
   background: #191b20;
-  border-radius: 8px;
+  border-radius: 10px;
   box-shadow: inset 0 1px 0 var(--ec3-highlight);
 }
 .event-row .round-number {
   color: #a5adbf;
   font-weight: 500;
 }
-.event-row h3 {
+.event-row h3,
+.event-panel > h3,
+.download-item h2 {
   color: #eceef4;
+  font-family: "Transducer", sans-serif;
+  font-size: var(--ec3-item-title);
   font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: -0.015em;
+  text-transform: none;
 }
 .event-row p {
   color: #a7adbb;
@@ -844,7 +901,10 @@ dialog::backdrop {
 }
 .modal-heading h2 {
   color: #f4f5f8;
-  font-weight: 700;
+  font-family: "Transducer", sans-serif;
+  font-size: 23px;
+  font-weight: 500;
+  line-height: 1.3;
   letter-spacing: -0.025em;
 }
 .detail-tabs {
@@ -901,6 +961,14 @@ dialog::backdrop {
 }
 
 @media (max-width: 560px) {
+  :root {
+    --ec3-page-title: 28px;
+    --ec3-section-title: 18px;
+    --ec3-item-title: 16px;
+  }
+  .page-heading .subtitle {
+    font-size: 14px;
+  }
   .race-ready-heading .badge,
   .compact-list .badge,
   .latest-content-item > .badge {
@@ -912,8 +980,8 @@ dialog::backdrop {
       linear-gradient(90deg, rgb(9 10 13 / 80%), rgb(9 10 13 / 24%)),
       linear-gradient(0deg, rgb(9 10 13 / 82%), transparent 75%);
   }
-  .race-result-heading h3 {
-    font-size: 14px;
+  .featured-package-copy h2 {
+    font-size: 36px;
   }
   .path-box {
     font-size: 11px;

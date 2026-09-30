@@ -84,7 +84,7 @@ test("real helper: install, verify corruption, repair, details and responsive la
     await page.setViewportSize({ width, height });
     await page.goto("/#home");
     await expect(
-      page.getByRole("heading", { name: "CONTENT HUB" }),
+      page.getByRole("heading", { name: "Content hub." }),
     ).toBeVisible();
     expect(
       await page.evaluate(
@@ -329,7 +329,7 @@ test("bundled production web connects to the same-origin helper", async ({
   await page.goto("http://127.0.0.1:32145");
   await expect(page.getByText("Online", { exact: true })).toBeVisible();
   await expect(
-    page.getByRole("heading", { name: "CONTENT HUB" }),
+    page.getByRole("heading", { name: "Content hub." }),
   ).toBeVisible();
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 });
