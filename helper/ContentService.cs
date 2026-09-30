@@ -57,11 +57,13 @@ public sealed class ContentService(
                         return new ContentStatus(p, "missing", null, 0, 0, null);
                     if (status.TryGetValue(p.Id, out var s) && s.Package == p)
                         return s;
+                    if (!Directory.Exists(Paths.Under(root, p.InstallPath)))
+                        return new ContentStatus(p, "missing", null, 0, 0, null);
                     var receipt = InstallationService.Receipt(root, p.Id);
                     return new ContentStatus(
                         p,
-                        receipt == null ? "missing"
-                            : receipt.Version != p.Version ? "outdated"
+                        receipt?.Version is string version && version != p.Version
+                            ? "outdated"
                             : "unverified",
                         receipt?.Version,
                         0,
@@ -194,14 +196,13 @@ public sealed class ContentService(
             job,
             ct
         );
-        bool valid = invalid == 0 && receipt?.Version == p.Version;
+        bool folderExists = Directory.Exists(Paths.Under(root, p.InstallPath));
+        var observed = Classify(p, receipt, folderExists, invalid);
+        bool valid = observed.State == "ready";
         status[p.Id] = new(
             p,
-            valid ? "ready"
-                : receipt == null ? "missing"
-                : receipt.Version != p.Version ? "outdated"
-                : "corrupted",
-            receipt?.Version,
+            observed.State,
+            observed.InstalledVersion,
             job.CheckedFiles,
             invalid,
             DateTimeOffset.UtcNow
@@ -225,28 +226,41 @@ public sealed class ContentService(
             valid = true;
         }
         var state =
-            valid ? "ready"
-            : receipt == null ? "missing"
-            : receipt.Version != p.Version ? "outdated"
-            : "corrupted";
+            Classify(p, receipt, Directory.Exists(Paths.Under(root, p.InstallPath)), invalid);
         status[p.Id] = new(
             p,
-            state,
-            receipt?.Version,
+            state.State,
+            state.InstalledVersion,
             job.CheckedFiles,
             invalid,
             DateTimeOffset.UtcNow
         );
         job.State = "complete";
         if (job.Action == "verify" && invalid > 0)
-            job.Error = $"{invalid} missing, changed or unexpected files. Use Repair.";
+            job.Error = $"{invalid} missing, changed or unexpected files. Use Update or Repair to install the catalog version.";
         logger.LogInformation(
             "{Action} {Package}: {State}, {Invalid} invalid files",
             job.Action,
             p.Id,
-            state,
+            state.State,
             invalid
         );
+    }
+
+    public static (string State, string? InstalledVersion) Classify(
+        Package package,
+        Installed? receipt,
+        bool folderExists,
+        int invalidFiles
+    )
+    {
+        if (!folderExists)
+            return ("missing", null);
+        if (invalidFiles == 0)
+            return ("ready", package.Version);
+        if (receipt?.Version == package.Version)
+            return ("corrupted", receipt.Version);
+        return ("outdated", receipt?.Version);
     }
 
     public Job Control(string id, string action)

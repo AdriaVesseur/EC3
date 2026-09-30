@@ -129,6 +129,35 @@ try
         w.Write("abc");
     }
     var package = P("safe") with { Files = [new("test.txt", digest, 3)] };
+    Assert(
+        ContentService.Classify(package, null, true, 0) == ("ready", package.Version),
+        "recognize a manually installed current package by its file inventory"
+    );
+    Assert(
+        ContentService.Classify(package, null, true, 1) == ("outdated", null),
+        "flag a manually installed package that differs from the current inventory"
+    );
+    var oldReceipt = new Installed(
+        package.Id,
+        "0.9.0",
+        package.InstallPath,
+        package.Files,
+        DateTimeOffset.UtcNow
+    );
+    Assert(
+        ContentService.Classify(package, oldReceipt, true, 1) == ("outdated", "0.9.0"),
+        "show the known installed version when an update is available"
+    );
+    var currentReceipt = oldReceipt with { Version = package.Version };
+    Assert(
+        ContentService.Classify(package, currentReceipt, true, 1) == ("corrupted", package.Version),
+        "keep same-version file damage in repair state"
+    );
+    Assert(
+        ContentService.Classify(package, oldReceipt, false, package.Files.Length)
+            == ("missing", null),
+        "show a missing target as not installed even when an old receipt remains"
+    );
     await new ExtractionService().Extract(
         zip,
         Path.Combine(work, "extracted"),

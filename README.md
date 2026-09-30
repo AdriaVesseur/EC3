@@ -98,6 +98,8 @@ gh release create content-1.4.1 C:/staging/barcelona-1.4.3.zip --repo AdriaVesse
 5. Actualizar la entrada de `manifest.json`: ID estable, versión semver, URL exacta del asset, tamaño, SHA256, `files`, `installPath`, dependencias y notas. Cambiar `build` también en `championship.json`. `demo` debe pasar a `false` solo con assets oficiales.
 6. Ejecutar la validación, revisar el diff y publicar **ambos JSON en el mismo commit**. La lectura puede coincidir con un cambio de rama; si los builds no coinciden, el helper lo rechaza y reintentará en el siguiente refresco.
 
+Para un coche, usa `type: "car"` y un `installPath` exclusivo como `content/cars/ec3_barcelona_gt3`. La carpeta de staging contiene los archivos que van dentro de esa carpeta del coche (por ejemplo, `ui/`, `data/` y `sfx/`), no el prefijo `content/cars/ec3_barcelona_gt3`. `manifest.json` es quien define la versión publicada: al sacar una actualización, aumenta `version`, crea un ZIP/release nuevo y reemplaza el inventario generado. Assetto Corsa no proporciona un campo de versión estándar para todos los coches y mods. Por eso el helper valida la versión instalada comparando los SHA256 de los archivos reales en `installPath` con `files` del manifiesto. También reconoce coches instalados manualmente: si coinciden quedan como actuales; si la carpeta existe y no coincide, aparecen como desactualizados para poder actualizarlos desde la app.
+
 ```powershell
 npm run validate:content
 git add manifest.json championship.json
