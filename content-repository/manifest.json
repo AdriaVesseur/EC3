@@ -18,16 +18,16 @@
       ]
     },
     {
-      "id": "paul ricard",
-      "name": "Coche de prueba",
-      "type": "car",
+      "id": "paul-ricard",
+      "name": "Paul Ricard",
+      "type": "track",
       "version": "1.0.0",
       "required": true,
       "icon": "https://freesvg.org/img/RaceCircuitPaulRicard.png",
-      "download": "https://github.com/AdriaVesseur/EC3/releases/download/EC3Test/Test2",
-      "description": "Coche de prueba para validar la instalación automática desde su ZIP.",
+      "download": "https://github.com/AdriaVesseur/EC3/releases/download/REPLACE-ME/paul-ricard.zip",
+      "description": "Circuito Paul Ricard para el campeonato.",
       "changelog": [
-        "Primera release para probar la instalación automática."
+        "Primera versión del circuito."
       ]
     },
     {
