@@ -17,9 +17,9 @@
       ]
     },
     {
-      "id": "ec3-car-templates",
+      "id": "ec3-car-templates2",
       "name": "Coche de prueba",
-      "type": "car2",
+      "type": "car",
       "version": "1.0.1",
       "required": false,
       "download": "https://github.com/AdriaVesseur/EC3/releases/download/EC3Test/Test2.zip",
