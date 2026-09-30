@@ -8,7 +8,7 @@
       "id": "ec3-dallara-326",
       "name": "Eurocup 3 Dallara 326",
       "type": "car",
-      "version": "2.3.1",
+      "version": "2.3.2",
       "installPath": "content/cars/ec3_dallara_326",
       "required": true,
       "download": "https://github.com/AdriaVesseur/EC3/releases/download/demo-1/ec3-dallara-326.zip",
