@@ -138,6 +138,54 @@ test("all application sections render without overflow or accessibility violatio
     });
   }
 });
+test("championship shows standings and results shows race classifications", async ({
+  page,
+}) => {
+  await page.route("**/api/results**", (route) =>
+    route.fulfill({
+      json: {
+        sourceUrl: "https://www.makrobeasts.com/championships/example",
+        updatedAt: "2026-09-30T12:00:00Z",
+        standings: [
+          { position: 1, number: "16", driver: "Sofia Example", points: "42" },
+        ],
+        races: [
+          {
+            id: "event-1",
+            round: "R1",
+            name: "Round 1 | Example Circuit",
+            venue: "Example Circuit",
+            url: "https://www.makrobeasts.com/championships/example/events/event-1/results",
+            sessions: [
+              {
+                name: "Race",
+                results: [
+                  {
+                    position: 1,
+                    number: "16",
+                    driver: "Sofia Example",
+                    car: "Porsche Cup",
+                    time: "26:12.232",
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    }),
+  );
+
+  await page.goto("/#championship");
+  await expect(page.getByRole("heading", { name: "Driver standings" })).toBeVisible();
+  await expect(page.getByText("Sofia Example", { exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Race results" })).toHaveCount(0);
+
+  await page.getByRole("link", { name: "Results", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Race results" })).toBeVisible();
+  await expect(page.getByText("Sofia Example", { exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Driver standings" })).toHaveCount(0);
+});
 test("offline state never reports race ready and provides installation action", async ({
   page,
 }) => {
