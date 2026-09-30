@@ -2,7 +2,7 @@
   "championship": "Eurocup 3",
   "season": "2026",
   "build": "1.4.5",
-  "demo": true,
+  "demo": false,
   "content": [
     {
       "id": "ec3-car-template",
