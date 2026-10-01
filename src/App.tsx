@@ -25,7 +25,6 @@ import {
   AlertTriangle,
   ExternalLink,
   Server,
-  CarFront,
 } from "lucide-react";
 import { api, connect, bytes, active } from "./api";
 import {
@@ -45,11 +44,9 @@ import { SponsorsFooter } from "./SponsorsFooter";
 import { usePortal } from "./usePortal";
 import { portalErrorMessage } from "./portal-types";
 import { AppUpdateNotice, useAppUpdate } from "./AppUpdateNotice";
-import { MyContentPage } from "./MyContentPage";
 type Page =
   | "home"
   | "content"
-  | "my-content"
   | "championship"
   | "results"
   | "servers"
@@ -57,7 +54,6 @@ type Page =
 const pages = [
   ["home", "Home", Home],
   ["content", "Content library", Layers],
-  ["my-content", "My Content", CarFront],
   ["championship", "Championship", Flag],
   ["results", "Results", Trophy],
   ["servers", "Servers", Server],
@@ -369,15 +365,13 @@ export default function App() {
                     ? contentTab === "downloads"
                       ? "Downloads."
                       : "Content library."
-                    : page === "my-content"
-                      ? "My Content."
-                      : page === "championship"
-                        ? "One grid. One standard."
-                        : page === "results"
-                          ? "The championship ledger."
-                          : page === "servers"
-                            ? "Race servers."
-                            : "Your workspace."}
+                    : page === "championship"
+                      ? "One grid. One standard."
+                      : page === "results"
+                        ? "The championship ledger."
+                        : page === "servers"
+                          ? "Race servers."
+                          : "Your workspace."}
               </h1>
               <p className="subtitle">
                 {page === "home"
@@ -386,15 +380,13 @@ export default function App() {
                     ? contentTab === "downloads"
                       ? "Track every transfer and file check."
                       : "Every official package, in one place."
-                    : page === "my-content"
-                      ? "Your launcher-installed cars, together in one garage."
-                      : page === "championship"
-                        ? "Prepare your championship or install a single event."
-                        : page === "results"
-                          ? "Official race results from MakroBeasts."
-                          : page === "servers"
-                            ? "Join the grid and follow the session live."
-                            : "Connection, support and application preferences."}
+                    : page === "championship"
+                      ? "Prepare your championship or install a single event."
+                      : page === "results"
+                        ? "Official race results from MakroBeasts."
+                        : page === "servers"
+                          ? "Join the grid and follow the session live."
+                          : "Connection, support and application preferences."}
               </p>
             </div>
             <div className="build-label">
@@ -911,9 +903,6 @@ export default function App() {
                 )}
               </a>
             </nav>
-          )}
-          {page === "my-content" && (
-            <MyContentPage content={content} connected={connected} />
           )}
           {page === "content" && contentTab === "library" && (
             <>
