@@ -1,0 +1,717 @@
+{
+  "id": "p992",
+  "version": "1.0.0",
+  "installPath": "content/cars/mkbt_porsche_911_GT3_992_cup",
+  "size": 99555084,
+  "sha256": "dbbaeed4f2f55fcb73dd3e86ade1515a15f3b09f58a5061731706fbc6e4daf43",
+  "files": [
+    {
+      "path": "body_shadow.png",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/body_shadow.png",
+      "size": 52229,
+      "sha256": "6d244532ee0885fd381afeb1279b540f90281e4ce5e9b43e2449841a2a066387"
+    },
+    {
+      "path": "tyre_0_shadow.png",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/tyre_0_shadow.png",
+      "size": 1433,
+      "sha256": "1963750d22aa1ad1a01eec4d58f2d2fd62af0dfcccbee604b4cc899093852e63"
+    },
+    {
+      "path": "tyre_1_shadow.png",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/tyre_1_shadow.png",
+      "size": 1398,
+      "sha256": "e3f6e04f39d12821c641dcf27659d0532f2104faa2bccd8796ec7357564959dc"
+    },
+    {
+      "path": "tyre_2_shadow.png",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/tyre_2_shadow.png",
+      "size": 1467,
+      "sha256": "59c00ea2e42f1af6ce64795568a52b0b43266569979a73380217030362508070"
+    },
+    {
+      "path": "tyre_3_shadow.png",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/tyre_3_shadow.png",
+      "size": 1497,
+      "sha256": "7da3c6ffa9922ade3479d9d24f292645c629a5a46d6cd5fda15803b0170970e1"
+    },
+    {
+      "path": "collider.kn5",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/collider.kn5",
+      "size": 4044,
+      "sha256": "e7e3625a0d0922745222e6d8fd60fd20b84d30f4273944198f95940d0d128c33"
+    },
+    {
+      "path": "driver_base_pos.knh",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/driver_base_pos.knh",
+      "size": 6594,
+      "sha256": "f929450361699c681fdc91916108bcfc85fd8c00dae81074c137c9e05175a469"
+    },
+    {
+      "path": "logo.png",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/logo.png",
+      "size": 5216,
+      "sha256": "a29e7b72c8abb897876e913e622ecda4e8e1e42c7da9823681a0e072c1b0c4df"
+    },
+    {
+      "path": "animations/a.ksanim",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/animations/a.ksanim",
+      "size": 245600,
+      "sha256": "e50be5e9070c96f46947e4e0e40b3d63924605d7cd035b861c9b1b64ed9d8002"
+    },
+    {
+      "path": "animations/car_lights.ksanim",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/animations/car_lights.ksanim",
+      "size": 36517,
+      "sha256": "f30a39e4287b9e69dd4456c3c601b34eb54cb020cbb3696ce979bb5cf3587ec7"
+    },
+    {
+      "path": "animations/car_lights0.ksanim",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/animations/car_lights0.ksanim",
+      "size": 32459,
+      "sha256": "1fa548c9bdc0bab61340c93684261331aa6c487150686fdadfcb54b3960897c9"
+    },
+    {
+      "path": "animations/car_lights2.ksanim",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/animations/car_lights2.ksanim",
+      "size": 8043,
+      "sha256": "f8ad3703df0706dcd217e7082d862d45713cd70e8030d5068325806fe10794a6"
+    },
+    {
+      "path": "animations/car_lights2a.ksanim",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/animations/car_lights2a.ksanim",
+      "size": 8043,
+      "sha256": "6322397d2b08b016a3cae67d7c1f672886b8366e4d7798fdb226139f6e170595"
+    },
+    {
+      "path": "animations/car_lights2b.ksanim",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/animations/car_lights2b.ksanim",
+      "size": 8043,
+      "sha256": "6790b5c83f8d5c0e584de6b5239026e4d6d82e5548fdcc1835312479f65e9327"
+    },
+    {
+      "path": "animations/car_shift_dw.ksanim",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/animations/car_shift_dw.ksanim",
+      "size": 12056,
+      "sha256": "3bc599e29899689ed2b0adad9043f79228b8c77d669f92e52fe4862b8f973771"
+    },
+    {
+      "path": "animations/car_shift_up.ksanim",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/animations/car_shift_up.ksanim",
+      "size": 12056,
+      "sha256": "0ce27ffa7c0169457112ef83b15d2347bd4004f3ba243dd810fee4993e9c192c"
+    },
+    {
+      "path": "animations/car_wiper.ksanim",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/animations/car_wiper.ksanim",
+      "size": 12174,
+      "sha256": "ed8c00f07e84b5e0030e8d1bc57f952c359e038ed7eba856d3de36b603ae8b2f"
+    },
+    {
+      "path": "animations/shift_dw.ksanim",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/animations/shift_dw.ksanim",
+      "size": 181176,
+      "sha256": "31938037086f62cfd03a25e6d83b4f578ffe5d06897bdec1b5f0079c8545f0b6"
+    },
+    {
+      "path": "animations/shift_up.ksanim",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/animations/shift_up.ksanim",
+      "size": 185201,
+      "sha256": "14fac13e12de9aaac5f7124af6eb1bc55342565ca6d2375a08333efc77e2d528"
+    },
+    {
+      "path": "animations/steer.ksanim",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/animations/steer.ksanim",
+      "size": 245600,
+      "sha256": "788d2880dd6b29d3f5dbe89fe2d8e78b21188d6b0622eeb25e7b66546c7d75c5"
+    },
+    {
+      "path": "extension/ext_config.ini",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/extension/ext_config.ini",
+      "size": 11857,
+      "sha256": "626c61d38778ae4c51a040c5389011c67d3fd0592338065d627d62e00426494a"
+    },
+    {
+      "path": "extension/ext_config0.ini",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/extension/ext_config0.ini",
+      "size": 9385,
+      "sha256": "21b69632e99675c7ec3ed20e0fc49e5bd01c318a18bbc7c097a2bc02dfc33e69"
+    },
+    {
+      "path": "extension/Slick_H.dds",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/extension/Slick_H.dds",
+      "size": 1398256,
+      "sha256": "0dde06d958c487ec143212e92ec33710ac2a313233a42b1aa7c6e41ed9f415bb"
+    },
+    {
+      "path": "extension/Slick_H_Blur.dds",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/extension/Slick_H_Blur.dds",
+      "size": 1398256,
+      "sha256": "21a16bf80da2d74f8f985280dffa7a492705da6894eec934e582e4763027da48"
+    },
+    {
+      "path": "extension/Slick_H_Blur_NM.dds",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/extension/Slick_H_Blur_NM.dds",
+      "size": 1398256,
+      "sha256": "9e26985c50b35be636c9c1cbcd25bd9dd88b8af148bbc4a0c894cd19a2c5e53c"
+    },
+    {
+      "path": "extension/Slick_H_NM.dds",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/extension/Slick_H_NM.dds",
+      "size": 1398256,
+      "sha256": "5e330d05c10a42eca3f611fae85ee8a560a363efe291de1aae2abe10498c2189"
+    },
+    {
+      "path": "extension/Slick_W.dds",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/extension/Slick_W.dds",
+      "size": 1398256,
+      "sha256": "b8d01b6e7b017566216f63470454f868bc9b95705252303e102ac0c56c3e0d18"
+    },
+    {
+      "path": "extension/Slick_W_Blur.dds",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/extension/Slick_W_Blur.dds",
+      "size": 1398256,
+      "sha256": "ab3cb6a8c15ab028c674734c49f478c6767d0ec08e91b852874a36ba0106157a"
+    },
+    {
+      "path": "extension/Slick_W_Blur_NM.dds",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/extension/Slick_W_Blur_NM.dds",
+      "size": 1398256,
+      "sha256": "908e18b9441d55dbab6c3f8babb971cc7769fabd9bf64e327dd751260070de73"
+    },
+    {
+      "path": "extension/Slick_W_NM.dds",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/extension/Slick_W_NM.dds",
+      "size": 1398256,
+      "sha256": "58f7b0f25ad43b52d05d05fc181ec7107873394bd530920fd6913e05778ff2ea"
+    },
+    {
+      "path": "sfx/GUIDs.txt",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/sfx/GUIDs.txt",
+      "size": 4845,
+      "sha256": "53b2a330cbc4c504e8a9ec8fc1d404d1cd76be0e716911e15f77ded5a9365c81"
+    },
+    {
+      "path": "sfx/mkbt_porsche_911_GT3_992_cup.bank",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/sfx/mkbt_porsche_911_GT3_992_cup.bank",
+      "size": 25998880,
+      "sha256": "7f123952ad980b8f4699b03fb46796d1934cfb72a68674da9f8fb688285ae7f7"
+    },
+    {
+      "path": "texture/flames/7.png",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/texture/flames/7.png",
+      "size": 31786,
+      "sha256": "b4bbd3595fc899aa586623ecc3ed8dc34b0a4fb69622c179fbda62db854ed129"
+    },
+    {
+      "path": "texture/flames/8.png",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/texture/flames/8.png",
+      "size": 9967,
+      "sha256": "3cfc0c971b280474c3244fd95bf932229e3054e6ca1a8aa54ba198482410ce6b"
+    },
+    {
+      "path": "texture/flames/f1.dds",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/texture/flames/f1.dds",
+      "size": 5584,
+      "sha256": "64e45a3b772847743f8bd13749e648283ad49c2f137ecd345078f39f976fb0e9"
+    },
+    {
+      "path": "texture/flames/f2.dds",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/texture/flames/f2.dds",
+      "size": 5584,
+      "sha256": "64e45a3b772847743f8bd13749e648283ad49c2f137ecd345078f39f976fb0e9"
+    },
+    {
+      "path": "texture/flames/f3.dds",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/texture/flames/f3.dds",
+      "size": 4224,
+      "sha256": "8aee8919af51d314bcb4c2fb32204166c04cb05a1a7d7ede7b60a5cbbf2fcc9a"
+    },
+    {
+      "path": "texture/flames/f4.dds",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/texture/flames/f4.dds",
+      "size": 5584,
+      "sha256": "8cbfe1256c96e5295ba47de6c9050422294a4ac0b31334771012bea0ab94da56"
+    },
+    {
+      "path": "texture/flames/l1.dds",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/texture/flames/l1.dds",
+      "size": 16512,
+      "sha256": "019119a0a87da4e8e16f75270bc00107242844ee4398dc339fd53850b4fc636d"
+    },
+    {
+      "path": "texture/flames/l2.dds",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/texture/flames/l2.dds",
+      "size": 16512,
+      "sha256": "d0ccfc1fb668a6f13a86b93de3bea06f868f9e87ba207a28d0307e1a9b575ead"
+    },
+    {
+      "path": "texture/flames/l3.dds",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/texture/flames/l3.dds",
+      "size": 16512,
+      "sha256": "019119a0a87da4e8e16f75270bc00107242844ee4398dc339fd53850b4fc636d"
+    },
+    {
+      "path": "texture/flames/l4.dds",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/texture/flames/l4.dds",
+      "size": 16512,
+      "sha256": "d0ccfc1fb668a6f13a86b93de3bea06f868f9e87ba207a28d0307e1a9b575ead"
+    },
+    {
+      "path": "texture/flames/l6.dds",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/texture/flames/l6.dds",
+      "size": 16512,
+      "sha256": "16f75b14b788ade534d852451ff36a53baf0fc20209f6aee14398d4764d5760d"
+    },
+    {
+      "path": "texture/flames/x0.dds",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/texture/flames/x0.dds",
+      "size": 16512,
+      "sha256": "0f325dcf44151adc088ee9babcd592ac343350ec9f3a830a04e9ccc314f1b8b4"
+    },
+    {
+      "path": "texture/flames/x1.dds",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/texture/flames/x1.dds",
+      "size": 16512,
+      "sha256": "17abf95bfdebefa4bfe62f6322848e95cdaf44c9d6ec77fb8b9fe256280a6b8d"
+    },
+    {
+      "path": "texture/flames/x5.dds",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/texture/flames/x5.dds",
+      "size": 16512,
+      "sha256": "6276231249678def47d017ca1125e21bdd1620da908c8b0a4b837535e7b449cf"
+    },
+    {
+      "path": "texture/flames/x7.dds",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/texture/flames/x7.dds",
+      "size": 16512,
+      "sha256": "18ba7c1f56bf04d25d4b637052c5b2c0f8b4722f4f764a4f268d8881f2f1dc8c"
+    },
+    {
+      "path": "texture/flames/x8.dds",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/texture/flames/x8.dds",
+      "size": 16512,
+      "sha256": "00e1293d7e9d2465142f51a4a4675199c961b52fcd9f127bd5b5a04813c10617"
+    },
+    {
+      "path": "ui/badge.png",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/ui/badge.png",
+      "size": 22403,
+      "sha256": "62c30d95ec9ee3bfa8c493ec1d5bc2d0af9c4509359c259112b0af8ed404e729"
+    },
+    {
+      "path": "ui/ui_car.json",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/ui/ui_car.json",
+      "size": 3328,
+      "sha256": "82686e9034ce81881f7b816e066bd9d9a92c7b3aa54821b139c4510933fd5108"
+    },
+    {
+      "path": "ui/cm_lights.json",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/ui/cm_lights.json",
+      "size": 2,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "path": "skins/00_Base/Skin_00.dds",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/skins/00_Base/Skin_00.dds",
+      "size": 22369776,
+      "sha256": "6903feb80045bdb5f46fc1184f4fcbbb3b283e84c80397c8a8c133e4bffcf397"
+    },
+    {
+      "path": "skins/01_RedBull/Skin_00.dds",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/skins/01_RedBull/Skin_00.dds",
+      "size": 5592560,
+      "sha256": "52495cd41ac3f002cb9ae4a4473e5250812abe1a6173c134dfa530de7d2a1942"
+    },
+    {
+      "path": "skins/02_Gulf/Skin_00.dds",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/skins/02_Gulf/Skin_00.dds",
+      "size": 5592560,
+      "sha256": "5005b1886dbca312211d739de9d595493480a36a7a9c253b562bc77685bee2b2"
+    },
+    {
+      "path": "skins/04_MissionR/Skin_00.dds",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/skins/04_MissionR/Skin_00.dds",
+      "size": 5592560,
+      "sha256": "36bea5915fa5aa4e0d5a863c31969aa8433604e66fafef7f3159ac0ce6d70018"
+    },
+    {
+      "path": "skins/08_HiPerform/Skin_00.dds",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/skins/08_HiPerform/Skin_00.dds",
+      "size": 5592560,
+      "sha256": "30358d068e374e987b48226ac29a17b72f73c08d2c4bac1a61b42dd9b3f7b714"
+    },
+    {
+      "path": "skins/09_HiPerform/Skin_00.dds",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/skins/09_HiPerform/Skin_00.dds",
+      "size": 5592560,
+      "sha256": "38f9229605fb46b2244873dcf3fea4c26dca6cac04cc8573e88c197f32c0dca7"
+    },
+    {
+      "path": "skins/11_UnaiCabo/Skin_00.dds",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/skins/11_UnaiCabo/Skin_00.dds",
+      "size": 22369776,
+      "sha256": "acd3fd59184d6ee90e5f6e48ade67f495a649e9dea594b87ad558312359923af"
+    },
+    {
+      "path": "skins/13_RubenFuentes/Skin_00.dds",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/skins/13_RubenFuentes/Skin_00.dds",
+      "size": 1398256,
+      "sha256": "56ea8e9852dc46b4cf6b51a20471f4a8746fb0190a6c59e3278ed719fae1207c"
+    },
+    {
+      "path": "skins/30_Momo/Skin_00.dds",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/skins/30_Momo/Skin_00.dds",
+      "size": 5592560,
+      "sha256": "d59f11e7843d95f5a7061d4d21a7922523b93c91d439c65a66843b7790d26e4b"
+    },
+    {
+      "path": "skins/44_RauhWelt/Skin_00.dds",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/skins/44_RauhWelt/Skin_00.dds",
+      "size": 5592560,
+      "sha256": "92dc5b462df020819cb4164c74c872bd8f83632dcbb6832e1ff5fb4b9bec1ae4"
+    },
+    {
+      "path": "skins/48_Ally/Skin_00.dds",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/skins/48_Ally/Skin_00.dds",
+      "size": 5592560,
+      "sha256": "445d414be9b4789a5266e70114c1453d5990ab60cfabf5b55f775ba9a1d8d2eb"
+    },
+    {
+      "path": "skins/73_Yago Cid/Skin_00.dds",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/skins/73_Yago Cid/Skin_00.dds",
+      "size": 22369776,
+      "sha256": "ab354a8ae96091fc25daecb97ce277b3fb6771b61a59ab31c6dd0b48997940a6"
+    },
+    {
+      "path": "skins/92_Porsche/Skin_00.dds",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/skins/92_Porsche/Skin_00.dds",
+      "size": 5592560,
+      "sha256": "d8e3f7b29750d0129c3ce1a44ae3a747bc848736c5786e52989968ca94f6511f"
+    },
+    {
+      "path": "skins/96_IronForce/Skin_00.dds",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/skins/96_IronForce/Skin_00.dds",
+      "size": 5592560,
+      "sha256": "b3fe9cc09fb65bde6a59ec4318e1097c50545e00e31b33fa9b21483c1b6877ae"
+    },
+    {
+      "path": "skins/11_UnaiCabo/Skin_MAP.dds",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/skins/11_UnaiCabo/Skin_MAP.dds",
+      "size": 22369776,
+      "sha256": "1dc3dd473167fec8ac2212ac447c92056266bf4664f83f4fdfaee751086778bf"
+    },
+    {
+      "path": "skins/73_Yago Cid/Skin_MAP.dds",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/skins/73_Yago Cid/Skin_MAP.dds",
+      "size": 22369776,
+      "sha256": "c9417233a5a11df662a1c65c6b9bfdf006539cd256bb9196ff2ebeb6affaf910"
+    },
+    {
+      "path": "skins/01_RedBull/Dorsal.dds",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/skins/01_RedBull/Dorsal.dds",
+      "size": 1398256,
+      "sha256": "f5f5d15eea535f71004700c965fe6950afef671ab481f5ee1395a2088809e264"
+    },
+    {
+      "path": "skins/02_Gulf/Dorsal.dds",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/skins/02_Gulf/Dorsal.dds",
+      "size": 1398256,
+      "sha256": "428c7c59f8036ee64d266363458befc17ba3b6b3d76961440e139fd9bb7b3eb6"
+    },
+    {
+      "path": "skins/04_MissionR/Dorsal.dds",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/skins/04_MissionR/Dorsal.dds",
+      "size": 1398256,
+      "sha256": "e54b36ca67d00b815ea7f64c72b5640427162f9b4ec6fdb6f06ff272576bf2f8"
+    },
+    {
+      "path": "skins/08_HiPerform/Dorsal.dds",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/skins/08_HiPerform/Dorsal.dds",
+      "size": 1398256,
+      "sha256": "63ba67c6528e0f97fee499474b295e093ba06d41b4e7fef1f05d50f019f45d91"
+    },
+    {
+      "path": "skins/09_HiPerform/Dorsal.dds",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/skins/09_HiPerform/Dorsal.dds",
+      "size": 1398256,
+      "sha256": "f374d82618c7dd9c139c072f5244888de226c80a8f7423c3194a539cfa7ce908"
+    },
+    {
+      "path": "skins/11_UnaiCabo/Dorsal.dds",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/skins/11_UnaiCabo/Dorsal.dds",
+      "size": 1398256,
+      "sha256": "f30eb8fe5fa0749a4671ff83dcdc81d0f43e50fdfd9052e3d9f80d848ec309a7"
+    },
+    {
+      "path": "skins/13_RubenFuentes/Dorsal.dds",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/skins/13_RubenFuentes/Dorsal.dds",
+      "size": 1398256,
+      "sha256": "65f3e2f98e3632928c8c7da5ee9b02c9f14ebdfb6f1c43b8c3563120829c6d1c"
+    },
+    {
+      "path": "skins/30_Momo/Dorsal.dds",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/skins/30_Momo/Dorsal.dds",
+      "size": 1398256,
+      "sha256": "3403dcb7a19c98ec226ca4260827433f1192d99621ac4d2a2919cb824275cbaa"
+    },
+    {
+      "path": "skins/44_RauhWelt/Dorsal.dds",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/skins/44_RauhWelt/Dorsal.dds",
+      "size": 1398256,
+      "sha256": "541b5874a65e0a10b3a4c7830449a8cfb2976294f230214a4844bb56c3706a28"
+    },
+    {
+      "path": "skins/48_Ally/Dorsal.dds",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/skins/48_Ally/Dorsal.dds",
+      "size": 1398256,
+      "sha256": "b201f272fdd794d72de66529e94c7da0d63bbec6264c0bdc803ca340baecb599"
+    },
+    {
+      "path": "skins/73_Yago Cid/Dorsal.dds",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/skins/73_Yago Cid/Dorsal.dds",
+      "size": 1398256,
+      "sha256": "64149bc42a553431f052431ae7309f755e8ae25d0527a341d695b41a7d704986"
+    },
+    {
+      "path": "skins/92_Porsche/Dorsal.dds",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/skins/92_Porsche/Dorsal.dds",
+      "size": 1398256,
+      "sha256": "5cc8ead17a25364ec567475cf3655eb013eeddb6f286727294315d33a2d3f216"
+    },
+    {
+      "path": "skins/96_IronForce/Dorsal.dds",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/skins/96_IronForce/Dorsal.dds",
+      "size": 1398256,
+      "sha256": "e97cdf1c241fee849a7bdf3015a9312f74e687c2fc46ff681825bf24d655101d"
+    },
+    {
+      "path": "skins/00_Base/EXT_Rim.dds",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/skins/00_Base/EXT_Rim.dds",
+      "size": 349680,
+      "sha256": "c8f41e40e8b3ab7ccbe71375f3e38b4146d645830d2f9373e55128c8910a0235"
+    },
+    {
+      "path": "skins/00_Base/livery.png",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/skins/00_Base/livery.png",
+      "size": 6815,
+      "sha256": "d2fa886bce53cf97254eb214a1ea9b3704dcb3fecd72a30a88b1a97407923a11"
+    },
+    {
+      "path": "skins/01_RedBull/livery.png",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/skins/01_RedBull/livery.png",
+      "size": 262,
+      "sha256": "a3daf886560bfaa9ebd34027f76d1b385352dd40b6887a2aac740234b6141613"
+    },
+    {
+      "path": "skins/02_Gulf/livery.png",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/skins/02_Gulf/livery.png",
+      "size": 258,
+      "sha256": "3dcc483b90af77f4cd043c761c7c765b8c968f3cbaacf70b3d4b0a416fa8c046"
+    },
+    {
+      "path": "skins/04_MissionR/livery.png",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/skins/04_MissionR/livery.png",
+      "size": 258,
+      "sha256": "8dfe0063688b5603fdb628c53ef1857688fb5f8fd69f89ca540540933a21f09f"
+    },
+    {
+      "path": "skins/08_HiPerform/livery.png",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/skins/08_HiPerform/livery.png",
+      "size": 263,
+      "sha256": "309fd1c362db6501668e079c30117cd38507eee60a0c2abd46e0c19cdd3e751d"
+    },
+    {
+      "path": "skins/09_HiPerform/livery.png",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/skins/09_HiPerform/livery.png",
+      "size": 258,
+      "sha256": "15245b7619e2e5032c87c215736a4582925d372a55c2c184346989fb98a03e8c"
+    },
+    {
+      "path": "skins/11_UnaiCabo/livery.png",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/skins/11_UnaiCabo/livery.png",
+      "size": 192454,
+      "sha256": "7dbca858007fb137db0dae04e0a39212add474b82aa157500febd0c05f84e765"
+    },
+    {
+      "path": "skins/13_RubenFuentes/livery.png",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/skins/13_RubenFuentes/livery.png",
+      "size": 208919,
+      "sha256": "708ce576e5f40f79a707e7c6d4b22f2cff7915d3c0f660f8422c702233f4e0fc"
+    },
+    {
+      "path": "skins/30_Momo/livery.png",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/skins/30_Momo/livery.png",
+      "size": 256,
+      "sha256": "4cdebf560bca4c54baf8bbb4e99efd89671071270777d64c1186b10659102a80"
+    },
+    {
+      "path": "skins/44_RauhWelt/livery.png",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/skins/44_RauhWelt/livery.png",
+      "size": 255,
+      "sha256": "e1b8cd391ef77818aa3087e54d5ee276246cd994850db227d03495fb54769148"
+    },
+    {
+      "path": "skins/48_Ally/livery.png",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/skins/48_Ally/livery.png",
+      "size": 256,
+      "sha256": "4cb5a8d5e4fc69910c811be9bd4d15b67d6009f48d9ad98b8ad71d7da9b66b2e"
+    },
+    {
+      "path": "skins/73_Yago Cid/livery.png",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/skins/73_Yago Cid/livery.png",
+      "size": 219580,
+      "sha256": "c47bec6ce9ab0160eccf3114c30b0c8a75d1c65315e79e1fb91c29f954b05647"
+    },
+    {
+      "path": "skins/92_Porsche/livery.png",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/skins/92_Porsche/livery.png",
+      "size": 258,
+      "sha256": "0abd705c972e71f9040a3089e84222262dcf2f6b4169dc0e5942011bb02c79f6"
+    },
+    {
+      "path": "skins/96_IronForce/livery.png",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/skins/96_IronForce/livery.png",
+      "size": 261,
+      "sha256": "fc5bb00eccbab3b856ae60f86f6f5b8662554a30104efb8e36fcf16386d59025"
+    },
+    {
+      "path": "skins/00_Base/preview.jpg",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/skins/00_Base/preview.jpg",
+      "size": 137840,
+      "sha256": "f478d600f0f2c5df3f5dfa40ca49460bb40671e143b6fe5f7a931915a39c7add"
+    },
+    {
+      "path": "skins/01_RedBull/preview.jpg",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/skins/01_RedBull/preview.jpg",
+      "size": 222109,
+      "sha256": "8cd6b2490e0c07c28b35453e88b4896aeaf058c8b7bb3a83974c749a4af80621"
+    },
+    {
+      "path": "skins/02_Gulf/preview.jpg",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/skins/02_Gulf/preview.jpg",
+      "size": 195635,
+      "sha256": "c2cee641a30c4612a8bae031170b7a2b6ba67f80b838676ab0a0445342a3a68d"
+    },
+    {
+      "path": "skins/04_MissionR/preview.jpg",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/skins/04_MissionR/preview.jpg",
+      "size": 167111,
+      "sha256": "c04349451829b2f3684af33420aeb10688b819c4b39a5470d1832080def814e2"
+    },
+    {
+      "path": "skins/08_HiPerform/preview.jpg",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/skins/08_HiPerform/preview.jpg",
+      "size": 195437,
+      "sha256": "e60039e7ccaecc36d7ca4723b8bf84dc5315f8c635e62b3f77cef85ad103c145"
+    },
+    {
+      "path": "skins/09_HiPerform/preview.jpg",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/skins/09_HiPerform/preview.jpg",
+      "size": 197268,
+      "sha256": "408f85d9576335ba91cc296f73fbd9435cc41a7468a2cb3a3212adf702eb95d3"
+    },
+    {
+      "path": "skins/11_UnaiCabo/preview.jpg",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/skins/11_UnaiCabo/preview.jpg",
+      "size": 175762,
+      "sha256": "43e7b8ce0d76f003b5d134eb90187ca7f2647c1656dd516fb46da032f89fb4f1"
+    },
+    {
+      "path": "skins/13_RubenFuentes/preview.jpg",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/skins/13_RubenFuentes/preview.jpg",
+      "size": 174094,
+      "sha256": "8f6df3933c4509860fa81222eb5445a8437db8332b690f09f0f88369e625d142"
+    },
+    {
+      "path": "skins/30_Momo/preview.jpg",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/skins/30_Momo/preview.jpg",
+      "size": 202322,
+      "sha256": "5839b0ad1cf2b9b9da12c221f1a8fc00a402cb0616424476a77e9dc3b1dedcff"
+    },
+    {
+      "path": "skins/44_RauhWelt/preview.jpg",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/skins/44_RauhWelt/preview.jpg",
+      "size": 195470,
+      "sha256": "dc9ceaed2f117b749aa6ef65adc178687abe61a0d1a6a9f3c24b61e41f5f9f9d"
+    },
+    {
+      "path": "skins/48_Ally/preview.jpg",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/skins/48_Ally/preview.jpg",
+      "size": 173368,
+      "sha256": "aac98c1a248d7f2343cb5a3327f476198c29a65ce3fef2e8089ecaa90302715c"
+    },
+    {
+      "path": "skins/73_Yago Cid/preview.jpg",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/skins/73_Yago Cid/preview.jpg",
+      "size": 175925,
+      "sha256": "7c166cdc1337ce5847b6dddfdfcf4056348714ee42cbd53ac43a815c631774fa"
+    },
+    {
+      "path": "skins/92_Porsche/preview.jpg",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/skins/92_Porsche/preview.jpg",
+      "size": 139401,
+      "sha256": "55164100a31fd2162a0bf198072996f35cd7397dadc7e166e02cef96fc1920cf"
+    },
+    {
+      "path": "skins/96_IronForce/preview.jpg",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/skins/96_IronForce/preview.jpg",
+      "size": 203890,
+      "sha256": "7ac1749b0fa91b623cbac60acf3207ed571aaab3249ec7dfba7f4ab056eff2e2"
+    },
+    {
+      "path": "skins/11_UnaiCabo/ui_skin.json",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/skins/11_UnaiCabo/ui_skin.json",
+      "size": 147,
+      "sha256": "6bcc96c6a2665ceb355a9b8343b90e0c7d57edbe81ff78626062734d5fed261d"
+    },
+    {
+      "path": "skins/13_RubenFuentes/ui_skin.json",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/skins/13_RubenFuentes/ui_skin.json",
+      "size": 116,
+      "sha256": "a6399ec94c8b37ba9ed921db67fcc7298ba67a839951d311952e6db7df797858"
+    },
+    {
+      "path": "skins/73_Yago Cid/ui_skin.json",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/skins/73_Yago Cid/ui_skin.json",
+      "size": 146,
+      "sha256": "ae1a0eaf9317e8dae1e434aeeebef5c860efe52591c7c48f455e57d71b2af0c2"
+    },
+    {
+      "path": "data.acd",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/data.acd",
+      "size": 219629,
+      "sha256": "b1d28dfd5032adf38a6672b852c219ef69cde927576649699711de8afe13b6de"
+    },
+    {
+      "path": "mkbt_porsche_911_GT3_992_cup.kn5",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/mkbt_porsche_911_GT3_992_cup.kn5",
+      "size": 40448862,
+      "sha256": "102eb0d06ff690b2d381875c229076e8d04a39678d3b282e8be4bfbe6974233a"
+    },
+    {
+      "path": "mkbt_porsche_911_GT3_992_cup_LOD_b.kn5",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/mkbt_porsche_911_GT3_992_cup_LOD_b.kn5",
+      "size": 34308254,
+      "sha256": "4a569f1b6578950099c24aaf00c717cfd4800162dbc4397e4987e79ac5d43744"
+    },
+    {
+      "path": "mkbt_porsche_911_GT3_992_cup_LOD_c.kn5",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/mkbt_porsche_911_GT3_992_cup_LOD_c.kn5",
+      "size": 29677102,
+      "sha256": "1b939ebe51068f064aef4a5ed08839c526dce768b0d33c25d849140b913612ea"
+    },
+    {
+      "path": "mkbt_porsche_911_GT3_992_cup_LOD_d.kn5",
+      "archivePath": "content/cars/mkbt_porsche_911_GT3_992_cup/mkbt_porsche_911_GT3_992_cup_LOD_d.kn5",
+      "size": 27476110,
+      "sha256": "040f681d92186283096fc95c66cde525e06185d92a0c66bce0e6b03f0267201f"
+    },
+    {
+      "path": "ReadMe.txt",
+      "archivePath": "ReadMe.txt",
+      "size": 259,
+      "sha256": "f9c4fd7416202632a3fe090720419a62d63bf67e7f1313be85c36e3beec82c97"
+    }
+  ]
+}
