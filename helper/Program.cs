@@ -7,7 +7,7 @@ namespace Eurocup3;
 
 public static class Program
 {
-    public const string Version = "1.3.17";
+    public const string Version = "1.3.18";
 
     public static async Task Main(string[] args)
     {

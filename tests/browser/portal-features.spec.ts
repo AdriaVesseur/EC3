@@ -347,6 +347,14 @@ test("Servers loads only when opened, shows reported details and joins the selec
   ).toContainText("EC3 Alternate Car");
   await expect(carPicker.locator(".server-car-picker-menu")).toBeHidden();
   await expect(practiceDetails.locator(".server-details > div")).toHaveCount(3);
+  await expect(practiceDetails.locator(".server-details dt").first()).toHaveCSS(
+    "justify-content",
+    "center",
+  );
+  await expect(practiceDetails.locator(".server-details dd").first()).toHaveCSS(
+    "text-align",
+    "center",
+  );
   await expect(
     practiceDetails.getByText("Server IP", { exact: true }),
   ).toBeVisible();

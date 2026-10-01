@@ -649,10 +649,12 @@
 }
 .server-details > div {
   min-width: 0;
+  text-align: center;
 }
 .server-details dt {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
   color: var(--ec3-quiet);
   font-size: 11px;
@@ -668,6 +670,7 @@
   font-weight: 500;
   line-height: 1.45;
   font-variant-numeric: tabular-nums;
+  text-align: center;
   overflow-wrap: anywhere;
 }
 .server-live-timing {
