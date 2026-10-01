@@ -176,6 +176,10 @@ public static class PortalTests
             "{\"DisconnectedDrivers\":[{\"CarInfo\":{\"DriverName\":\"Offline driver\"}}]}", "ec3-practice");
         assert(offlineOnlyTiming.DriverCount == 0 && offlineOnlyTiming.OfflineDriverCount == 1,
             "live timing accepts a missing connected list as empty");
+        var nullConnectedTiming = ServerService.ParseTiming(
+            "{\"ConnectedDrivers\":null,\"DisconnectedDrivers\":[{\"CarInfo\":{\"DriverName\":\"Offline driver\"}}]}", "ec3-practice");
+        assert(nullConnectedTiming.DriverCount == 0 && nullConnectedTiming.OfflineDriverCount == 1,
+            "live timing accepts a null connected list when the server has offline drivers");
         reject(() => ServerService.ParseTiming("{}", "ec3-practice"), "unrelated JSON cannot masquerade as a live timing leaderboard");
         reject(() => ServerService.ParseTiming("{\"ConnectedDrivers\":null}", "ec3-practice"), "malformed timing lists are rejected");
     }

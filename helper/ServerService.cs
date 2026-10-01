@@ -281,9 +281,11 @@ public sealed class ServerService(PortalConfigService portal, AssettoDetectionSe
             throw new AppFault("TIMING_INVALID_RESPONSE", "The configured JSON does not contain an Assetto Corsa driver list.");
         bool hasDrivers = root.TryGetProperty("ConnectedDrivers", out var drivers);
         bool hasOffline = root.TryGetProperty("DisconnectedDrivers", out var offline);
-        if ((!hasDrivers && !hasOffline) ||
-            (hasDrivers && drivers.ValueKind != JsonValueKind.Array) ||
-            (hasOffline && offline.ValueKind != JsonValueKind.Array))
+        bool hasDriverArray = (hasDrivers && drivers.ValueKind == JsonValueKind.Array)
+            || (hasOffline && offline.ValueKind == JsonValueKind.Array);
+        if ((!hasDrivers && !hasOffline) || !hasDriverArray ||
+            (hasDrivers && drivers.ValueKind is not (JsonValueKind.Array or JsonValueKind.Null)) ||
+            (hasOffline && offline.ValueKind is not (JsonValueKind.Array or JsonValueKind.Null)))
             throw new AppFault("TIMING_INVALID_RESPONSE", "The configured JSON does not contain a valid Assetto Corsa driver list.");
         string ReadRoot(string key) => root.TryGetProperty(key, out var property) && property.ValueKind == JsonValueKind.String
             ? property.GetString() ?? "" : "";
@@ -316,8 +318,8 @@ public sealed class ServerService(PortalConfigService portal, AssettoDetectionSe
             }
             return entries.OrderBy(driver => driver.Position).Take(100).ToArray();
         }
-        LiveTimingDriver[] connectedEntries = hasDrivers ? ParseEntries(drivers) : [];
-        LiveTimingDriver[] offlineEntries = hasOffline ? ParseEntries(offline) : [];
+        LiveTimingDriver[] connectedEntries = hasDrivers && drivers.ValueKind == JsonValueKind.Array ? ParseEntries(drivers) : [];
+        LiveTimingDriver[] offlineEntries = hasOffline && offline.ValueKind == JsonValueKind.Array ? ParseEntries(offline) : [];
         return new(serverId, ReadRoot("Name"), ReadRoot("Track").Replace('_', ' '), connectedEntries.Length,
             offlineEntries.Length, DateTimeOffset.UtcNow, connectedEntries, offlineEntries);
     }
