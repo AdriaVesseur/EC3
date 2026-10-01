@@ -100,6 +100,21 @@ const findMatchingPackage = (
 };
 const packagePhoto = (item: Package | undefined) =>
   item?.image || item?.icon || "/images/race-action.jpg";
+const displayTrackName = (value: string | null | undefined) => {
+  const parts = (value ?? "")
+    .split(/[\\/]+/)
+    .map((part) => part.trim())
+    .filter(
+      (part) =>
+        part &&
+        part !== "." &&
+        part !== ".." &&
+        !/^csp$/i.test(part) &&
+        !/^\d+$/.test(part),
+    );
+  const track = parts.at(-1)?.replaceAll("_", " ").replace(/\s+/g, " ").trim();
+  return track ? track.replace(/^vv\s+/i, "") : "Circuit unavailable";
+};
 
 function TimingDriverTable({
   title,
@@ -510,6 +525,7 @@ export function ServersPage({
               "track",
               info?.track ?? "",
             );
+            const trackName = trackPackage?.name ?? displayTrackName(info?.track);
             const selectedCarInfo = availableCars.find(
               (car) => car.id === selectedCar,
             );
@@ -531,7 +547,7 @@ export function ServersPage({
                   onClick={() => setSelectedServerId(entry.server.id)}
                 >
                   <img
-                    src={entry.server.image || "/images/race-action.jpg"}
+                    src={trackPackage?.image || entry.server.image || "/images/race-action.jpg"}
                     alt=""
                     loading="lazy"
                     decoding="async"
@@ -565,7 +581,9 @@ export function ServersPage({
                     <h3>{entry.server.name}</h3>
                     <span>
                       {[
-                        info?.track?.replaceAll("_", " "),
+                        info?.track
+                          ? (trackPackage?.name ?? displayTrackName(info.track))
+                          : null,
                         session,
                         info?.currentPlayers != null
                           ? `${info.currentPlayers}${info.maxPlayers != null ? ` / ${info.maxPlayers}` : ""} drivers`
@@ -598,8 +616,7 @@ export function ServersPage({
                           </span>
                           <span className="server-detail-option-copy">
                             <strong>
-                              {info?.track?.replaceAll("_", " ") ||
-                                "Circuit unavailable"}
+                              {trackName}
                             </strong>
                             <span>{session || "Server session"}</span>
                           </span>

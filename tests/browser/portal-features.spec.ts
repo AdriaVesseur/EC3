@@ -425,6 +425,88 @@ test("Servers loads only when opened, shows reported details and joins the selec
   ).toEqual([]);
 });
 
+test("server cards use the matched circuit artwork and clean circuit name", async ({
+  page,
+}) => {
+  const circuitImage = "https://assets.example.test/kyalami.jpg";
+  await page.route("**/api/status", async (route) => {
+    const response = await route.fetch();
+    const snapshot = await response.json();
+    const trackPackage = {
+      id: "kyalami",
+      name: "Kyalami",
+      type: "track",
+      version: "1.0.0",
+      download: "https://assets.example.test/kyalami.zip",
+      size: 1,
+      sha256: "a".repeat(64),
+      installPath: "content/tracks/vv_kyalami",
+      required: true,
+      files: [],
+      dependencies: [],
+      description: "Kyalami circuit",
+      icon: null,
+      image: circuitImage,
+    };
+    snapshot.catalog ??= {
+      manifest: {
+        championship: "Eurocup 3",
+        season: "2026",
+        build: "1.0.0",
+        demo: false,
+        content: [],
+      },
+      championship: {
+        minimumHelperVersion: "1.0.0",
+        requiredContent: [],
+        events: [],
+      },
+      fetchedAt: checkedAt,
+    };
+    snapshot.catalog.manifest.content.push(trackPackage);
+    await route.fulfill({ response, json: snapshot });
+  });
+  await page.route(circuitImage, (route) =>
+    route.fulfill({
+      contentType: "image/svg+xml",
+      body: '<svg xmlns="http://www.w3.org/2000/svg" width="320" height="180"><rect width="320" height="180" fill="#252932"/></svg>',
+    }),
+  );
+  await mockFeatures(page, {
+    servers: () => {
+      const response = serverResponse();
+      response.servers[0].info!.track = "Csp/3465/../D/.../vv_kyalami";
+      return response;
+    },
+  });
+  await page.goto("/");
+  await page
+    .getByRole("navigation", { name: "Main navigation" })
+    .getByRole("link", { name: "Servers", exact: true })
+    .click();
+
+  const card = page
+    .getByRole("article")
+    .filter({ has: page.getByRole("heading", { name: practice.name }) });
+  await expect(card.locator(".server-card-cover img")).toHaveAttribute(
+    "src",
+    circuitImage,
+  );
+  await expect(card.locator(".server-card-cover-bottom")).toContainText(
+    "Kyalami",
+  );
+  await card
+    .getByRole("button", { name: `View details for ${practice.name}` })
+    .click();
+  const details = page.getByRole("dialog", { name: practice.name });
+  await expect(
+    details.locator(".server-detail-option-artwork img"),
+  ).toHaveAttribute("src", circuitImage);
+  await expect(
+    details.locator(".server-detail-option-copy strong"),
+  ).toHaveText("Kyalami");
+});
+
 test("configured timing switches between an embedded view and an external page; sponsors retain their links and logo", async ({
   page,
 }) => {
