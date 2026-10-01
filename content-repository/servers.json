@@ -1,3 +1,10 @@
 {
-  "servers": []
+  "servers": [
+    {
+      "id": "ec3-practice",
+      "name": "EC3 Practice",
+      "ip": "89.150.159.86",
+      "httpPort": 8011
+    }
+  ]
 }
