@@ -327,6 +327,9 @@ test("Servers loads only when opened, shows reported details and joins the selec
   await expect(
     practiceDetails.getByText("practice circuit", { exact: true }),
   ).toBeVisible();
+  await expect(
+    practiceDetails.getByText("Track for this server", { exact: true }),
+  ).toHaveCount(0);
   const carPicker = practiceDetails.locator(".server-car-picker");
   await expect(carPicker.locator("summary")).toContainText("Choose your car");
   await expect(carPicker.locator("details")).toHaveCount(0);

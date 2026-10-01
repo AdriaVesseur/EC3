@@ -603,17 +603,19 @@ export function ServersPage({
                             </strong>
                             <span>{session || "Server session"}</span>
                           </span>
-                          <span className="server-detail-option-meta">
-                            <MapPin size={14} aria-hidden="true" />
-                            {trackPackage?.name ?? "Track for this server"}
-                            {trackPackage?.icon && (
-                              <img
-                                className="server-detail-option-icon"
-                                src={trackPackage.icon}
-                                alt=""
-                              />
-                            )}
-                          </span>
+                          {trackPackage && (
+                            <span className="server-detail-option-meta">
+                              <MapPin size={14} aria-hidden="true" />
+                              {trackPackage.name}
+                              {trackPackage.icon && (
+                                <img
+                                  className="server-detail-option-icon"
+                                  src={trackPackage.icon}
+                                  alt=""
+                                />
+                              )}
+                            </span>
+                          )}
                         </div>
                       </article>
                       <section
