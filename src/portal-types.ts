@@ -44,6 +44,7 @@ export type ServerStatus = {
 export type ServersResponse = {
   servers: ServerStatus[];
   contentManagerAvailable: boolean;
+  assettoCorsaAvailable: boolean;
   errors: (PortalError | string)[];
   checkedAt: string;
 };

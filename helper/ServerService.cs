@@ -31,10 +31,13 @@ public sealed record ServersSnapshot(
     bool ContentManagerAvailable,
     PortalConfigError[] Errors,
     DateTimeOffset CheckedAt
-);
+)
+{
+    public bool AssettoCorsaAvailable { get; init; }
+}
 public sealed record ServerJoinResult(string ServerId, bool Launched, string Message);
 
-public sealed class ServerService(PortalConfigService portal)
+public sealed class ServerService(PortalConfigService portal, AssettoDetectionService assetto)
 {
     readonly SemaphoreSlim gate = new(1, 1);
     ServersSnapshot? cached;
@@ -43,16 +46,17 @@ public sealed class ServerService(PortalConfigService portal)
     public async Task<ServersSnapshot> Get(bool force = false, CancellationToken ct = default)
     {
         var configuration = await portal.Get(force, ct);
-        bool available = ContentManagerAvailable();
+        bool available = IsLaunchable(assetto.Find());
+        bool contentManagerAvailable = ContentManagerAvailable();
         if (!force && cached is { } current && configuration.Servers.SequenceEqual(cachedConfig) &&
             DateTimeOffset.UtcNow - current.CheckedAt < TimeSpan.FromSeconds(15))
-            return WithContentManagerAvailability(current, available) with { Errors = configuration.Errors };
+            return WithAvailability(current, available, contentManagerAvailable) with { Errors = configuration.Errors };
         await gate.WaitAsync(ct);
         try
         {
             if (!force && cached is { } latest && configuration.Servers.SequenceEqual(cachedConfig) &&
                 DateTimeOffset.UtcNow - latest.CheckedAt < TimeSpan.FromSeconds(15))
-                return WithContentManagerAvailability(latest, available) with { Errors = configuration.Errors };
+                return WithAvailability(latest, available, contentManagerAvailable) with { Errors = configuration.Errors };
             using var concurrency = new SemaphoreSlim(4, 4);
             var tasks = configuration.Servers.Select(async server =>
             {
@@ -62,7 +66,10 @@ public sealed class ServerService(PortalConfigService portal)
             }).ToArray();
             var states = await Task.WhenAll(tasks);
             cachedConfig = configuration.Servers;
-            cached = new(states, available, configuration.Errors, DateTimeOffset.UtcNow);
+            cached = new(states, contentManagerAvailable, configuration.Errors, DateTimeOffset.UtcNow)
+            {
+                AssettoCorsaAvailable = available,
+            };
             return cached;
         }
         finally
@@ -102,6 +109,14 @@ public sealed class ServerService(PortalConfigService portal)
         {
             ContentManagerAvailable = available,
             Servers = snapshot.Servers.Select(s => s with { JoinAvailable = available && s.State == "online" }).ToArray(),
+        };
+
+    static ServersSnapshot WithAvailability(ServersSnapshot snapshot, bool assettoAvailable, bool contentManagerAvailable) =>
+        snapshot with
+        {
+            AssettoCorsaAvailable = assettoAvailable,
+            ContentManagerAvailable = contentManagerAvailable,
+            Servers = snapshot.Servers.Select(s => s with { JoinAvailable = assettoAvailable && s.State == "online" }).ToArray(),
         };
 
     static async Task<ServerInfo> FetchInfo(PortalServer server, CancellationToken ct)
@@ -156,19 +171,30 @@ public sealed class ServerService(PortalConfigService portal)
         var configuration = await portal.Get(ct: ct);
         var server = configuration.Servers.FirstOrDefault(s => s.Id == id)
             ?? throw new AppFault("SERVER_NOT_FOUND", "This server is not in servers.json.");
-        if (!ContentManagerAvailable())
-            throw new AppFault("CONTENT_MANAGER_NOT_FOUND", "Open Content Manager once and enable its acmanager URL protocol before joining.");
+        string gameRoot = assetto.Require();
+        string executable = Path.Combine(gameRoot, "AssettoCorsa.exe");
+        if (!File.Exists(executable))
+            throw new AppFault("ASSETTO_LAUNCHER_NOT_FOUND", "Assetto Corsa was detected, but AssettoCorsa.exe is missing from the selected game folder.");
         ct.ThrowIfCancellationRequested();
         try
         {
-            using var process = Process.Start(new ProcessStartInfo(BuildJoinUri(server)) { UseShellExecute = true });
-            return new(server.Id, true, "Content Manager has been opened for this server.");
+            using var process = Process.Start(new ProcessStartInfo(executable)
+            {
+                WorkingDirectory = gameRoot,
+                UseShellExecute = true,
+            });
+            if (process is null)
+                throw new InvalidOperationException("Windows did not start Assetto Corsa.");
+            return new(server.Id, true, "Assetto Corsa has opened. Select Online > Direct Connect in the game to finish joining.");
         }
         catch (Exception ex) when (ex is System.ComponentModel.Win32Exception or InvalidOperationException)
         {
-            throw new AppFault("CONTENT_MANAGER_LAUNCH_FAILED", "Windows could not open Content Manager. " + ex.Message);
+            throw new AppFault("ASSETTO_LAUNCH_FAILED", "Windows could not open Assetto Corsa. " + ex.Message);
         }
     }
+
+    static bool IsLaunchable(string? root) =>
+        OperatingSystem.IsWindows() && root is not null && File.Exists(Path.Combine(root, "AssettoCorsa.exe"));
 
     public static string BuildJoinUri(PortalServer server)
     {

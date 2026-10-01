@@ -107,7 +107,7 @@ export function ServersPage({
       if (response.launched) {
         setJoinMessage(response.message);
       } else {
-        setJoinError("Content Manager could not be opened. Try again.");
+        setJoinError("Assetto Corsa could not be opened. Try again.");
       }
     } catch (cause) {
       if (!controller.signal.aborted) {
@@ -205,18 +205,18 @@ export function ServersPage({
           No championship servers have been published yet.
         </EmptyState>
       )}
-      {!!data?.servers.length && !data.contentManagerAvailable && (
+      {!!data?.servers.length && !data.assettoCorsaAvailable && (
         <div className="portal-notice" role="status">
           <AlertTriangle size={18} aria-hidden="true" />
           <p>
-            Content Manager is required to join these servers.{" "}
+            Assetto Corsa must be installed and detected to open the game from here.{" "}
             <a
               className="text-link"
-              href="https://acstuff.ru/app/"
+              href="https://store.steampowered.com/app/244210/Assetto_Corsa/"
               target="_blank"
               rel="noopener noreferrer"
             >
-              Get Content Manager <ExternalLink size={13} />
+              Get Assetto Corsa <ExternalLink size={13} />
             </a>
           </p>
         </div>
@@ -344,7 +344,7 @@ export function ServersPage({
                   >
                     <Play size={14} aria-hidden="true" />
                     {joining === entry.server.id
-                      ? "Opening Content Manager…"
+                      ? "Opening Assetto Corsa…"
                       : "Join server"}
                   </Button>
                 </div>
