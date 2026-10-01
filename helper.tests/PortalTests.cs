@@ -168,6 +168,15 @@ public static class PortalTests
             timing.OfflineDrivers[0].Name == "Samuel Fernández" && timing.OfflineDrivers[0].Laps == 35 &&
             timing.OfflineDrivers[0].BestLapSeconds == 108.123 && timing.OfflineDrivers[0].LastSeen == "2026-10-01T17:25:00Z",
             "connected and offline JSON timing leaderboard groups are normalized for the server UI");
+        var connectedOnlyTiming = ServerService.ParseTiming(
+            "{\"ConnectedDrivers\":[{\"CarInfo\":{\"DriverName\":\"Online driver\"}}]}", "ec3-practice");
+        assert(connectedOnlyTiming.DriverCount == 1 && connectedOnlyTiming.OfflineDriverCount == 0,
+            "live timing accepts a missing disconnected list as empty");
+        var offlineOnlyTiming = ServerService.ParseTiming(
+            "{\"DisconnectedDrivers\":[{\"CarInfo\":{\"DriverName\":\"Offline driver\"}}]}", "ec3-practice");
+        assert(offlineOnlyTiming.DriverCount == 0 && offlineOnlyTiming.OfflineDriverCount == 1,
+            "live timing accepts a missing connected list as empty");
         reject(() => ServerService.ParseTiming("{}", "ec3-practice"), "unrelated JSON cannot masquerade as a live timing leaderboard");
+        reject(() => ServerService.ParseTiming("{\"ConnectedDrivers\":null}", "ec3-practice"), "malformed timing lists are rejected");
     }
 }

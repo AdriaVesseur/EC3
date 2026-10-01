@@ -277,9 +277,14 @@ public sealed class ServerService(PortalConfigService portal, AssettoDetectionSe
     {
         using var document = JsonDocument.Parse(json);
         var root = document.RootElement;
-        if (root.ValueKind != JsonValueKind.Object || !root.TryGetProperty("ConnectedDrivers", out var drivers) || drivers.ValueKind != JsonValueKind.Array ||
-            !root.TryGetProperty("DisconnectedDrivers", out var offline) || offline.ValueKind != JsonValueKind.Array)
-            throw new AppFault("TIMING_INVALID_RESPONSE", "The configured JSON does not contain Assetto Corsa connected and disconnected driver lists.");
+        if (root.ValueKind != JsonValueKind.Object)
+            throw new AppFault("TIMING_INVALID_RESPONSE", "The configured JSON does not contain an Assetto Corsa driver list.");
+        bool hasDrivers = root.TryGetProperty("ConnectedDrivers", out var drivers);
+        bool hasOffline = root.TryGetProperty("DisconnectedDrivers", out var offline);
+        if ((!hasDrivers && !hasOffline) ||
+            (hasDrivers && drivers.ValueKind != JsonValueKind.Array) ||
+            (hasOffline && offline.ValueKind != JsonValueKind.Array))
+            throw new AppFault("TIMING_INVALID_RESPONSE", "The configured JSON does not contain a valid Assetto Corsa driver list.");
         string ReadRoot(string key) => root.TryGetProperty(key, out var property) && property.ValueKind == JsonValueKind.String
             ? property.GetString() ?? "" : "";
         int ReadInt(JsonElement obj, string key) => obj.TryGetProperty(key, out var property) && property.TryGetInt32(out var value) ? Math.Max(0, value) : 0;
@@ -311,8 +316,8 @@ public sealed class ServerService(PortalConfigService portal, AssettoDetectionSe
             }
             return entries.OrderBy(driver => driver.Position).Take(100).ToArray();
         }
-        var connectedEntries = ParseEntries(drivers);
-        var offlineEntries = ParseEntries(offline);
+        LiveTimingDriver[] connectedEntries = hasDrivers ? ParseEntries(drivers) : [];
+        LiveTimingDriver[] offlineEntries = hasOffline ? ParseEntries(offline) : [];
         return new(serverId, ReadRoot("Name"), ReadRoot("Track").Replace('_', ' '), connectedEntries.Length,
             offlineEntries.Length, DateTimeOffset.UtcNow, connectedEntries, offlineEntries);
     }

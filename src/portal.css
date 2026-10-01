@@ -254,6 +254,10 @@
   gap: 4px;
   color: #fff;
 }
+.server-detail-option-artwork:not(:has(.server-detail-option-meta))
+  .server-detail-option-copy {
+  bottom: 14px;
+}
 .server-detail-option-copy small,
 .server-detail-section-heading > div > span {
   color: #a9b6ce;

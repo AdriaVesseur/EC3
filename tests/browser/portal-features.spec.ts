@@ -324,6 +324,10 @@ test("Servers loads only when opened, shows reported details and joins the selec
     .evaluate((element) => getComputedStyle(element).borderRadius);
   expect(trackRadius).toBe(carRadius);
   expect(trackImageRadius).toBe(carImageRadius);
+  await expect(trackCard.locator(".server-detail-option-copy")).toHaveCSS(
+    "bottom",
+    "14px",
+  );
   await expect(
     practiceDetails.getByText("practice circuit", { exact: true }),
   ).toBeVisible();
