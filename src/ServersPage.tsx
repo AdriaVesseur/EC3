@@ -56,10 +56,13 @@ export function ServersPage({
   const [copyError, setCopyError] = useState("");
   const [copiedAddress, setCopiedAddress] = useState("");
   const copyTimer = useRef<number | null>(null);
-  const [timingServerId, setTimingServerId] = useState("");
+  const [openTimingServerId, setOpenTimingServerId] = useState<string | null>(
+    null,
+  );
   const [selectedCars, setSelectedCars] = useState<Record<string, string>>({});
-  const timingSelectId = useId();
   const carSelectId = useId();
+  const timingPanelId = useId();
+  const autoOpenedTiming = useRef(false);
   const joinRequest = useRef<AbortController | null>(null);
   useEffect(
     () => () => {
@@ -92,6 +95,17 @@ export function ServersPage({
     };
   }, [connected, active]);
 
+  useEffect(() => {
+    if (!data || autoOpenedTiming.current) return;
+    autoOpenedTiming.current = true;
+    const firstEmbeddedTiming = data.servers.find(
+      (entry) =>
+        entry.server.embedTiming && httpsUrl(entry.server.liveTimingUrl),
+    );
+    if (firstEmbeddedTiming)
+      setOpenTimingServerId(firstEmbeddedTiming.server.id);
+  }, [data]);
+
   const join = async (entry: ServerStatus, carId: string) => {
     if (!connected || !active || !entry.joinAvailable || joining) return;
     const controller = new AbortController();
@@ -109,7 +123,9 @@ export function ServersPage({
       if (response.launched) {
         setJoinMessage(response.message);
       } else {
-        setJoinError("Assetto Corsa could not be started on the server. Try again.");
+        setJoinError(
+          "Assetto Corsa could not be started on the server. Try again.",
+        );
       }
     } catch (cause) {
       if (!controller.signal.aborted) {
@@ -126,14 +142,6 @@ export function ServersPage({
       }
     }
   };
-  const timingServers = (data?.servers ?? []).filter((entry) =>
-    httpsUrl(entry.server.liveTimingUrl),
-  );
-  const timingServer =
-    timingServers.find((entry) => entry.server.id === timingServerId) ??
-    timingServers[0];
-  const timingUrl = httpsUrl(timingServer?.server.liveTimingUrl);
-
   return (
     <div className="servers-page">
       <div className="section-heading">
@@ -211,7 +219,8 @@ export function ServersPage({
         <div className="portal-notice" role="status">
           <AlertTriangle size={18} aria-hidden="true" />
           <p>
-            Assetto Corsa must be installed and detected to open the game from here.{" "}
+            Assetto Corsa must be installed and detected to open the game from
+            here.{" "}
             <a
               className="text-link"
               href="https://store.steampowered.com/app/244210/Assetto_Corsa/"
@@ -223,17 +232,25 @@ export function ServersPage({
           </p>
         </div>
       )}
-      {!!data?.servers.length && data.assettoCorsaAvailable && !data.contentManagerAvailable && (
-        <div className="portal-notice" role="status">
-          <AlertTriangle size={18} aria-hidden="true" />
-          <p>
-            Content Manager’s launch protocol prepares the server session; Assetto Corsa then starts directly on track.{" "}
-            <a className="text-link" href="https://acstuff.ru/app/" target="_blank" rel="noopener noreferrer">
-              Install Content Manager <ExternalLink size={13} />
-            </a>
-          </p>
-        </div>
-      )}
+      {!!data?.servers.length &&
+        data.assettoCorsaAvailable &&
+        !data.contentManagerAvailable && (
+          <div className="portal-notice" role="status">
+            <AlertTriangle size={18} aria-hidden="true" />
+            <p>
+              Content Manager’s launch protocol prepares the server session;
+              Assetto Corsa then starts directly on track.{" "}
+              <a
+                className="text-link"
+                href="https://acstuff.ru/app/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Install Content Manager <ExternalLink size={13} />
+              </a>
+            </p>
+          </div>
+        )}
       {!!data?.servers.length && (
         <div className="servers-grid">
           {data.servers.map((entry) => {
@@ -244,6 +261,9 @@ export function ServersPage({
                 ? null
                 : (sessionNames[info.session] ?? `Session ${info.session}`);
             const availableCars = entry.availableCars ?? [];
+            const timingUrl = httpsUrl(entry.server.liveTimingUrl);
+            const timingOpen = openTimingServerId === entry.server.id;
+            const timingId = `${timingPanelId}-${entry.server.id}`;
             const selectedCar = availableCars.some(
               (car) => car.id === selectedCars[entry.server.id],
             )
@@ -346,6 +366,78 @@ export function ServersPage({
                       "Live server details are unavailable."}
                   </p>
                 )}
+                <section
+                  className="server-live-timing"
+                  aria-labelledby={`${timingId}-heading`}
+                >
+                  <div className="server-live-timing-heading">
+                    <div className="server-live-timing-title">
+                      <Timer size={17} aria-hidden="true" />
+                      <div>
+                        <span>LIVE TIMING</span>
+                        <h4 id={`${timingId}-heading`}>
+                          {timingUrl ? "Server timing" : "Not configured"}
+                        </h4>
+                      </div>
+                    </div>
+                    {timingUrl ? (
+                      <div className="server-live-timing-actions">
+                        {entry.server.embedTiming && (
+                          <Button
+                            aria-expanded={timingOpen}
+                            aria-controls={timingId}
+                            onClick={() =>
+                              setOpenTimingServerId((current) =>
+                                current === entry.server.id
+                                  ? null
+                                  : entry.server.id,
+                              )
+                            }
+                          >
+                            {timingOpen ? "Hide timing" : "Show timing"}
+                          </Button>
+                        )}
+                        <a
+                          className="text-link"
+                          href={timingUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          Open full view <ExternalLink size={13} />
+                        </a>
+                      </div>
+                    ) : (
+                      <span className="server-live-timing-hint">
+                        Add liveTimingUrl in servers.json
+                      </span>
+                    )}
+                  </div>
+                  {timingUrl && entry.server.embedTiming && (
+                    <div
+                      id={timingId}
+                      className="server-live-timing-frame-wrap"
+                      hidden={!timingOpen}
+                    >
+                      {timingOpen && (
+                        <>
+                          <iframe
+                            key={entry.server.id + timingUrl}
+                            className="live-timing-frame"
+                            src={timingUrl}
+                            title={`${entry.server.name} live timing`}
+                            sandbox="allow-scripts allow-same-origin"
+                            referrerPolicy="no-referrer"
+                            loading="lazy"
+                          />
+                          <p className="timing-help">
+                            If the timing view is unavailable here, use Open
+                            full view.
+                          </p>
+                        </>
+                      )}
+                    </div>
+                  )}
+                </section>
                 {availableCars.length > 0 ? (
                   <div className="timing-server-choice server-car-choice">
                     <label htmlFor={`${carSelectId}-${entry.server.id}`}>
@@ -371,7 +463,8 @@ export function ServersPage({
                   </div>
                 ) : entry.state === "online" && info?.cars.length ? (
                   <p className="server-unavailable">
-                    None of this server’s cars is installed. Install a permitted car from Content to join.
+                    None of this server’s cars is installed. Install a permitted
+                    car from Content to join.
                   </p>
                 ) : null}
                 {info?.passwordRequired && (
@@ -399,60 +492,6 @@ export function ServersPage({
             );
           })}
         </div>
-      )}
-      {timingServer && timingUrl && (
-        <section className="live-timing-panel">
-          <div className="section-heading">
-            <div>
-              <p className="eyebrow">Follow the session</p>
-              <h2>Live timing</h2>
-            </div>
-            <a
-              className="text-link"
-              href={timingUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Open live timing <ExternalLink size={14} />
-            </a>
-          </div>
-          <div className="timing-server-choice">
-            <label htmlFor={timingSelectId}>Server</label>
-            <select
-              id={timingSelectId}
-              value={timingServer.server.id}
-              onChange={(event) => setTimingServerId(event.target.value)}
-            >
-              {timingServers.map((entry) => (
-                <option value={entry.server.id} key={entry.server.id}>
-                  {entry.server.name}
-                </option>
-              ))}
-            </select>
-          </div>
-          {timingServer.server.embedTiming ? (
-            <>
-              <iframe
-                key={timingServer.server.id + timingUrl}
-                className="live-timing-frame"
-                src={timingUrl}
-                title={`${timingServer.server.name} live timing`}
-                sandbox="allow-scripts allow-same-origin"
-                referrerPolicy="no-referrer"
-                loading="lazy"
-              />
-              <p className="timing-help">
-                If the timing view is unavailable here, use Open live timing to
-                view it in a new window.
-              </p>
-            </>
-          ) : (
-            <div className="live-timing-external">
-              <Timer size={26} aria-hidden="true" />
-              <p>Follow {timingServer.server.name} on its live timing page.</p>
-            </div>
-          )}
-        </section>
       )}
     </div>
   );

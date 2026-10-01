@@ -24,17 +24,17 @@ Ejemplo de formato: sustituye la IP, nombre y URL por los del servidor real ante
 }
 ```
 
-| Campo | Qué debes poner |
-| --- | --- |
-| `id` | Identificador estable del servidor. |
-| `name` | Nombre que aparece en la app. |
-| `ip` | IP pública IPv4 o IPv6 del servidor, sin `http://`, sin corchetes, sin ruta y sin puerto. Es el formato recomendado para configuraciones nuevas. |
-| `host` | Campo antiguo compatible con IP o dominio. Úsalo solo si ya tienes una configuración que lo necesita; no lo combines con `ip`. Debe existir exactamente uno de los dos campos. |
-| `httpPort` | Puerto **HTTP** configurado en AC, normalmente `8081`. No es el puerto de carrera UDP/TCP, normalmente `9600`. |
-| `description` | Texto opcional de hasta 1000 caracteres. |
-| `allowLan` | Opcional, `false` por defecto. Pon `true` únicamente si quieres que los usuarios consulten una IP privada de su red local. |
-| `liveTimingUrl` | URL HTTPS opcional del servicio que proporciona el cronometraje. |
-| `embedTiming` | Opcional, `false` por defecto. Pon `true` solo si el servicio permite mostrar su web en un iframe. El enlace externo está disponible aunque el servicio bloquee el iframe. |
+| Campo           | Qué debes poner                                                                                                                                                                                                                                                 |
+| --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`            | Identificador estable del servidor.                                                                                                                                                                                                                             |
+| `name`          | Nombre que aparece en la app.                                                                                                                                                                                                                                   |
+| `ip`            | IP pública IPv4 o IPv6 del servidor, sin `http://`, sin corchetes, sin ruta y sin puerto. Es el formato recomendado para configuraciones nuevas.                                                                                                                |
+| `host`          | Campo antiguo compatible con IP o dominio. Úsalo solo si ya tienes una configuración que lo necesita; no lo combines con `ip`. Debe existir exactamente uno de los dos campos.                                                                                  |
+| `httpPort`      | Puerto **HTTP** configurado en AC, normalmente `8081`. No es el puerto de carrera UDP/TCP, normalmente `9600`.                                                                                                                                                  |
+| `description`   | Texto opcional de hasta 1000 caracteres.                                                                                                                                                                                                                        |
+| `allowLan`      | Opcional, `false` por defecto. Pon `true` únicamente si quieres que los usuarios consulten una IP privada de su red local.                                                                                                                                      |
+| `liveTimingUrl` | URL HTTPS opcional del servicio que proporciona el cronometraje.                                                                                                                                                                                                |
+| `embedTiming`   | Opcional, `false` por defecto. Pon `true` solo si el servicio permite mostrar su web en un iframe. En Servers aparece dentro de la tarjeta del servidor; solo se carga un live timing incrustado a la vez. El enlace externo sigue disponible como alternativa. |
 
 La app consulta `/INFO` en la IP y puerto HTTP que configures, por ejemplo `http://203.0.113.10:8081/INFO`. Para IPv6, el helper añade automáticamente los corchetes necesarios a la URL de consulta; en el JSON escribe únicamente la dirección, por ejemplo `"ip": "2001:db8::10"`. Además del nombre, circuito, jugadores, sesión y tiempo, `/INFO` proporciona el puerto de carrera y los coches habilitados. La app los usa al unirse: selecciona el primer coche permitido que encuentre instalado y prepara la sesión. `session` significa `0` Booking, `1` Practice, `2` Qualifying y `3` Race. `/INFO` no ofrece vueltas ni una clasificación de pilotos: esos datos deben venir de la página de cronometraje indicada en `liveTimingUrl`.
 
@@ -42,7 +42,7 @@ La app consulta `/INFO` en la IP y puerto HTTP que configures, por ejemplo `http
 
 El juego usa la instalación de Assetto Corsa que la app detectó. El botón se activa cuando el servidor responde online, publica su puerto de carrera y coches permitidos, AC está instalado y el protocolo de Content Manager está registrado. Si ninguno de los coches del servidor está instalado, instala su paquete desde **Content** antes de unirte.
 
-Para servidores LAN, `allowLan: true` admite direcciones privadas y nombres locales del campo antiguo `host`, pero siempre bloquea loopback, link-local y direcciones conocidas de metadatos cloud. `ip` siempre exige una dirección literal, nunca un dominio. Los nombres de `host` también se validan después de resolver DNS. El helper fija la conexión a las direcciones validadas, no sigue redirecciones ni proxies, consulta únicamente `/INFO`, limita cada respuesta a 256 KiB y cada consulta a ocho segundos. Un servidor que no responda no impide mostrar los demás. `liveTimingUrl` nunca se descarga desde el helper: se utiliza como enlace y, si lo activas, como iframe del navegador.
+Para servidores LAN, `allowLan: true` admite direcciones privadas y nombres locales del campo antiguo `host`, pero siempre bloquea loopback, link-local y direcciones conocidas de metadatos cloud. `ip` siempre exige una dirección literal, nunca un dominio. Los nombres de `host` también se validan después de resolver DNS. El helper fija la conexión a las direcciones validadas, no sigue redirecciones ni proxies, consulta únicamente `/INFO`, limita cada respuesta a 256 KiB y cada consulta a ocho segundos. Un servidor que no responda no impide mostrar los demás. `liveTimingUrl` nunca se descarga desde el helper: se utiliza como enlace y, si activas `embedTiming`, como iframe del navegador dentro de la tarjeta del servidor.
 
 ## sponsors.json
 
