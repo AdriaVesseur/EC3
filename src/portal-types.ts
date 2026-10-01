@@ -30,6 +30,7 @@ export type ServerInfo = {
   maxPlayers: number | null;
   session: number | null;
   timeLeft: number | null;
+  racePort: number | null;
   cars: string[];
   passwordRequired: boolean | null;
 };

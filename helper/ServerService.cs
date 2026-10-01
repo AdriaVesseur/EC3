@@ -14,6 +14,7 @@ public sealed record ServerInfo(
     int? MaxPlayers,
     int? Session,
     long? TimeLeft,
+    int? RacePort,
     string[] Cars,
     bool? PasswordRequired
 );
@@ -48,20 +49,21 @@ public sealed class ServerService(PortalConfigService portal, AssettoDetectionSe
         var configuration = await portal.Get(force, ct);
         bool available = IsLaunchable(assetto.Find());
         bool contentManagerAvailable = ContentManagerAvailable();
+        bool launchAvailable = available && contentManagerAvailable;
         if (!force && cached is { } current && configuration.Servers.SequenceEqual(cachedConfig) &&
             DateTimeOffset.UtcNow - current.CheckedAt < TimeSpan.FromSeconds(15))
-            return WithAvailability(current, available, contentManagerAvailable) with { Errors = configuration.Errors };
+            return WithAvailability(current, launchAvailable, available, contentManagerAvailable) with { Errors = configuration.Errors };
         await gate.WaitAsync(ct);
         try
         {
             if (!force && cached is { } latest && configuration.Servers.SequenceEqual(cachedConfig) &&
                 DateTimeOffset.UtcNow - latest.CheckedAt < TimeSpan.FromSeconds(15))
-                return WithAvailability(latest, available, contentManagerAvailable) with { Errors = configuration.Errors };
+                return WithAvailability(latest, launchAvailable, available, contentManagerAvailable) with { Errors = configuration.Errors };
             using var concurrency = new SemaphoreSlim(4, 4);
             var tasks = configuration.Servers.Select(async server =>
             {
                 await concurrency.WaitAsync(ct);
-                try { return await Query(server, available, ct); }
+                try { return await Query(server, launchAvailable, ct); }
                 finally { concurrency.Release(); }
             }).ToArray();
             var states = await Task.WhenAll(tasks);
@@ -85,7 +87,8 @@ public sealed class ServerService(PortalConfigService portal, AssettoDetectionSe
             using var timeout = CancellationTokenSource.CreateLinkedTokenSource(ct);
             timeout.CancelAfter(TimeSpan.FromSeconds(8));
             var info = await FetchInfo(server, timeout.Token);
-            return new(server, "online", info, null, DateTimeOffset.UtcNow, available);
+            return new(server, "online", info, null, DateTimeOffset.UtcNow,
+                available && info.RacePort is not null && info.Cars.Length > 0);
         }
         catch (Exception ex) when (!ct.IsCancellationRequested &&
             ex is AppFault or HttpRequestException or SocketException or OperationCanceledException or JsonException or IOException)
@@ -111,12 +114,15 @@ public sealed class ServerService(PortalConfigService portal, AssettoDetectionSe
             Servers = snapshot.Servers.Select(s => s with { JoinAvailable = available && s.State == "online" }).ToArray(),
         };
 
-    static ServersSnapshot WithAvailability(ServersSnapshot snapshot, bool assettoAvailable, bool contentManagerAvailable) =>
+    static ServersSnapshot WithAvailability(ServersSnapshot snapshot, bool launchAvailable, bool assettoAvailable, bool contentManagerAvailable) =>
         snapshot with
         {
             AssettoCorsaAvailable = assettoAvailable,
             ContentManagerAvailable = contentManagerAvailable,
-            Servers = snapshot.Servers.Select(s => s with { JoinAvailable = assettoAvailable && s.State == "online" }).ToArray(),
+            Servers = snapshot.Servers.Select(s => s with
+            {
+                JoinAvailable = launchAvailable && s.State == "online" && s.Info?.RacePort is not null && s.Info.Cars.Length > 0,
+            }).ToArray(),
         };
 
     static async Task<ServerInfo> FetchInfo(PortalServer server, CancellationToken ct)
@@ -171,26 +177,46 @@ public sealed class ServerService(PortalConfigService portal, AssettoDetectionSe
         var configuration = await portal.Get(ct: ct);
         var server = configuration.Servers.FirstOrDefault(s => s.Id == id)
             ?? throw new AppFault("SERVER_NOT_FOUND", "This server is not in servers.json.");
+        if (!ContentManagerAvailable())
+            throw new AppFault("CONTENT_MANAGER_NOT_FOUND", "Install Content Manager to enable its Assetto Corsa server-launch protocol.");
         string gameRoot = assetto.Require();
-        string executable = Path.Combine(gameRoot, "AssettoCorsa.exe");
-        if (!File.Exists(executable))
+        if (!File.Exists(Path.Combine(gameRoot, "AssettoCorsa.exe")))
             throw new AppFault("ASSETTO_LAUNCHER_NOT_FOUND", "Assetto Corsa was detected, but AssettoCorsa.exe is missing from the selected game folder.");
+        var info = await FetchInfo(server, ct);
         ct.ThrowIfCancellationRequested();
         try
         {
-            using var process = Process.Start(new ProcessStartInfo(executable)
+            if (info.PasswordRequired == true)
             {
-                WorkingDirectory = gameRoot,
-                UseShellExecute = true,
-            });
+                using var prompt = Process.Start(new ProcessStartInfo(BuildJoinUri(server)) { UseShellExecute = true });
+                if (prompt is null)
+                    throw new InvalidOperationException("Windows did not hand the password prompt to Content Manager.");
+                return new(server.Id, true, "This server requires a password. Content Manager has opened its server prompt.");
+            }
+            if (info.RacePort is not int racePort)
+                throw new AppFault("SERVER_RACE_PORT_MISSING", "The server did not publish its race port in /INFO.");
+            var carId = info.Cars.FirstOrDefault(car => IsInstalledCar(gameRoot, car));
+            if (carId is null)
+                throw new AppFault("SERVER_CAR_NOT_INSTALLED", "None of this server’s allowed cars is installed. Install its required car package from Content, then try again.");
+            using var process = Process.Start(new ProcessStartInfo(BuildDirectJoinUri(server, racePort, carId)) { UseShellExecute = true });
             if (process is null)
-                throw new InvalidOperationException("Windows did not start Assetto Corsa.");
-            return new(server.Id, true, "Assetto Corsa has opened. Select Online > Direct Connect in the game to finish joining.");
+                throw new InvalidOperationException("Windows did not hand the server launch request to Content Manager.");
+            return new(server.Id, true, "Starting Assetto Corsa directly on this server.");
         }
         catch (Exception ex) when (ex is System.ComponentModel.Win32Exception or InvalidOperationException)
         {
-            throw new AppFault("ASSETTO_LAUNCH_FAILED", "Windows could not open Assetto Corsa. " + ex.Message);
+            throw new AppFault("ASSETTO_LAUNCH_FAILED", "Windows could not start Assetto Corsa on this server. " + ex.Message);
         }
+    }
+
+    static bool IsInstalledCar(string gameRoot, string carId)
+    {
+        if (!Regex.IsMatch(carId, @"^[A-Za-z0-9_-]{1,160}$"))
+            return false;
+        string carsRoot = Path.GetFullPath(Path.Combine(gameRoot, "content", "cars"));
+        string carPath = Path.GetFullPath(Path.Combine(carsRoot, carId));
+        return carPath.StartsWith(carsRoot + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase)
+            && Directory.Exists(carPath);
     }
 
     static bool IsLaunchable(string? root) =>
@@ -203,6 +229,18 @@ public sealed class ServerService(PortalConfigService portal, AssettoDetectionSe
             throw new AppFault("INVALID_SERVERS", "The Content Manager join command requires a valid HTTP port.");
         return "acmanager://race/online/join?ip=" + Uri.EscapeDataString(addressText) +
             "&httpPort=" + server.HttpPort.ToString(System.Globalization.CultureInfo.InvariantCulture);
+    }
+
+    public static string BuildDirectJoinUri(PortalServer server, int racePort, string carId)
+    {
+        string addressText = ServerNetworkPolicy.ConfiguredAddress(server);
+        if (server.HttpPort is < 1 or > 65535 || racePort is < 1 or > 65535 ||
+            !Regex.IsMatch(carId, @"^[A-Za-z0-9_-]{1,160}$"))
+            throw new AppFault("INVALID_SERVERS", "Direct server joining requires a valid HTTP port, race port and car ID.");
+        return "acmanager://race/online?ip=" + Uri.EscapeDataString(addressText) +
+            "&port=" + racePort.ToString(System.Globalization.CultureInfo.InvariantCulture) +
+            "&httpPort=" + server.HttpPort.ToString(System.Globalization.CultureInfo.InvariantCulture) +
+            "&car=" + Uri.EscapeDataString(carId);
     }
 
     public static bool ContentManagerAvailable()
@@ -266,8 +304,9 @@ public sealed class ServerService(PortalConfigService portal, AssettoDetectionSe
         }
         var info = new ServerInfo(Text("name", 256), Text("track", 256),
             (int?)Number("clients", 0, 1000), (int?)Number("maxclients", 0, 1000),
-            (int?)Number("session", 0, 255), Number("timeleft", -86400, 31536000), cars, password);
-        if (info.Name is null && info.Track is null && info.CurrentPlayers is null && info.MaxPlayers is null && cars.Length == 0)
+            (int?)Number("session", 0, 255), Number("timeleft", -86400, 31536000),
+            (int?)Number("port", 1, 65535), cars, password);
+        if (info.Name is null && info.Track is null && info.CurrentPlayers is null && info.MaxPlayers is null && info.RacePort is null && cars.Length == 0)
             throw new AppFault("SERVER_INVALID_RESPONSE", "The response does not contain Assetto Corsa /INFO fields.");
         return info;
     }

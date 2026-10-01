@@ -107,7 +107,7 @@ export function ServersPage({
       if (response.launched) {
         setJoinMessage(response.message);
       } else {
-        setJoinError("Assetto Corsa could not be opened. Try again.");
+        setJoinError("Assetto Corsa could not be started on the server. Try again.");
       }
     } catch (cause) {
       if (!controller.signal.aborted) {
@@ -217,6 +217,17 @@ export function ServersPage({
               rel="noopener noreferrer"
             >
               Get Assetto Corsa <ExternalLink size={13} />
+            </a>
+          </p>
+        </div>
+      )}
+      {!!data?.servers.length && data.assettoCorsaAvailable && !data.contentManagerAvailable && (
+        <div className="portal-notice" role="status">
+          <AlertTriangle size={18} aria-hidden="true" />
+          <p>
+            Content Manager’s launch protocol prepares the server session; Assetto Corsa then starts directly on track.{" "}
+            <a className="text-link" href="https://acstuff.ru/app/" target="_blank" rel="noopener noreferrer">
+              Install Content Manager <ExternalLink size={13} />
             </a>
           </p>
         </div>
