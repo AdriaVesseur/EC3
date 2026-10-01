@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   ArrowRight,
   ArrowUpRight,
@@ -179,11 +179,6 @@ export default function App() {
   }, [connected, snapshot?.catalog]);
   const resultsSource = snapshot?.catalog?.championship.resultsUrl;
   const hasCatalog = !!snapshot?.catalog;
-  const carImages = useMemo(() => new Map(
-    (snapshot?.catalog?.manifest.content ?? [])
-      .filter((item) => item.type === "car" && item.image)
-      .map((item) => [item.id.toLowerCase(), item.image!]),
-  ), [snapshot?.catalog?.manifest.content]);
   useEffect(() => {
     if (
       !connected ||
@@ -982,7 +977,7 @@ export default function App() {
             </>
           )}
           {page === "servers" && (
-            <ServersPage connected={connected} active={page === "servers"} carImages={carImages} />
+            <ServersPage connected={connected} active={page === "servers"} />
           )}
           {page === "content" && contentTab === "downloads" && (
             <>

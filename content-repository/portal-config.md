@@ -17,6 +17,7 @@ Ejemplo de formato: sustituye la IP, nombre y URL por los del servidor real ante
       "ip": "203.0.113.10",
       "httpPort": 8081,
       "description": "Entrenamientos del campeonato",
+      "image": "https://example.com/photos/ec3-practice.jpg",
       "liveTimingUrl": "https://timing.example.com/ec3",
       "embedTiming": false
     }
@@ -32,6 +33,7 @@ Ejemplo de formato: sustituye la IP, nombre y URL por los del servidor real ante
 | `host`          | Campo antiguo compatible con IP o dominio. Úsalo solo si ya tienes una configuración que lo necesita; no lo combines con `ip`. Debe existir exactamente uno de los dos campos.                                                                                  |
 | `httpPort`      | Puerto **HTTP** configurado en AC, normalmente `8081`. No es el puerto de carrera UDP/TCP, normalmente `9600`.                                                                                                                                                  |
 | `description`   | Texto opcional de hasta 1000 caracteres.                                                                                                                                                                                                                        |
+| `image`         | Foto opcional del servidor, mediante una URL pública HTTPS. Se muestra en su tarjeta; si se omite o no carga, aparece la foto general de carreras.                                                                                                               |
 | `allowLan`      | Opcional, `false` por defecto. Pon `true` únicamente si quieres que los usuarios consulten una IP privada de su red local.                                                                                                                                      |
 | `liveTimingUrl` | URL opcional de la página de cronometraje (HTTPS) o de una API leaderboard en JSON. Para una API JSON por HTTP se admite únicamente una IP pública literal; HTTPS también admite dominios públicos.                                                                                                                                                                                                |
 | `embedTiming`   | Opcional, `false` por defecto. Pon `true` para incrustar una página HTTPS que permita iframes. Si `liveTimingUrl` acaba en `.json`, la app consulta la API desde el helper y muestra tablas separadas de pilotos conectados y desconectados, con posición, coche, vueltas, tiempos y última conexión; no necesita `embedTiming`. El enlace externo sigue disponible. |
@@ -44,7 +46,7 @@ El juego usa la instalación de Assetto Corsa que la app detectó. El botón se 
 
 Para servidores LAN, `allowLan: true` admite direcciones privadas y nombres locales del campo antiguo `host`, pero siempre bloquea loopback, link-local y direcciones conocidas de metadatos cloud. `ip` siempre exige una dirección literal, nunca un dominio. Los nombres de `host` también se validan después de resolver DNS. El helper fija la conexión a las direcciones validadas, no sigue redirecciones ni proxies, consulta `/INFO` y la API JSON de timing configurada, limita las respuestas a 256 KiB para `/INFO` y 2 MiB para timing, y limita cada consulta a ocho segundos. Un servidor que no responda no impide mostrar los demás. Las páginas de cronometraje HTTPS se abren como enlace o iframe; las URL `.json` se consultan desde el helper para evitar bloqueos CORS del navegador y se muestran como una clasificación en vivo.
 
-Las tarjetas de piloto usan la foto `image` del paquete de coche cuando su `id` coincide con `CarModel` enviado por el servidor. Si no hay coincidencia, usan la foto de carrera de EC3 como fondo. Al pulsar una tarjeta se abre el detalle con equipo, skin, neumáticos, tiempos, vueltas, ping, split y última conexión cuando está disponible.
+La página de servidores muestra cada servidor como una tarjeta de foto. Al pulsarla aparecen su dirección, descripción, estado, circuito, sesión, pilotos, tiempo, live timing, selección de coche y botón para unirse. Usa `image` para poner una foto propia en cada tarjeta.
 
 ## sponsors.json
 

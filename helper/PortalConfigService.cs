@@ -14,7 +14,8 @@ public sealed record PortalServer(
     bool AllowLan = false,
     string? LiveTimingUrl = null,
     bool EmbedTiming = false,
-    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? Ip = null
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? Ip = null,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? Image = null
 );
 
 public sealed record PortalSponsor(string Id, string Name, string Logo, string Url, int Order = 0);
@@ -134,6 +135,8 @@ public sealed class PortalConfigService(ConfigService config)
             ValidateId(server.Id, ids, "INVALID_SERVERS");
             ValidateText(server.Name, 120, false, "Server name", "INVALID_SERVERS");
             ValidateText(server.Description, 1000, true, "Server description", "INVALID_SERVERS");
+            if (server.Image is not null)
+                ValidateHttpsUrl(server.Image, "INVALID_SERVERS");
             ServerNetworkPolicy.ConfiguredAddress(server);
             if (server.HttpPort is < 1 or > 65535)
                 throw new AppFault("INVALID_SERVERS", "httpPort must be between 1 and 65535.");

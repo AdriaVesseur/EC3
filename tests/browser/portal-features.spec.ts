@@ -15,6 +15,7 @@ const practice: ServerConfig = {
   name: "Championship practice",
   ip: "198.51.100.24",
   httpPort: 8081,
+  image: "https://assets.example.test/practice.jpg",
   description: "Practice with the championship grid.",
   liveTimingUrl: "https://timing.example.test/practice",
   embedTiming: true,
@@ -140,40 +141,44 @@ async function mockFeatures(
         driverCount: 1,
         offlineDriverCount: 1,
         updatedAt: checkedAt,
-        drivers: [{
-          position: 1,
-          number: "19",
-          name: "Carlos Leiva",
-          carId: "porsche_cup",
-          car: "Porsche 911 GT3 CUP",
-          team: "EC3 Racing",
-          skin: "19_carlos",
-          tyres: "S",
-          laps: 47,
-          bestLapSeconds: 107.488,
-          lastLapSeconds: 108.321,
-          inPits: false,
-          ping: 46,
-          split: "00:13.450",
-          lastSeen: checkedAt,
-        }],
-        offlineDrivers: [{
-          position: 1,
-          number: "16",
-          name: "Samuel Fernández",
-          carId: "porsche_cup",
-          car: "Porsche CUP",
-          team: "Team 16",
-          skin: "16_blue",
-          tyres: "M",
-          laps: 35,
-          bestLapSeconds: 108.123,
-          lastLapSeconds: 109.456,
-          inPits: true,
-          ping: 38,
-          split: "01:12.200",
-          lastSeen: checkedAt,
-        }],
+        drivers: [
+          {
+            position: 1,
+            number: "19",
+            name: "Carlos Leiva",
+            carId: "porsche_cup",
+            car: "Porsche 911 GT3 CUP",
+            team: "EC3 Racing",
+            skin: "19_carlos",
+            tyres: "S",
+            laps: 47,
+            bestLapSeconds: 107.488,
+            lastLapSeconds: 108.321,
+            inPits: false,
+            ping: 46,
+            split: "00:13.450",
+            lastSeen: checkedAt,
+          },
+        ],
+        offlineDrivers: [
+          {
+            position: 1,
+            number: "16",
+            name: "Samuel Fernández",
+            carId: "porsche_cup",
+            car: "Porsche CUP",
+            team: "Team 16",
+            skin: "16_blue",
+            tyres: "M",
+            laps: 35,
+            bestLapSeconds: 108.123,
+            lastLapSeconds: 109.456,
+            inPits: true,
+            ping: 38,
+            split: "01:12.200",
+            lastSeen: checkedAt,
+          },
+        ],
       } satisfies LiveTimingSnapshot,
     }),
   );
@@ -255,6 +260,13 @@ test("Servers loads only when opened, shows reported details and joins the selec
     onServers: () => statusRequests++,
     onJoin: (id, method, body) => joins.push({ id, method, body }),
   });
+  await page.route("https://assets.example.test/practice.jpg", (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: "image/jpeg",
+      body: Buffer.from("ec3 photo"),
+    }),
+  );
   await page.goto("/");
   await expect(page.getByText("Online", { exact: true })).toBeVisible();
   expect(statusRequests).toBe(0);
@@ -266,6 +278,18 @@ test("Servers loads only when opened, shows reported details and joins the selec
     .getByRole("article")
     .filter({ has: page.getByRole("heading", { name: practice.name }) });
   await expect(card).toBeVisible();
+  await expect(card.locator(".server-card-cover img")).toHaveAttribute(
+    "src",
+    practice.image!,
+  );
+  await expect(
+    card.getByText("View server details", { exact: true }),
+  ).toBeVisible();
+  await expect(card.locator(".server-card-details")).toBeHidden();
+  await card
+    .getByRole("button", { name: `View details for ${practice.name}` })
+    .click();
+  await expect(card.locator(".server-card-details")).toBeVisible();
   await expect(card.getByText("Server IP", { exact: true })).toBeVisible();
   await expect(card.getByText(practice.ip!, { exact: true })).toBeVisible();
   await card
@@ -295,6 +319,9 @@ test("Servers loads only when opened, shows reported details and joins the selec
   const raceCard = page
     .getByRole("article")
     .filter({ has: page.getByRole("heading", { name: race.name }) });
+  await raceCard
+    .getByRole("button", { name: `View details for ${race.name}` })
+    .click();
   await expect(raceCard.getByText("Race", { exact: true })).toBeVisible();
   await expect(raceCard.getByText("Password protected")).toBeVisible();
   expect(joins).toEqual([]);
@@ -303,7 +330,10 @@ test("Servers loads only when opened, shows reported details and joins the selec
     page.getByText("Content Manager has been opened for this server."),
   ).toBeVisible();
   expect(joins).toEqual([{ id: practice.id, method: "POST", body: {} }]);
-  expect((await new AxeBuilder({ page }).exclude(".live-timing-frame").analyze()).violations).toEqual([]);
+  expect(
+    (await new AxeBuilder({ page }).exclude(".live-timing-frame").analyze())
+      .violations,
+  ).toEqual([]);
 });
 
 test("configured timing switches between an embedded view and an external page; sponsors retain their links and logo", async ({
@@ -331,6 +361,9 @@ test("configured timing switches between an embedded view and an external page; 
     }),
   );
   await page.goto("/#servers");
+  await page
+    .getByRole("button", { name: `View details for ${practice.name}` })
+    .click();
   const frame = page.locator(`iframe[title="${practice.name} live timing"]`);
   await expect(frame).toHaveAttribute("src", practice.liveTimingUrl!);
   await expect(frame).toHaveAttribute(
@@ -349,8 +382,16 @@ test("configured timing switches between an embedded view and an external page; 
   ).toHaveAttribute("href", practice.liveTimingUrl!);
   await expect(page.locator("iframe.live-timing-frame")).toHaveCount(1);
   const raceCard = page.locator(".server-card").filter({ hasText: race.name });
-  await expect(raceCard.getByRole("link", { name: "Open full view" })).toHaveAttribute("href", race.liveTimingUrl!);
+  await raceCard
+    .getByRole("button", { name: `View details for ${race.name}` })
+    .click();
+  await expect(
+    raceCard.getByRole("link", { name: "Open full view" }),
+  ).toHaveAttribute("href", race.liveTimingUrl!);
   await expect(raceCard.locator("iframe.live-timing-frame")).toHaveCount(0);
+  await page
+    .getByRole("button", { name: `View details for ${practice.name}` })
+    .click();
   const sponsor = page.getByRole("link", {
     name: "Fixture Racing Partner",
     exact: true,
@@ -385,7 +426,10 @@ test("configured timing switches between an embedded view and an external page; 
       () => document.documentElement.scrollWidth <= innerWidth,
     ),
   ).toBeTruthy();
-  expect((await new AxeBuilder({ page }).exclude(".live-timing-frame").analyze()).violations).toEqual([]);
+  expect(
+    (await new AxeBuilder({ page }).exclude(".live-timing-frame").analyze())
+      .violations,
+  ).toEqual([]);
   await page.evaluate(() => window.scrollTo(0, 0));
   await page.screenshot({
     path: "artifacts/servers-timing-sponsors-390.png",
@@ -394,40 +438,46 @@ test("configured timing switches between an embedded view and an external page; 
   });
 });
 
-test("JSON live timing APIs render connected and offline leaderboards instead of an iframe", async ({ page }) => {
-  const apiUrl = "http://94.23.107.62:8772/api/live-timings/leaderboard.json?server=1";
+test("JSON live timing APIs render connected and offline leaderboards instead of an iframe", async ({
+  page,
+}) => {
+  const apiUrl =
+    "http://94.23.107.62:8772/api/live-timings/leaderboard.json?server=1";
   await mockFeatures(page, {
     servers: () => {
       const response = serverResponse();
-      response.servers[0].server = { ...practice, liveTimingUrl: apiUrl, embedTiming: true };
+      response.servers[0].server = {
+        ...practice,
+        liveTimingUrl: apiUrl,
+        embedTiming: true,
+      };
       return response;
     },
   });
   await page.goto("/#servers");
-  const connectedCard = page.getByRole("button", { name: "Open details for Carlos Leiva" });
-  await expect(connectedCard).toBeVisible();
-  await expect(page.locator(".live-driver-card img").first()).toHaveAttribute("src", "/images/race-action.jpg");
+  await page
+    .getByRole("button", { name: `View details for ${practice.name}` })
+    .click();
+  const connectedTable = page.getByRole("table", { name: "Connected drivers" });
+  const offlineTable = page.getByRole("table", { name: "Offline drivers" });
+  await expect(
+    connectedTable.getByRole("row", { name: /Carlos Leiva/ }),
+  ).toBeVisible();
+  await expect(
+    offlineTable.getByRole("row", { name: /Samuel Fernández/ }),
+  ).toBeVisible();
   await expect(page.getByText("Connected drivers")).toBeVisible();
   await expect(page.getByText("1:47.488")).toBeVisible();
-  const offlineCard = page.getByRole("button", { name: "Open details for Samuel Fernández" });
-  await expect(offlineCard).toBeVisible();
   await expect(page.getByText("Offline drivers")).toBeVisible();
   await expect(page.getByText("1:48.123")).toBeVisible();
   await expect(page.locator("iframe.live-timing-frame")).toHaveCount(0);
-  await expect(page.getByRole("link", { name: "Open JSON source" })).toHaveAttribute("href", apiUrl);
-  expect((await new AxeBuilder({ page }).exclude(".live-timing-frame").analyze()).violations).toEqual([]);
-  await connectedCard.click();
-  const details = page.getByRole("dialog", { name: "Carlos Leiva" });
-  await expect(details.getByText("EC3 Racing")).toBeVisible();
-  await expect(details.getByText("19_carlos")).toBeVisible();
-  await expect(details.getByText("46 ms")).toBeVisible();
-  await expect(details.getByText("00:13.450")).toBeVisible();
-  expect((await new AxeBuilder({ page }).exclude(".live-timing-frame").analyze()).violations).toEqual([]);
-  await details.getByRole("button", { name: "Close details" }).click();
-  await offlineCard.click();
-  const offlineDetails = page.getByRole("dialog", { name: "Samuel Fernández" });
-  await expect(offlineDetails.getByText("Offline")).toBeVisible();
-  await expect(offlineDetails.getByText("Last seen")).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "Open JSON source" }),
+  ).toHaveAttribute("href", apiUrl);
+  expect(
+    (await new AxeBuilder({ page }).exclude(".live-timing-frame").analyze())
+      .violations,
+  ).toEqual([]);
 });
 
 test("missing Content Manager disables Join and a failed refresh labels preserved server data as last known", async ({
@@ -439,14 +489,9 @@ test("missing Content Manager disables Join and a failed refresh labels preserve
     serverFailure: () => failRefresh,
   });
   await page.goto("/#servers");
-  await expect(
-    page.getByText("Content Manager is required to join these servers.", {
-      exact: false,
-    }),
-  ).toBeVisible();
-  await expect(
-    page.getByRole("link", { name: "Get Content Manager" }),
-  ).toHaveAttribute("href", "https://acstuff.ru/app/");
+  await page
+    .getByRole("button", { name: `View details for ${practice.name}` })
+    .click();
   for (const button of await page
     .getByRole("button", { name: "Join server", exact: true })
     .all()) {

@@ -11,6 +11,11 @@ public static class PortalTests
             "Open practice", LiveTimingUrl: "https://timing.example.com/ec3", EmbedTiming: true);
         var parsed = PortalConfigService.ParseServers(ServerJson(server));
         assert(parsed.Length == 1 && parsed[0] == server, "portal preserves configured server identity, HTTP port and timing options");
+        var photoServer = server with { Image = "https://images.example.com/ec3-practice.jpg" };
+        assert(PortalConfigService.ParseServers(ServerJson(photoServer))[0] == photoServer,
+            "server cards preserve their configured HTTPS photo");
+        reject(() => PortalConfigService.ParseServers(ServerJson(server with { Image = "http://images.example.com/ec3-practice.jpg" })),
+            "server card photos require HTTPS");
         assert(PortalConfigService.ParseServers("{\"servers\":[]}").Length == 0 &&
             PortalConfigService.ParseSponsors("{\"sponsors\":[]}").Length == 0, "empty portal configurations are valid");
         assert(ServerService.BuildJoinUri(server) ==

@@ -6,6 +6,7 @@ export type ServerConfig = {
   host?: string | null;
   httpPort: number;
   description?: string | null;
+  image?: string | null;
   allowLan?: boolean;
   liveTimingUrl?: string | null;
   embedTiming?: boolean;
