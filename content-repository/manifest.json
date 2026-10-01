@@ -22,7 +22,7 @@
       "id": "paul-ricard",
       "name": "Paul Ricard",
       "type": "track",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "required": true,
       "icon": "https://freesvg.org/img/RaceCircuitPaulRicard.png",
       "image": "https://raw.githubusercontent.com/AdriaVesseur/EC3/main/content-repository/images/paul-ricard.png",
