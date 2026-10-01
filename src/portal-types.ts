@@ -59,11 +59,17 @@ export type LiveTimingDriver = {
   position: number;
   number: string;
   name: string;
+  carId: string;
   car: string;
+  team: string;
+  skin: string;
+  tyres: string;
   laps: number;
   bestLapSeconds: number | null;
   lastLapSeconds: number | null;
   inPits: boolean;
+  ping: number | null;
+  split: string;
   lastSeen: string;
 };
 export type LiveTimingSnapshot = {

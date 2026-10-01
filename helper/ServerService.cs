@@ -21,7 +21,7 @@ public sealed record ServerInfo(
 public sealed record ServerError(string Code, string Message);
 public sealed record ServerCarOption(string Id, string Name);
 public sealed record ServerJoinRequest(string? CarId);
-public sealed record LiveTimingDriver(int Position, string Number, string Name, string Car, int Laps, double? BestLapSeconds, double? LastLapSeconds, bool InPits, string LastSeen);
+public sealed record LiveTimingDriver(int Position, string Number, string Name, string CarId, string Car, string Team, string Skin, string Tyres, int Laps, double? BestLapSeconds, double? LastLapSeconds, bool InPits, int? Ping, string Split, string LastSeen);
 public sealed record LiveTimingSnapshot(string ServerId, string Session, string Track, int DriverCount, int OfflineDriverCount, DateTimeOffset UpdatedAt, LiveTimingDriver[] Drivers, LiveTimingDriver[] OfflineDrivers);
 public sealed record ServerStatus(
     PortalServer Server,
@@ -299,12 +299,15 @@ public sealed class ServerService(PortalConfigService portal, AssettoDetectionSe
                 JsonElement car = default;
                 bool hasCar = carModel.Length > 0 && entry.TryGetProperty("Cars", out var cars) && cars.ValueKind == JsonValueKind.Object && cars.TryGetProperty(carModel, out car);
                 string lastSeen = entry.TryGetProperty("LastSeen", out var seen) && seen.ValueKind == JsonValueKind.String ? seen.GetString() ?? "" : "";
+                int? ping = entry.TryGetProperty("Ping", out var pingValue) && pingValue.TryGetInt32(out var pingMs) && pingMs >= 0 ? pingMs : null;
+                string split = entry.TryGetProperty("Split", out var splitValue) && splitValue.ValueKind == JsonValueKind.String ? splitValue.GetString() ?? "" : "";
                 entries.Add(new(position > 0 ? position : entries.Count + 1,
                     ReadInt(carInfo, "RaceNumber").ToString(),
-                    ReadCar("DriverName"), ReadCar("CarName") is { Length: > 0 } carName ? carName : carModel,
+                    ReadCar("DriverName"), carModel, ReadCar("CarName") is { Length: > 0 } carName ? carName : carModel,
+                    ReadCar("TeamName"), ReadCar("CarSkin"), ReadCar("Tyres"),
                     ReadInt(entry, "TotalNumLaps"), hasCar ? ReadLap(car, "BestLap") : null,
                     hasCar ? ReadLap(car, "LastLap") : null,
-                    entry.TryGetProperty("IsInPits", out var pits) && pits.ValueKind == JsonValueKind.True, lastSeen));
+                    entry.TryGetProperty("IsInPits", out var pits) && pits.ValueKind == JsonValueKind.True, ping, split, lastSeen));
             }
             return entries.OrderBy(driver => driver.Position).Take(100).ToArray();
         }

@@ -44,6 +44,8 @@ El juego usa la instalación de Assetto Corsa que la app detectó. El botón se 
 
 Para servidores LAN, `allowLan: true` admite direcciones privadas y nombres locales del campo antiguo `host`, pero siempre bloquea loopback, link-local y direcciones conocidas de metadatos cloud. `ip` siempre exige una dirección literal, nunca un dominio. Los nombres de `host` también se validan después de resolver DNS. El helper fija la conexión a las direcciones validadas, no sigue redirecciones ni proxies, consulta `/INFO` y la API JSON de timing configurada, limita las respuestas a 256 KiB para `/INFO` y 2 MiB para timing, y limita cada consulta a ocho segundos. Un servidor que no responda no impide mostrar los demás. Las páginas de cronometraje HTTPS se abren como enlace o iframe; las URL `.json` se consultan desde el helper para evitar bloqueos CORS del navegador y se muestran como una clasificación en vivo.
 
+Las tarjetas de piloto usan la foto `image` del paquete de coche cuando su `id` coincide con `CarModel` enviado por el servidor. Si no hay coincidencia, usan la foto de carrera de EC3 como fondo. Al pulsar una tarjeta se abre el detalle con equipo, skin, neumáticos, tiempos, vueltas, ping, split y última conexión cuando está disponible.
+
 ## sponsors.json
 
 Ejemplo de formato: sustituye todos los valores por los de tus patrocinadores.

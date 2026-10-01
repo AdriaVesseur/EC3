@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, useState } from "react";
 import {
+  ArrowUpRight,
   AlertTriangle,
   Check,
   Copy,
@@ -15,7 +16,7 @@ import {
   UsersRound,
 } from "lucide-react";
 import { api } from "./api";
-import { Badge, Button, EmptyState } from "./components";
+import { Badge, Button, EmptyState, Modal } from "./components";
 import {
   httpsUrl,
   isJsonTimingUrl,
@@ -49,36 +50,87 @@ const lapTime = (seconds: number | null) => {
   return `${Math.floor(seconds / 60)}:${(seconds % 60).toFixed(3).padStart(6, "0")}`;
 };
 
-function TimingDriverTable({
+function TimingDriverCard({
+  driver,
+  offline,
+  carImages,
+  onOpen,
+}: {
+  driver: LiveTimingDriver;
+  offline: boolean;
+  carImages: ReadonlyMap<string, string>;
+  onOpen: () => void;
+}) {
+  const [imageFailed, setImageFailed] = useState(false);
+  const configuredImage = carImages.get(driver.carId.toLowerCase());
+  const image = imageFailed ? "/images/race-action.jpg" : configuredImage ?? "/images/race-action.jpg";
+  return (
+    <article className="live-driver-card">
+      <button
+        type="button"
+        className="live-driver-card-open"
+        aria-label={`Open details for ${driver.name || "driver"}`}
+        aria-haspopup="dialog"
+        onClick={onOpen}
+      />
+      <div className="content-card-artwork live-driver-artwork">
+        <img className="content-card-photo" src={image} alt="" loading="lazy" decoding="async" referrerPolicy="no-referrer" onError={() => setImageFailed(true)} />
+        <div className="content-card-shade" aria-hidden="true" />
+        <div className="live-driver-card-top">
+          <span className="live-driver-number">{driver.number ? `#${driver.number}` : "Driver"}</span>
+          <span className={`live-driver-status ${offline ? "offline" : "online"}`}>{offline ? "Offline" : driver.inPits ? "In pits" : "On track"}</span>
+        </div>
+        <div className="live-driver-card-title">
+          <span className="live-driver-position">P{driver.position}</span>
+          <p className="live-driver-card-name">{driver.name || "Unknown driver"}</p>
+        </div>
+      </div>
+      <div className="live-driver-card-body">
+        <p className="live-driver-car">{driver.car || "Car unavailable"}</p>
+        <dl className="live-driver-card-metrics">
+          <div><dt>Laps</dt><dd>{driver.laps}</dd></div>
+          <div><dt>Best lap</dt><dd>{lapTime(driver.bestLapSeconds)}</dd></div>
+          <div><dt>{offline ? "Last seen" : "Last lap"}</dt><dd>{offline ? (driver.lastSeen ? checkedTime(driver.lastSeen) : "—") : lapTime(driver.lastLapSeconds)}</dd></div>
+        </dl>
+        <span className="live-driver-details-link">View all details <ArrowUpRight size={14} aria-hidden="true" /></span>
+      </div>
+    </article>
+  );
+}
+
+function TimingDriverGrid({
   title,
   drivers,
   offline = false,
+  carImages,
+  onOpen,
 }: {
   title: string;
   drivers: LiveTimingDriver[];
   offline?: boolean;
+  carImages: ReadonlyMap<string, string>;
+  onOpen: (driver: LiveTimingDriver, offline: boolean) => void;
 }) {
   return (
-    <section className="live-timing-group" aria-label={title}>
+    <div className="live-timing-group">
       <div className="live-timing-group-heading">
-        <h5>{title}</h5>
+        <p>{title}</p>
         <span>{drivers.length}</span>
       </div>
       {drivers.length ? (
-        <div className="live-timing-table-wrap">
-          <table className="live-timing-table" aria-label={title}>
-            <thead><tr><th>Pos</th><th>No.</th><th>Driver</th><th>Car</th><th>Laps</th><th>Best</th>{offline ? <th>Last seen</th> : <th>Last</th>}</tr></thead>
-            <tbody>{drivers.map((driver) => (
-              <tr key={`${driver.position}-${driver.number}-${driver.name}`}>
-                <td>{driver.position}</td><td>{driver.number || "—"}</td><td>{driver.name || "Unknown driver"}</td>
-                <td>{driver.car || "—"}</td><td>{driver.laps}</td><td>{lapTime(driver.bestLapSeconds)}</td>
-                <td>{offline ? (driver.lastSeen ? checkedTime(driver.lastSeen) : "—") : lapTime(driver.lastLapSeconds)}</td>
-              </tr>
-            ))}</tbody>
-          </table>
+        <div className="live-timing-driver-grid">
+          {drivers.map((driver) => (
+            <TimingDriverCard
+              key={`${driver.position}-${driver.number}-${driver.name}`}
+              driver={driver}
+              offline={offline}
+              carImages={carImages}
+              onOpen={() => onOpen(driver, offline)}
+            />
+          ))}
         </div>
       ) : <p className="timing-data-empty">{offline ? "No offline drivers." : "No drivers are currently connected."}</p>}
-    </section>
+    </div>
   );
 }
 
@@ -86,15 +138,18 @@ function LiveTimingData({
   serverId,
   connected,
   active,
+  carImages,
 }: {
   serverId: string;
   connected: boolean;
   active: boolean;
+  carImages: ReadonlyMap<string, string>;
 }) {
   const [data, setData] = useState<LiveTimingSnapshot | null>(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [selectedDriver, setSelectedDriver] = useState<{ driver: LiveTimingDriver; offline: boolean } | null>(null);
   useEffect(() => {
     if (!connected || !active) {
       setLoading(false);
@@ -143,10 +198,34 @@ function LiveTimingData({
       </div>
       {error && <p className="timing-data-error" role="status">{data ? "Showing the last timing update. " : ""}{error}</p>}
       {data && <>
-        <TimingDriverTable title="Connected drivers" drivers={data.drivers} />
-        <TimingDriverTable title="Offline drivers" drivers={data.offlineDrivers} offline />
+        <TimingDriverGrid title="Connected drivers" drivers={data.drivers} carImages={carImages} onOpen={(driver, offline) => setSelectedDriver({ driver, offline })} />
+        <TimingDriverGrid title="Offline drivers" drivers={data.offlineDrivers} offline carImages={carImages} onOpen={(driver, offline) => setSelectedDriver({ driver, offline })} />
       </>}
       {data && <p className="timing-data-updated">Updated {checkedTime(data.updatedAt)} · refreshes every 15 seconds</p>}
+      {selectedDriver && data && (
+        <Modal title={selectedDriver.driver.name || "Driver details"} onClose={() => setSelectedDriver(null)}>
+          <div className="live-driver-detail">
+            <p className={`live-driver-detail-status ${selectedDriver.offline ? "offline" : "online"}`}>
+              {selectedDriver.offline ? "Offline" : selectedDriver.driver.inPits ? "In pits" : "On track"}
+              <span>{data.session}{data.track ? ` · ${data.track}` : ""}</span>
+            </p>
+            <dl className="live-driver-detail-grid">
+              <div><dt>Position</dt><dd>P{selectedDriver.driver.position}</dd></div>
+              <div><dt>Race number</dt><dd>{selectedDriver.driver.number || "—"}</dd></div>
+              <div><dt>Team</dt><dd>{selectedDriver.driver.team || "—"}</dd></div>
+              <div><dt>Car</dt><dd>{selectedDriver.driver.car || "—"}</dd></div>
+              <div><dt>Skin</dt><dd>{selectedDriver.driver.skin || "—"}</dd></div>
+              <div><dt>Tyres</dt><dd>{selectedDriver.driver.tyres || "—"}</dd></div>
+              <div><dt>Completed laps</dt><dd>{selectedDriver.driver.laps}</dd></div>
+              <div><dt>Best lap</dt><dd>{lapTime(selectedDriver.driver.bestLapSeconds)}</dd></div>
+              <div><dt>Last lap</dt><dd>{lapTime(selectedDriver.driver.lastLapSeconds)}</dd></div>
+              <div><dt>Current split</dt><dd>{selectedDriver.driver.split || "—"}</dd></div>
+              <div><dt>Ping</dt><dd>{selectedDriver.driver.ping == null ? "—" : `${selectedDriver.driver.ping} ms`}</dd></div>
+              {selectedDriver.offline && <div><dt>Last seen</dt><dd>{selectedDriver.driver.lastSeen ? checkedTime(selectedDriver.driver.lastSeen) : "—"}</dd></div>}
+            </dl>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 }
@@ -154,9 +233,11 @@ function LiveTimingData({
 export function ServersPage({
   connected,
   active = true,
+  carImages = new Map(),
 }: {
   connected: boolean;
   active?: boolean;
+  carImages?: ReadonlyMap<string, string>;
 }) {
   const { data, loading, error, refresh, stale } =
     usePortalResource<ServersResponse>("/servers", connected, active, 30000);
@@ -478,18 +559,15 @@ export function ServersPage({
                       "Live server details are unavailable."}
                   </p>
                 )}
-                <section
-                  className="server-live-timing"
-                  aria-labelledby={`${timingId}-heading`}
-                >
+                <section className="server-live-timing" aria-label={`Live timing for ${entry.server.name}`}>
                   <div className="server-live-timing-heading">
                     <div className="server-live-timing-title">
                       <Timer size={17} aria-hidden="true" />
                       <div>
                         <span>LIVE TIMING</span>
-                        <h4 id={`${timingId}-heading`}>
+                        <p className="server-live-timing-name">
                           {timingUrl ? "Server timing" : "Not configured"}
-                        </h4>
+                        </p>
                       </div>
                     </div>
                     {timingUrl ? (
@@ -525,7 +603,7 @@ export function ServersPage({
                     )}
                   </div>
                   {timingUrl && apiTiming && (
-                    <LiveTimingData serverId={entry.server.id} connected={connected} active={active} />
+                    <LiveTimingData serverId={entry.server.id} connected={connected} active={active} carImages={carImages} />
                   )}
                   {timingUrl && !apiTiming && entry.server.embedTiming && (
                     <div
