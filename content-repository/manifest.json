@@ -33,13 +33,27 @@
       ]
     },
     {
+      "id": "kyalami",
+      "name": "Kyalami",
+      "type": "track",
+      "version": "1.0.0",
+      "required": true,
+      "icon": "https://www.kyalamigrandprixcircuit.com/wp-content/uploads/2025/06/Kyalami-web-elements-800-x-800-px-1024x1024.webp",
+      "image": "https://traxion.gg/wp-content/uploads/2026/07/Kyalami-Assetto-Corsa-EVO-01-1024x576.jpg",
+      "download": "https://github.com/AdriaVesseur/EC3/releases/download/Kyalami/Kyalami.rar",
+      "description": "Circuito Paul Ricard para el campeonato.",
+      "changelog": [
+        "Primera versión del circuito."
+      ]
+    },
+    {
       "id": "p992",
       "name": "Porsche Cup 992",
       "type": "car",
       "version": "1.0.0",
       "required": true,
       "icon": "https://cdn.webshopapp.com/shops/347118/files/455175240/image.jpg",
-      "image": "https://racemarket.net/oc-content/uploads/51/60079.jpg",
+      "image": "https://i.imgur.com/YmC0rNM.jpeg",
       "download": "https://github.com/AdriaVesseur/EC3/releases/download/992/Porsche.992.Cup.zip",
       "description": "Coche de prueba para validar la instalación automática desde su ZIP.",
       "changelog": [
