@@ -7,7 +7,7 @@ namespace Eurocup3;
 
 public static class Program
 {
-    public const string Version = "1.3.3";
+    public const string Version = "1.3.4";
 
     public static async Task Main(string[] args)
     {
@@ -196,8 +196,8 @@ public static class Program
         );
         app.MapPost(
             "/api/servers/{id}/join",
-            async (string id, ServerService servers, CancellationToken ct) =>
-                await servers.Join(id, ct)
+            async (string id, ServerJoinRequest request, ServerService servers, CancellationToken ct) =>
+                await servers.Join(id, request.CarId, ct)
         );
         app.MapGet(
             "/api/packages/{id}",

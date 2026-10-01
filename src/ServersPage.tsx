@@ -57,7 +57,9 @@ export function ServersPage({
   const [copiedAddress, setCopiedAddress] = useState("");
   const copyTimer = useRef<number | null>(null);
   const [timingServerId, setTimingServerId] = useState("");
+  const [selectedCars, setSelectedCars] = useState<Record<string, string>>({});
   const timingSelectId = useId();
+  const carSelectId = useId();
   const joinRequest = useRef<AbortController | null>(null);
   useEffect(
     () => () => {
@@ -90,7 +92,7 @@ export function ServersPage({
     };
   }, [connected, active]);
 
-  const join = async (entry: ServerStatus) => {
+  const join = async (entry: ServerStatus, carId: string) => {
     if (!connected || !active || !entry.joinAvailable || joining) return;
     const controller = new AbortController();
     joinRequest.current = controller;
@@ -100,7 +102,7 @@ export function ServersPage({
     try {
       const response = await api<ServerJoinResponse>(
         `/servers/${encodeURIComponent(entry.server.id)}/join`,
-        {},
+        { carId },
         { signal: controller.signal },
       );
       if (controller.signal.aborted) return;
@@ -241,6 +243,12 @@ export function ServersPage({
               info?.session == null
                 ? null
                 : (sessionNames[info.session] ?? `Session ${info.session}`);
+            const availableCars = entry.availableCars ?? [];
+            const selectedCar = availableCars.some(
+              (car) => car.id === selectedCars[entry.server.id],
+            )
+              ? selectedCars[entry.server.id]
+              : (availableCars[0]?.id ?? "");
             return (
               <article className="server-card" key={entry.server.id}>
                 <div className="server-card-heading">
@@ -338,6 +346,34 @@ export function ServersPage({
                       "Live server details are unavailable."}
                   </p>
                 )}
+                {availableCars.length > 0 ? (
+                  <div className="timing-server-choice server-car-choice">
+                    <label htmlFor={`${carSelectId}-${entry.server.id}`}>
+                      Car for this session
+                    </label>
+                    <select
+                      id={`${carSelectId}-${entry.server.id}`}
+                      value={selectedCar}
+                      disabled={!!joining}
+                      onChange={(event) =>
+                        setSelectedCars((current) => ({
+                          ...current,
+                          [entry.server.id]: event.target.value,
+                        }))
+                      }
+                    >
+                      {availableCars.map((car) => (
+                        <option value={car.id} key={car.id}>
+                          {car.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                ) : entry.state === "online" && info?.cars.length ? (
+                  <p className="server-unavailable">
+                    None of this server’s cars is installed. Install a permitted car from Content to join.
+                  </p>
+                ) : null}
                 {info?.passwordRequired && (
                   <p className="server-password">
                     <LockKeyhole size={13} />
@@ -351,7 +387,7 @@ export function ServersPage({
                     disabled={
                       !connected || !active || !entry.joinAvailable || !!joining
                     }
-                    onClick={() => void join(entry)}
+                    onClick={() => void join(entry, selectedCar)}
                   >
                     <Play size={14} aria-hidden="true" />
                     {joining === entry.server.id

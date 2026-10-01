@@ -41,6 +41,7 @@ export type ServerStatus = {
   error: { code: string; message: string } | null;
   checkedAt: string;
   joinAvailable: boolean;
+  availableCars: { id: string; name: string }[];
 };
 export type ServersResponse = {
   servers: ServerStatus[];

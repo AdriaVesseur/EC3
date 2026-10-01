@@ -19,6 +19,8 @@ public sealed record ServerInfo(
     bool? PasswordRequired
 );
 public sealed record ServerError(string Code, string Message);
+public sealed record ServerCarOption(string Id, string Name);
+public sealed record ServerJoinRequest(string? CarId);
 public sealed record ServerStatus(
     PortalServer Server,
     string State,
@@ -26,7 +28,10 @@ public sealed record ServerStatus(
     ServerError? Error,
     DateTimeOffset CheckedAt,
     bool JoinAvailable
-);
+)
+{
+    public ServerCarOption[] AvailableCars { get; init; } = [];
+}
 public sealed record ServersSnapshot(
     ServerStatus[] Servers,
     bool ContentManagerAvailable,
@@ -47,7 +52,8 @@ public sealed class ServerService(PortalConfigService portal, AssettoDetectionSe
     public async Task<ServersSnapshot> Get(bool force = false, CancellationToken ct = default)
     {
         var configuration = await portal.Get(force, ct);
-        bool available = IsLaunchable(assetto.Find());
+        string? gameRoot = assetto.Find();
+        bool available = IsLaunchable(gameRoot);
         bool contentManagerAvailable = ContentManagerAvailable();
         bool launchAvailable = available && contentManagerAvailable;
         if (!force && cached is { } current && configuration.Servers.SequenceEqual(cachedConfig) &&
@@ -63,7 +69,7 @@ public sealed class ServerService(PortalConfigService portal, AssettoDetectionSe
             var tasks = configuration.Servers.Select(async server =>
             {
                 await concurrency.WaitAsync(ct);
-                try { return await Query(server, launchAvailable, ct); }
+                try { return await Query(server, launchAvailable, gameRoot, ct); }
                 finally { concurrency.Release(); }
             }).ToArray();
             var states = await Task.WhenAll(tasks);
@@ -80,15 +86,19 @@ public sealed class ServerService(PortalConfigService portal, AssettoDetectionSe
         }
     }
 
-    static async Task<ServerStatus> Query(PortalServer server, bool available, CancellationToken ct)
+    static async Task<ServerStatus> Query(PortalServer server, bool available, string? gameRoot, CancellationToken ct)
     {
         try
         {
             using var timeout = CancellationTokenSource.CreateLinkedTokenSource(ct);
             timeout.CancelAfter(TimeSpan.FromSeconds(8));
             var info = await FetchInfo(server, timeout.Token);
+            var availableCars = GetAvailableCars(gameRoot, info.Cars);
             return new(server, "online", info, null, DateTimeOffset.UtcNow,
-                available && info.RacePort is not null && info.Cars.Length > 0);
+                available && info.RacePort is not null && availableCars.Length > 0)
+            {
+                AvailableCars = availableCars,
+            };
         }
         catch (Exception ex) when (!ct.IsCancellationRequested &&
             ex is AppFault or HttpRequestException or SocketException or OperationCanceledException or JsonException or IOException)
@@ -121,7 +131,7 @@ public sealed class ServerService(PortalConfigService portal, AssettoDetectionSe
             ContentManagerAvailable = contentManagerAvailable,
             Servers = snapshot.Servers.Select(s => s with
             {
-                JoinAvailable = launchAvailable && s.State == "online" && s.Info?.RacePort is not null && s.Info.Cars.Length > 0,
+                JoinAvailable = launchAvailable && s.State == "online" && s.Info?.RacePort is not null && s.AvailableCars.Length > 0,
             }).ToArray(),
         };
 
@@ -172,7 +182,7 @@ public sealed class ServerService(PortalConfigService portal, AssettoDetectionSe
         return ParseInfo(System.Text.Encoding.UTF8.GetString(bytes));
     }
 
-    public async Task<ServerJoinResult> Join(string id, CancellationToken ct = default)
+    public async Task<ServerJoinResult> Join(string id, string? selectedCarId, CancellationToken ct = default)
     {
         var configuration = await portal.Get(ct: ct);
         var server = configuration.Servers.FirstOrDefault(s => s.Id == id)
@@ -195,9 +205,12 @@ public sealed class ServerService(PortalConfigService portal, AssettoDetectionSe
             }
             if (info.RacePort is not int racePort)
                 throw new AppFault("SERVER_RACE_PORT_MISSING", "The server did not publish its race port in /INFO.");
-            var carId = info.Cars.FirstOrDefault(car => IsInstalledCar(gameRoot, car));
+            var carId = selectedCarId is null
+                ? GetAvailableCars(gameRoot, info.Cars).FirstOrDefault()?.Id
+                : info.Cars.FirstOrDefault(car => car.Equals(selectedCarId, StringComparison.OrdinalIgnoreCase)
+                    && IsInstalledCar(gameRoot, car));
             if (carId is null)
-                throw new AppFault("SERVER_CAR_NOT_INSTALLED", "None of this server’s allowed cars is installed. Install its required car package from Content, then try again.");
+                throw new AppFault("SERVER_CAR_NOT_AVAILABLE", "Choose a car allowed by this server that is installed in Assetto Corsa.");
             using var process = Process.Start(new ProcessStartInfo(BuildDirectJoinUri(server, racePort, carId)) { UseShellExecute = true });
             if (process is null)
                 throw new InvalidOperationException("Windows did not hand the server launch request to Content Manager.");
@@ -217,6 +230,37 @@ public sealed class ServerService(PortalConfigService portal, AssettoDetectionSe
         string carPath = Path.GetFullPath(Path.Combine(carsRoot, carId));
         return carPath.StartsWith(carsRoot + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase)
             && Directory.Exists(carPath);
+    }
+
+    static ServerCarOption[] GetAvailableCars(string? gameRoot, string[] serverCars)
+    {
+        if (gameRoot is null)
+            return [];
+        return serverCars
+            .Where(car => IsInstalledCar(gameRoot, car))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .Select(car => new ServerCarOption(car, ReadCarName(gameRoot, car)))
+            .ToArray();
+    }
+
+    static string ReadCarName(string gameRoot, string carId)
+    {
+        string metadata = Path.Combine(gameRoot, "content", "cars", carId, "ui", "ui_car.json");
+        try
+        {
+            var info = new FileInfo(metadata);
+            if (info.Length is > 0 and <= 64 * 1024)
+            {
+                using var document = JsonDocument.Parse(File.ReadAllText(metadata));
+                if (document.RootElement.TryGetProperty("name", out var name) && name.ValueKind == JsonValueKind.String &&
+                    !string.IsNullOrWhiteSpace(name.GetString()))
+                    return name.GetString()!;
+            }
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or JsonException)
+        {
+        }
+        return carId.Replace('_', ' ').Replace('-', ' ');
     }
 
     static bool IsLaunchable(string? root) =>
