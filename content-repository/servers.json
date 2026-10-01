@@ -7,6 +7,14 @@
       "liveTimingUrl": "http://94.23.107.62:8772/api/live-timings/leaderboard.json?server=1",
       "embedTiming": true,
       "httpPort": 8011
+    },
+    {
+      "id": "ec3-practice2",
+      "name": "EC3 Practice",
+      "ip": "94.23.107.62",
+      "liveTimingUrl": "http://94.23.107.62:8772/api/live-timings/leaderboard.json?server=1",
+      "embedTiming": true,
+      "httpPort": 8082
     }
   ]
 }
