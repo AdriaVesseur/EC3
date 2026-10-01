@@ -4,6 +4,8 @@
       "id": "ec3-practice",
       "name": "EC3 Practice",
       "ip": "89.150.159.86",
+      "liveTimingUrl": "http://94.23.107.62:8772/api/live-timings/leaderboard.json?server=1",
+      "embedTiming": true,
       "httpPort": 8011
     }
   ]
