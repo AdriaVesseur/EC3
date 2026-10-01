@@ -70,7 +70,7 @@
   position: relative;
   display: flex;
   width: 100%;
-  min-height: clamp(250px, 24vw, 330px);
+  min-height: clamp(220px, 19vw, 270px);
   flex-direction: column;
   justify-content: space-between;
   overflow: hidden;
@@ -960,7 +960,7 @@
     padding: 0;
   }
   .server-card-cover {
-    min-height: 210px;
+    min-height: 180px;
     padding: 14px;
   }
   .server-card-details {
