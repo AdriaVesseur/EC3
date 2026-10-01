@@ -55,6 +55,24 @@ export type ServerJoinResponse = {
   launched: boolean;
   message: string;
 };
+export type LiveTimingDriver = {
+  position: number;
+  number: string;
+  name: string;
+  car: string;
+  laps: number;
+  bestLapSeconds: number | null;
+  lastLapSeconds: number | null;
+  inPits: boolean;
+};
+export type LiveTimingSnapshot = {
+  serverId: string;
+  session: string;
+  track: string;
+  driverCount: number;
+  updatedAt: string;
+  drivers: LiveTimingDriver[];
+};
 
 export const portalErrorMessage = (error: PortalError | string) =>
   typeof error === "string" ? error : error.message;
@@ -66,5 +84,27 @@ export function httpsUrl(value?: string | null) {
     return url.protocol === "https:" ? url.href : null;
   } catch {
     return null;
+  }
+}
+
+export function timingUrl(value?: string | null) {
+  if (!value) return null;
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:" ||
+      (url.protocol === "http:" && url.pathname.toLowerCase().endsWith(".json"))
+      ? url.href
+      : null;
+  } catch {
+    return null;
+  }
+}
+
+export function isJsonTimingUrl(value?: string | null) {
+  if (!value) return false;
+  try {
+    return new URL(value).pathname.toLowerCase().endsWith(".json");
+  } catch {
+    return false;
   }
 }

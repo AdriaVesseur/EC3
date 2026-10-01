@@ -7,7 +7,7 @@ namespace Eurocup3;
 
 public static class Program
 {
-    public const string Version = "1.3.5";
+    public const string Version = "1.3.6";
 
     public static async Task Main(string[] args)
     {
@@ -193,6 +193,11 @@ public static class Program
             "/api/servers",
             async (bool? refresh, ServerService servers, CancellationToken ct) =>
                 await servers.Get(refresh == true, ct)
+        );
+        app.MapGet(
+            "/api/servers/{id}/timing",
+            async (string id, ServerService servers, CancellationToken ct) =>
+                await servers.GetTiming(id, ct)
         );
         app.MapPost(
             "/api/servers/{id}/join",

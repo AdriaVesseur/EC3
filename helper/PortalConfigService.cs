@@ -1,6 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
+using System.Net;
 
 namespace Eurocup3;
 
@@ -137,7 +138,7 @@ public sealed class PortalConfigService(ConfigService config)
             if (server.HttpPort is < 1 or > 65535)
                 throw new AppFault("INVALID_SERVERS", "httpPort must be between 1 and 65535.");
             if (server.LiveTimingUrl is not null)
-                ValidateHttpsUrl(server.LiveTimingUrl, "INVALID_SERVERS");
+                ValidateLiveTimingUrl(server.LiveTimingUrl, "INVALID_SERVERS");
             if (server.EmbedTiming && server.LiveTimingUrl is null)
                 throw new AppFault("INVALID_SERVERS", "embedTiming requires a liveTimingUrl.");
         }
@@ -188,6 +189,30 @@ public sealed class PortalConfigService(ConfigService config)
             throw new AppFault(code, "Image, website and timing URLs must use HTTPS without credentials.");
         // These URLs are browser links/images only. The helper never fetches a configured timing URL.
     }
+
+    public static void ValidateLiveTimingUrl(string? value, string code = "INVALID_PORTAL_URL")
+    {
+        if (IsLiveTimingJsonUrl(value))
+        {
+            var api = new Uri(value!);
+            if (api.Scheme == Uri.UriSchemeHttp)
+            {
+                if (!IPAddress.TryParse(api.Host, out var address))
+                    throw new AppFault(code, "HTTP live timing APIs must use a public IP address; use HTTPS for hostnames.");
+                ServerNetworkPolicy.ValidateAddress(address, false);
+            }
+            else if (api.Scheme != Uri.UriSchemeHttps)
+                throw new AppFault(code, "Live timing API URLs must use HTTP or HTTPS.");
+            return;
+        }
+        ValidateHttpsUrl(value, code);
+    }
+
+    public static bool IsLiveTimingJsonUrl(string? value) =>
+        !string.IsNullOrWhiteSpace(value) && value.Length <= 2048 && !value.Any(char.IsWhiteSpace) &&
+        !value.Contains('\\') && Uri.TryCreate(value, UriKind.Absolute, out var uri) &&
+        uri.UserInfo.Length == 0 && string.IsNullOrEmpty(uri.Fragment) &&
+        uri.AbsolutePath.EndsWith(".json", StringComparison.OrdinalIgnoreCase) && !value.Contains('@');
 
     static T? Deserialize<T>(string json, string code)
     {

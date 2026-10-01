@@ -235,6 +235,78 @@
 .server-live-timing .live-timing-frame {
   height: 380px;
 }
+.live-timing-data {
+  min-width: 0;
+  margin-top: 14px;
+  border-top: 1px solid var(--ec3-line);
+  padding-top: 12px;
+}
+.live-timing-data-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  color: var(--ec3-muted);
+  font-size: 10px;
+}
+.live-timing-data-meta > span:first-child {
+  color: #9bd9bd;
+  font-weight: 600;
+}
+.live-timing-data-meta .button {
+  min-height: 30px;
+  margin-left: auto;
+  padding: 5px 8px;
+  font-size: 10px;
+}
+.live-timing-table-wrap {
+  max-width: 100%;
+  margin-top: 10px;
+  overflow-x: auto;
+}
+.live-timing-table {
+  width: 100%;
+  border-collapse: collapse;
+  color: var(--ec3-text);
+  font-size: 11px;
+  white-space: nowrap;
+}
+.live-timing-table th,
+.live-timing-table td {
+  padding: 8px 9px;
+  border-bottom: 1px solid var(--ec3-line);
+  text-align: left;
+  font-variant-numeric: tabular-nums;
+}
+.live-timing-table th {
+  color: var(--ec3-quiet);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.live-timing-table td:nth-child(1),
+.live-timing-table td:nth-child(2),
+.live-timing-table td:nth-child(n + 5) {
+  color: #cbd2df;
+}
+.live-timing-table td:nth-child(3) {
+  font-weight: 600;
+}
+.timing-data-empty,
+.timing-data-error,
+.timing-data-updated {
+  margin-top: 9px;
+  color: var(--ec3-muted);
+  font-size: 10px;
+  line-height: 1.5;
+}
+.timing-data-error {
+  color: #ffb4b4;
+}
+.timing-data-updated {
+  color: var(--ec3-quiet);
+}
 .server-password {
   display: flex;
   align-items: center;

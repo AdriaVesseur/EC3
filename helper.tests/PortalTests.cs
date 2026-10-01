@@ -66,7 +66,14 @@ public static class PortalTests
         reject(() => PortalConfigService.ParseServers(ServerJson(server with { Host = "server.example.com/path" })), "server host cannot be an arbitrary URL path");
         reject(() => PortalConfigService.ParseServers(ServerJson(server with { Host = "server.example.com&password=secret" })), "server host cannot inject join arguments");
         reject(() => PortalConfigService.ParseServers(ServerJson(server with { LiveTimingUrl = null })), "embedding requires configured timing URL");
-        reject(() => PortalConfigService.ParseServers(ServerJson(server with { LiveTimingUrl = "http://timing.example.com" })), "timing link requires HTTPS");
+        reject(() => PortalConfigService.ParseServers(ServerJson(server with { LiveTimingUrl = "http://timing.example.com/timing.json" })), "HTTP JSON timing requires a public literal IP");
+        var apiServer = server with { Host = null, Ip = "89.150.159.86", LiveTimingUrl = "http://94.23.107.62:8772/api/live-timings/leaderboard.json?server=1", EmbedTiming = true };
+        assert(PortalConfigService.ParseServers(ServerJson(apiServer))[0] == apiServer,
+            "public HTTP JSON timing API URLs are accepted for server leaderboard polling");
+        reject(() => PortalConfigService.ParseServers(ServerJson(apiServer with { LiveTimingUrl = "http://127.0.0.1/timing.json" })),
+            "JSON timing API cannot target loopback");
+        reject(() => PortalConfigService.ParseServers(ServerJson(apiServer with { LiveTimingUrl = "http://94.23.107.62/timing" })),
+            "plain HTTP timing pages are rejected; HTTP is limited to JSON APIs");
         reject(() => PortalConfigService.ParseServers(ServerJson(server with { LiveTimingUrl = "https://user:secret@timing.example.com" })), "timing link cannot include credentials");
         reject(() => PortalConfigService.ParseServers(ServerJson(server with { Host = "192.168.1.20" })), "LAN server requires explicit consent in config");
         assert(PortalConfigService.ParseServers(ServerJson(server with { Host = "192.168.1.20", AllowLan = true })).Length == 1,
@@ -141,5 +148,15 @@ public static class PortalTests
         reject(() => ServerService.ParseInfo("{\"clients\":\"12\"}"), "wrong numeric server field type is rejected");
         reject(() => ServerService.ParseInfo("{\"clients\":-1}"), "negative connected player count is rejected");
         reject(() => ServerService.ParseInfo("{\"name\":\"AC\",\"cars\":[{}]}"), "malformed server car identifiers are rejected");
+        var timing = ServerService.ParseTiming("""
+            {"Name":"Practice","Track":"vv_kyalami","ConnectedDrivers":[
+              {"Position":1,"TotalNumLaps":47,"IsInPits":false,"CarInfo":{"DriverName":"Carlos Leiva","RaceNumber":19,"CarName":"Porsche 911 GT3 CUP","CarModel":"porsche_cup"},"Cars":{"porsche_cup":{"BestLap":107488000000,"LastLap":176338000000}}},
+              {"Position":2,"TotalNumLaps":12,"IsInPits":true,"CarInfo":{"DriverName":"Other Driver","RaceNumber":7,"CarName":"GT3","CarModel":"gt3"},"Cars":{"gt3":{"BestLap":109000000000,"LastLap":110000000000}}}]}
+            """, "ec3-practice");
+        assert(timing.Session == "Practice" && timing.Track == "vv kyalami" && timing.DriverCount == 2 &&
+            timing.Drivers[0].Position == 1 && timing.Drivers[0].Name == "Carlos Leiva" && timing.Drivers[0].Number == "19" &&
+            timing.Drivers[0].BestLapSeconds == 107.488 && timing.Drivers[1].InPits,
+            "JSON live timing leaderboard is normalized for the server UI");
+        reject(() => ServerService.ParseTiming("{}", "ec3-practice"), "unrelated JSON cannot masquerade as a live timing leaderboard");
     }
 }

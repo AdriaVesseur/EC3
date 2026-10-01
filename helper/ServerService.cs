@@ -21,6 +21,8 @@ public sealed record ServerInfo(
 public sealed record ServerError(string Code, string Message);
 public sealed record ServerCarOption(string Id, string Name);
 public sealed record ServerJoinRequest(string? CarId);
+public sealed record LiveTimingDriver(int Position, string Number, string Name, string Car, int Laps, double? BestLapSeconds, double? LastLapSeconds, bool InPits);
+public sealed record LiveTimingSnapshot(string ServerId, string Session, string Track, int DriverCount, DateTimeOffset UpdatedAt, LiveTimingDriver[] Drivers);
 public sealed record ServerStatus(
     PortalServer Server,
     string State,
@@ -220,6 +222,88 @@ public sealed class ServerService(PortalConfigService portal, AssettoDetectionSe
         {
             throw new AppFault("ASSETTO_LAUNCH_FAILED", "Windows could not start Assetto Corsa on this server. " + ex.Message);
         }
+    }
+
+    public async Task<LiveTimingSnapshot> GetTiming(string id, CancellationToken ct = default)
+    {
+        var configuration = await portal.Get(ct: ct);
+        var server = configuration.Servers.FirstOrDefault(s => s.Id == id)
+            ?? throw new AppFault("SERVER_NOT_FOUND", "This server is not in servers.json.");
+        var value = server.LiveTimingUrl;
+        if (value is null || !PortalConfigService.IsLiveTimingJsonUrl(value))
+            throw new AppFault("TIMING_NOT_CONFIGURED", "This server does not have a JSON live timing URL configured.");
+        var uri = new Uri(value);
+        var addresses = IPAddress.TryParse(uri.Host, out var literal)
+            ? new[] { literal }
+            : await Dns.GetHostAddressesAsync(uri.Host, ct);
+        if (addresses.Length is 0 or > 16)
+            throw new AppFault("TIMING_ADDRESS_BLOCKED", "The configured live timing host did not resolve to a public address.");
+        foreach (var address in addresses)
+            ServerNetworkPolicy.ValidateAddress(address, false);
+        using var handler = new SocketsHttpHandler
+        {
+            AllowAutoRedirect = false,
+            UseProxy = false,
+            MaxResponseHeadersLength = 16,
+            ConnectCallback = async (context, cancellation) =>
+            {
+                Exception? last = null;
+                foreach (var address in addresses.Take(4))
+                {
+                    var socket = new Socket(address.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+                    try
+                    {
+                        await socket.ConnectAsync(new IPEndPoint(address, uri.Port), cancellation);
+                        return new NetworkStream(socket, ownsSocket: true);
+                    }
+                    catch (Exception ex) when (ex is SocketException or OperationCanceledException)
+                    {
+                        socket.Dispose();
+                        cancellation.ThrowIfCancellationRequested();
+                        last = ex;
+                    }
+                }
+                throw new HttpRequestException("Could not connect to the configured live timing host.", last);
+            },
+        };
+        using var http = new HttpClient(handler) { Timeout = Timeout.InfiniteTimeSpan };
+        using var response = await http.GetAsync(uri, HttpCompletionOption.ResponseHeadersRead, ct);
+        response.EnsureSuccessStatusCode();
+        var bytes = await PortalConfigService.ReadLimited(response.Content, 2 * 1024 * 1024, ct);
+        return ParseTiming(System.Text.Encoding.UTF8.GetString(bytes), server.Id);
+    }
+
+    public static LiveTimingSnapshot ParseTiming(string json, string serverId)
+    {
+        using var document = JsonDocument.Parse(json);
+        var root = document.RootElement;
+        if (root.ValueKind != JsonValueKind.Object || !root.TryGetProperty("ConnectedDrivers", out var drivers) || drivers.ValueKind != JsonValueKind.Array)
+            throw new AppFault("TIMING_INVALID_RESPONSE", "The configured JSON does not contain an Assetto Corsa ConnectedDrivers leaderboard.");
+        string ReadRoot(string key) => root.TryGetProperty(key, out var property) && property.ValueKind == JsonValueKind.String
+            ? property.GetString() ?? "" : "";
+        int ReadInt(JsonElement obj, string key) => obj.TryGetProperty(key, out var property) && property.TryGetInt32(out var value) ? Math.Max(0, value) : 0;
+        double? ReadLap(JsonElement obj, string key) => obj.TryGetProperty(key, out var property) && property.TryGetDouble(out var value) && value > 0
+            ? Math.Round(value / 1_000_000_000d, 3) : null;
+        var entries = new List<LiveTimingDriver>();
+        foreach (var entry in drivers.EnumerateArray())
+        {
+            if (!entry.TryGetProperty("CarInfo", out var carInfo) || carInfo.ValueKind != JsonValueKind.Object)
+                continue;
+            string ReadCar(string key) => carInfo.TryGetProperty(key, out var property) && property.ValueKind == JsonValueKind.String
+                ? property.GetString() ?? "" : "";
+            var position = ReadInt(entry, "Position");
+            var carModel = ReadCar("CarModel");
+            JsonElement car = default;
+            bool hasCar = carModel.Length > 0 && entry.TryGetProperty("Cars", out var cars) && cars.ValueKind == JsonValueKind.Object && cars.TryGetProperty(carModel, out car);
+            entries.Add(new(position > 0 ? position : entries.Count + 1,
+                ReadCar("RaceNumber") is { Length: > 0 } number ? number : ReadInt(carInfo, "RaceNumber").ToString(),
+                ReadCar("DriverName"), ReadCar("CarName") is { Length: > 0 } carName ? carName : carModel,
+                ReadInt(entry, "TotalNumLaps"), hasCar ? ReadLap(car, "BestLap") : null,
+                hasCar ? ReadLap(car, "LastLap") : null,
+                entry.TryGetProperty("IsInPits", out var pits) && pits.ValueKind == JsonValueKind.True));
+        }
+        return new(serverId, ReadRoot("Name"), ReadRoot("Track").Replace('_', ' '), entries.Count, DateTimeOffset.UtcNow,
+            entries.OrderBy(driver => driver.Position).Take(100).ToArray());
     }
 
     static bool IsInstalledCar(string gameRoot, string carId)

@@ -18,7 +18,10 @@ import { api } from "./api";
 import { Badge, Button, EmptyState } from "./components";
 import {
   httpsUrl,
+  isJsonTimingUrl,
   portalErrorMessage,
+  timingUrl as validateTimingUrl,
+  type LiveTimingSnapshot,
   type ServerJoinResponse,
   type ServerStatus,
   type ServersResponse,
@@ -40,6 +43,88 @@ const remainingTime = (seconds: number) => {
   const total = Math.max(0, Math.floor(seconds));
   return `${Math.floor(total / 60)}:${(total % 60).toString().padStart(2, "0")}`;
 };
+const lapTime = (seconds: number | null) => {
+  if (seconds == null || !Number.isFinite(seconds)) return "—";
+  return `${Math.floor(seconds / 60)}:${(seconds % 60).toFixed(3).padStart(6, "0")}`;
+};
+
+function LiveTimingData({
+  serverId,
+  connected,
+  active,
+}: {
+  serverId: string;
+  connected: boolean;
+  active: boolean;
+}) {
+  const [data, setData] = useState<LiveTimingSnapshot | null>(null);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [refreshKey, setRefreshKey] = useState(0);
+  useEffect(() => {
+    if (!connected || !active) {
+      setLoading(false);
+      return;
+    }
+    let stopped = false;
+    let request: AbortController | null = null;
+    const load = async () => {
+      request?.abort();
+      request = new AbortController();
+      try {
+        const next = await api<LiveTimingSnapshot>(
+          `/servers/${encodeURIComponent(serverId)}/timing`,
+          undefined,
+          { signal: request.signal },
+        );
+        if (!stopped) {
+          setData(next);
+          setError("");
+        }
+      } catch (cause) {
+        if (!stopped && !request.signal.aborted) {
+          setError(cause instanceof Error ? cause.message : "Could not load live timing.");
+        }
+      } finally {
+        if (!stopped && !request.signal.aborted) setLoading(false);
+      }
+    };
+    void load();
+    const timer = window.setInterval(() => void load(), 15000);
+    return () => {
+      stopped = true;
+      window.clearInterval(timer);
+      request?.abort();
+    };
+  }, [serverId, connected, active, refreshKey]);
+  return (
+    <div className="live-timing-data">
+      <div className="live-timing-data-meta">
+        <span>{data ? `${data.driverCount} drivers` : loading ? "Loading leaderboard…" : "Live leaderboard"}</span>
+        {data && <span>{[data.session, data.track].filter(Boolean).join(" · ")}</span>}
+        <Button disabled={!connected || !active || loading} onClick={() => { setLoading(true); setRefreshKey((key) => key + 1); }}>
+          <RefreshCw size={13} aria-hidden="true" className={loading ? "spin" : undefined} />
+          Refresh
+        </Button>
+      </div>
+      {error && <p className="timing-data-error" role="status">{data ? "Showing the last timing update. " : ""}{error}</p>}
+      {data?.drivers.length ? (
+        <div className="live-timing-table-wrap">
+          <table className="live-timing-table">
+            <thead><tr><th>Pos</th><th>No.</th><th>Driver</th><th>Car</th><th>Laps</th><th>Best</th><th>Last</th></tr></thead>
+            <tbody>{data.drivers.map((driver) => (
+              <tr key={`${driver.position}-${driver.number}-${driver.name}`}>
+                <td>{driver.position}</td><td>{driver.number || "—"}</td><td>{driver.name || "Unknown driver"}</td>
+                <td>{driver.car || "—"}</td><td>{driver.laps}</td><td>{lapTime(driver.bestLapSeconds)}</td><td>{lapTime(driver.lastLapSeconds)}</td>
+              </tr>
+            ))}</tbody>
+          </table>
+        </div>
+      ) : !loading && !error ? <p className="timing-data-empty">No drivers are currently on track.</p> : null}
+      {data && <p className="timing-data-updated">Updated {checkedTime(data.updatedAt)} · refreshes every 15 seconds</p>}
+    </div>
+  );
+}
 
 export function ServersPage({
   connected,
@@ -100,7 +185,8 @@ export function ServersPage({
     autoOpenedTiming.current = true;
     const firstEmbeddedTiming = data.servers.find(
       (entry) =>
-        entry.server.embedTiming && httpsUrl(entry.server.liveTimingUrl),
+        entry.server.embedTiming && httpsUrl(entry.server.liveTimingUrl) &&
+        !isJsonTimingUrl(entry.server.liveTimingUrl),
     );
     if (firstEmbeddedTiming)
       setOpenTimingServerId(firstEmbeddedTiming.server.id);
@@ -261,7 +347,8 @@ export function ServersPage({
                 ? null
                 : (sessionNames[info.session] ?? `Session ${info.session}`);
             const availableCars = entry.availableCars ?? [];
-            const timingUrl = httpsUrl(entry.server.liveTimingUrl);
+            const timingUrl = validateTimingUrl(entry.server.liveTimingUrl);
+            const apiTiming = isJsonTimingUrl(timingUrl);
             const timingOpen = openTimingServerId === entry.server.id;
             const timingId = `${timingPanelId}-${entry.server.id}`;
             const selectedCar = availableCars.some(
@@ -382,7 +469,7 @@ export function ServersPage({
                     </div>
                     {timingUrl ? (
                       <div className="server-live-timing-actions">
-                        {entry.server.embedTiming && (
+                        {entry.server.embedTiming && !apiTiming && (
                           <Button
                             aria-expanded={timingOpen}
                             aria-controls={timingId}
@@ -403,7 +490,7 @@ export function ServersPage({
                           target="_blank"
                           rel="noopener noreferrer"
                         >
-                          Open full view <ExternalLink size={13} />
+                          {apiTiming ? "Open JSON source" : "Open full view"} <ExternalLink size={13} />
                         </a>
                       </div>
                     ) : (
@@ -412,7 +499,10 @@ export function ServersPage({
                       </span>
                     )}
                   </div>
-                  {timingUrl && entry.server.embedTiming && (
+                  {timingUrl && apiTiming && (
+                    <LiveTimingData serverId={entry.server.id} connected={connected} active={active} />
+                  )}
+                  {timingUrl && !apiTiming && entry.server.embedTiming && (
                     <div
                       id={timingId}
                       className="server-live-timing-frame-wrap"

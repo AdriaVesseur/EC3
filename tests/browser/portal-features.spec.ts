@@ -2,6 +2,7 @@ import { expect, test, type Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import type { AppUpdateInfo } from "../../src/AppUpdateNotice";
 import type {
+  LiveTimingSnapshot,
   PortalResponse,
   ServerConfig,
   ServersResponse,
@@ -130,6 +131,27 @@ async function mockFeatures(
       },
     });
   });
+  await page.route(`${api}/servers/*/timing`, (route) =>
+    route.fulfill({
+      json: {
+        serverId: "practice-a",
+        session: "Practice",
+        track: "kyalami",
+        driverCount: 1,
+        updatedAt: checkedAt,
+        drivers: [{
+          position: 1,
+          number: "19",
+          name: "Carlos Leiva",
+          car: "Porsche 911 GT3 CUP",
+          laps: 47,
+          bestLapSeconds: 107.488,
+          lastLapSeconds: 108.321,
+          inPits: false,
+        }],
+      } satisfies LiveTimingSnapshot,
+    }),
+  );
   await page.route(`${api}/helper-update**`, (route) =>
     options.updateFailure?.()
       ? route.fulfill({
@@ -351,6 +373,23 @@ test("configured timing switches between an embedded view and an external page; 
     fullPage: true,
     animations: "disabled",
   });
+});
+
+test("JSON live timing APIs render the leaderboard instead of an iframe", async ({ page }) => {
+  const apiUrl = "http://94.23.107.62:8772/api/live-timings/leaderboard.json?server=1";
+  await mockFeatures(page, {
+    servers: () => {
+      const response = serverResponse();
+      response.servers[0].server = { ...practice, liveTimingUrl: apiUrl, embedTiming: true };
+      return response;
+    },
+  });
+  await page.goto("/#servers");
+  await expect(page.getByRole("table")).toBeVisible();
+  await expect(page.getByRole("cell", { name: "Carlos Leiva" })).toBeVisible();
+  await expect(page.getByRole("cell", { name: "1:47.488" })).toBeVisible();
+  await expect(page.locator("iframe.live-timing-frame")).toHaveCount(0);
+  await expect(page.getByRole("link", { name: "Open JSON source" })).toHaveAttribute("href", apiUrl);
 });
 
 test("missing Content Manager disables Join and a failed refresh labels preserved server data as last known", async ({
