@@ -51,6 +51,53 @@ const lapTime = (seconds: number | null) => {
 };
 const normalizeAssetId = (value: string) =>
   value.toLowerCase().replace(/[^a-z0-9]/g, "");
+const findMatchingPackage = (
+  packages: Package[],
+  type: Package["type"],
+  ...identifiers: string[]
+) => {
+  const keys = identifiers
+    .map((value) => ({
+      flat: normalizeAssetId(value),
+      tokens: new Set(value.toLowerCase().match(/[a-z0-9]+/g) ?? []),
+    }))
+    .filter((key) => key.flat);
+  if (!keys.length) return undefined;
+  const score = (value: string) => {
+    const candidate = normalizeAssetId(value);
+    if (!candidate) return 0;
+    return Math.max(
+      ...keys.map((key) => {
+        if (key.flat === candidate) return 3;
+        if (
+          key.flat.length >= 4 &&
+          candidate.length >= 4 &&
+          (key.flat.includes(candidate) || candidate.includes(key.flat))
+        ) {
+          return 2;
+        }
+        const candidateTokens = new Set(
+          value.toLowerCase().match(/[a-z0-9]+/g) ?? [],
+        );
+        const keyTokens = [...key.tokens].filter((part) => part.length >= 2);
+        const candidateParts = [...candidateTokens].filter(
+          (part) => part.length >= 2,
+        );
+        const overlap = keyTokens.filter((part) =>
+          candidateTokens.has(part),
+        ).length;
+        return overlap && overlap >= Math.min(keyTokens.length, candidateParts.length) * 0.6
+          ? 1
+          : 0;
+      }),
+    );
+  };
+  return packages
+    .filter((item) => item.type === type)
+    .map((item) => ({ item, score: Math.max(score(item.id), score(item.name)) }))
+    .filter((result) => result.score > 0)
+    .sort((left, right) => right.score - left.score)[0]?.item;
+};
 const packagePhoto = (item: Package | undefined) =>
   item?.image || item?.icon || "/images/race-action.jpg";
 
@@ -458,13 +505,22 @@ export function ServersPage({
             )
               ? selectedCars[entry.server.id]
               : (availableCars[0]?.id ?? "");
-            const trackKey = normalizeAssetId(info?.track ?? "");
-            const trackPackage = packages.find(
-              (item) =>
-                item.type === "track" &&
-                (normalizeAssetId(item.id) === trackKey ||
-                  normalizeAssetId(item.name) === trackKey),
+            const trackPackage = findMatchingPackage(
+              packages,
+              "track",
+              info?.track ?? "",
             );
+            const selectedCarInfo = availableCars.find(
+              (car) => car.id === selectedCar,
+            );
+            const selectedCarPackage = selectedCarInfo
+              ? findMatchingPackage(
+                  packages,
+                  "car",
+                  selectedCarInfo.id,
+                  selectedCarInfo.name,
+                )
+              : undefined;
             return (
               <article className="server-card" key={entry.server.id}>
                 <button
@@ -548,6 +604,13 @@ export function ServersPage({
                         </div>
                         <div className="server-detail-option-meta">
                           <MapPin size={15} aria-hidden="true" />
+                          {trackPackage?.icon && (
+                            <img
+                              className="server-detail-option-icon"
+                              src={trackPackage.icon}
+                              alt=""
+                            />
+                          )}
                           {trackPackage?.name ?? "Track for this server"}
                         </div>
                       </article>
@@ -555,59 +618,72 @@ export function ServersPage({
                         className="server-detail-car-section"
                         aria-labelledby={`car-choice-${entry.server.id}`}
                       >
-                        <div className="server-detail-section-heading">
-                          <div>
-                            <span>YOUR GARAGE</span>
-                            <h3 id={`car-choice-${entry.server.id}`}>
-                              Choose your car
-                            </h3>
-                          </div>
-                          <span>{availableCars.length} available</span>
-                        </div>
                         {availableCars.length ? (
-                          <div
-                            className="server-detail-car-grid"
-                            role="group"
-                            aria-label="Choose your car"
-                          >
-                            {availableCars.map((car) => {
-                              const carPackage = packages.find(
-                                (item) =>
-                                  item.type === "car" &&
-                                  item.id.toLowerCase() ===
-                                    car.id.toLowerCase(),
-                              );
-                              return (
-                                <button
-                                  key={car.id}
-                                  type="button"
-                                  className={`server-detail-car ${selectedCar === car.id ? "selected" : ""}`}
-                                  aria-label={`Select car ${car.name}`}
-                                  aria-pressed={selectedCar === car.id}
-                                  disabled={!!joining}
-                                  onClick={() =>
-                                    setSelectedCars((current) => ({
-                                      ...current,
-                                      [entry.server.id]: car.id,
-                                    }))
-                                  }
-                                >
-                                  <span className="server-detail-car-artwork">
-                                    <img
-                                      src={packagePhoto(carPackage)}
-                                      alt=""
-                                    />
-                                  </span>
-                                  <span className="server-detail-car-name">
-                                    {car.name}
-                                  </span>
-                                  <span className="server-detail-car-id">
-                                    {car.id}
-                                  </span>
-                                </button>
-                              );
-                            })}
-                          </div>
+                          <details className="server-car-picker">
+                            <summary
+                              className="server-car-picker-summary"
+                              aria-label={`Choose your car, currently ${selectedCarInfo?.name ?? "none selected"}`}
+                            >
+                              <span className="server-car-picker-label">
+                                <span>YOUR GARAGE</span>
+                                <h3 id={`car-choice-${entry.server.id}`}>
+                                  Choose your car
+                                </h3>
+                              </span>
+                              <span className="server-car-picker-current">
+                                <img src={packagePhoto(selectedCarPackage)} alt="" />
+                                {selectedCarPackage?.icon && (
+                                  <img
+                                    className="server-car-picker-selected-logo"
+                                    src={selectedCarPackage.icon}
+                                    alt=""
+                                  />
+                                )}
+                                <span>
+                                  <strong>{selectedCarInfo?.name ?? "Select a car"}</strong>
+                                  <small>{availableCars.length} available</small>
+                                </span>
+                                <span className="server-car-picker-chevron" aria-hidden="true">⌄</span>
+                              </span>
+                            </summary>
+                            <div className="server-car-picker-menu">
+                              {availableCars.map((car) => {
+                                const carPackage = findMatchingPackage(
+                                  packages,
+                                  "car",
+                                  car.id,
+                                  car.name,
+                                );
+                                return (
+                                  <button
+                                    key={car.id}
+                                    type="button"
+                                    className={`server-car-picker-option ${selectedCar === car.id ? "selected" : ""}`}
+                                    aria-pressed={selectedCar === car.id}
+                                    disabled={!!joining}
+                                    onClick={(event) => {
+                                      setSelectedCars((current) => ({
+                                        ...current,
+                                        [entry.server.id]: car.id,
+                                      }));
+                                      const details = event.currentTarget.closest("details");
+                                      if (details) details.open = false;
+                                    }}
+                                  >
+                                    <img src={packagePhoto(carPackage)} alt="" />
+                                    <span>
+                                      <strong>{car.name}</strong>
+                                      <small>{car.id}</small>
+                                    </span>
+                                    {carPackage?.icon && (
+                                      <img className="server-car-picker-logo" src={carPackage.icon} alt="" />
+                                    )}
+                                    {selectedCar === car.id && <Check size={16} aria-hidden="true" />}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </details>
                         ) : (
                           <p className="server-unavailable">
                             {entry.state === "online" && info?.cars.length
@@ -716,17 +792,16 @@ export function ServersPage({
                                 {timingOpen ? "Hide timing" : "Show timing"}
                               </Button>
                             )}
-                            <a
-                              className="text-link"
-                              href={timingUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              {apiTiming
-                                ? "Open JSON source"
-                                : "Open full view"}{" "}
-                              <ExternalLink size={13} />
-                            </a>
+                            {!apiTiming && (
+                              <a
+                                className="text-link"
+                                href={timingUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                Open full view <ExternalLink size={13} />
+                              </a>
+                            )}
                           </div>
                         ) : (
                           <span className="server-live-timing-hint">

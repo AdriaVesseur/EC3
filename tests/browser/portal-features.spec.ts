@@ -299,17 +299,19 @@ test("Servers loads only when opened, shows reported details and joins the selec
   await expect(
     practiceDetails.getByText("practice circuit", { exact: true }),
   ).toBeVisible();
-  await expect(
-    practiceDetails.getByRole("heading", { name: "Choose your car" }),
-  ).toBeVisible();
+  const carPicker = practiceDetails.locator(".server-car-picker");
+  await expect(carPicker.locator("summary")).toContainText("Choose your car");
+  await expect(carPicker.locator("details")).toHaveCount(0);
+  await carPicker.locator("summary").click();
+  await expect(carPicker.locator(".server-car-picker-menu")).toBeVisible();
   await practiceDetails
-    .getByRole("button", { name: "Select car EC3 Alternate Car" })
+    .getByRole("button", { name: /EC3 Alternate Car/ })
     .click();
   await expect(
-    practiceDetails.getByRole("button", {
-      name: "Select car EC3 Alternate Car",
-    }),
-  ).toHaveAttribute("aria-pressed", "true");
+    carPicker.locator("summary"),
+  ).toContainText("EC3 Alternate Car");
+  await expect(carPicker.locator(".server-car-picker-menu")).toBeHidden();
+  await expect(practiceDetails.locator(".server-details > div")).toHaveCount(3);
   await expect(
     practiceDetails.getByText("Server IP", { exact: true }),
   ).toBeVisible();
@@ -541,9 +543,7 @@ test("JSON live timing APIs render connected and offline leaderboards instead of
   await expect(page.getByText("Offline drivers")).toBeVisible();
   await expect(page.getByText("1:48.123")).toBeVisible();
   await expect(page.locator("iframe.live-timing-frame")).toHaveCount(0);
-  await expect(
-    page.getByRole("link", { name: "Open JSON source" }),
-  ).toHaveAttribute("href", apiUrl);
+  await expect(page.getByRole("link", { name: "Open JSON source" })).toHaveCount(0);
   expect(
     (await new AxeBuilder({ page }).exclude(".live-timing-frame").analyze())
       .violations,
