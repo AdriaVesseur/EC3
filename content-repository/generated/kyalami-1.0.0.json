@@ -1,0 +1,231 @@
+{
+  "id": "kyalami",
+  "version": "1.0.0",
+  "installPath": "content/tracks/vv_kyalami",
+  "size": 254765971,
+  "sha256": "f3119cda2946844949403c9a0222b85e0d000adcdf3d8780ae7cd549453f6c05",
+  "files": [
+    {
+      "path": "ai/fast_lane.ai",
+      "archivePath": "content/tracks/vv_kyalami/ai/fast_lane.ai",
+      "size": 3075940,
+      "sha256": "50038605fdd127065522b618d4d7f41273d53bc43933e30c92b672386c670c2a"
+    },
+    {
+      "path": "ai/pit_lane.ai",
+      "archivePath": "content/tracks/vv_kyalami/ai/pit_lane.ai",
+      "size": 1834232,
+      "sha256": "967c64e336d18344c512b7a399ceaf0ee1edfb03fbb071584b2e7a70278a33c9"
+    },
+    {
+      "path": "data/audio_sources.ini",
+      "archivePath": "content/tracks/vv_kyalami/data/audio_sources.ini",
+      "size": 292,
+      "sha256": "ee853f8c3f79c7a2de969ad26b59165f0102d3780c9ffef71eaca8a40fa33df2"
+    },
+    {
+      "path": "data/cameras.ini",
+      "archivePath": "content/tracks/vv_kyalami/data/cameras.ini",
+      "size": 5140,
+      "sha256": "e4dbedfa1348ccf0db552c19809971256889df099d32d2c4e932c008536979f0"
+    },
+    {
+      "path": "data/cameras_1.ini",
+      "archivePath": "content/tracks/vv_kyalami/data/cameras_1.ini",
+      "size": 6554,
+      "sha256": "45d7219868a68079fe896a07b1512726bf2fc54ba1d21d8f4ee343ac291c0d53"
+    },
+    {
+      "path": "data/camera_facing.ini",
+      "archivePath": "content/tracks/vv_kyalami/data/camera_facing.ini",
+      "size": 691,
+      "sha256": "8aae342672b597b9109bf3a0defa6f60adc0171ce8b8214c0b831b0eb17b1e51"
+    },
+    {
+      "path": "data/crew.ini",
+      "archivePath": "content/tracks/vv_kyalami/data/crew.ini",
+      "size": 43,
+      "sha256": "33b8b210397b834eae4f0fec70f50c85700707f8d208b9b54cfa8aea0d50e811"
+    },
+    {
+      "path": "data/drs_zones.ini",
+      "archivePath": "content/tracks/vv_kyalami/data/drs_zones.ini",
+      "size": 108,
+      "sha256": "e94717e0adb0fb163cb12f49774397994a41d0a9adad579d82962579d00f7ea8"
+    },
+    {
+      "path": "data/groove.ini",
+      "archivePath": "content/tracks/vv_kyalami/data/groove.ini",
+      "size": 416,
+      "sha256": "8e66789f56490147abed782b12f6c5041d6236d2d7d623e6d0583dc4cce7c2e1"
+    },
+    {
+      "path": "data/map.ini",
+      "archivePath": "content/tracks/vv_kyalami/data/map.ini",
+      "size": 138,
+      "sha256": "1efb1df2d9301684e8ca14311bad7c9023b48eeeca7c851a9bae3099c56e3b9d"
+    },
+    {
+      "path": "data/overlays.ini",
+      "archivePath": "content/tracks/vv_kyalami/data/overlays.ini",
+      "size": 29,
+      "sha256": "caabd3d1b806e02e256cb68c40115f446a24dad26774364facc7c1fde67862ff"
+    },
+    {
+      "path": "data/sections.ini",
+      "archivePath": "content/tracks/vv_kyalami/data/sections.ini",
+      "size": 1073,
+      "sha256": "ac072b800a7c115ed3d9384e1557bf2209ef0a4d3c9accc82ca39cd2bdc000d3"
+    },
+    {
+      "path": "data/semaphore.ini",
+      "archivePath": "content/tracks/vv_kyalami/data/semaphore.ini",
+      "size": 42,
+      "sha256": "7a039ac4bfbf062cf99d588017d7294e267bf6ba7afd448c92abf066a25333e4"
+    },
+    {
+      "path": "data/startinglights.ini",
+      "archivePath": "content/tracks/vv_kyalami/data/startinglights.ini",
+      "size": 62,
+      "sha256": "66506e21ef963a1089ec60aee8b521ee6488f1dda59390498553c512b8ca0f59"
+    },
+    {
+      "path": "data/surfaces.ini",
+      "archivePath": "content/tracks/vv_kyalami/data/surfaces.ini",
+      "size": 1608,
+      "sha256": "ac152bfd8569b2049a84ea2074b3b5554265d8e830b60d655bf385194b190695"
+    },
+    {
+      "path": "extension/ext_config.ini",
+      "archivePath": "content/tracks/vv_kyalami/extension/ext_config.ini",
+      "size": 11275,
+      "sha256": "f8bcccc8fd2aa5406b9d97075d9e6a08822bec648656cc32437787f42e5dd6b6"
+    },
+    {
+      "path": "groove.kn5",
+      "archivePath": "content/tracks/vv_kyalami/groove.kn5",
+      "size": 1770332,
+      "sha256": "b148c096cee45ec5e9e66902f176a3e958b8683784962ddbc0424627413bc70d"
+    },
+    {
+      "path": "map.png",
+      "archivePath": "content/tracks/vv_kyalami/map.png",
+      "size": 44783,
+      "sha256": "77f9231dd5483165092ea10330a13a92985dcdbdcba34c64428e4d4dc9f699f3"
+    },
+    {
+      "path": "marshals.kn5",
+      "archivePath": "content/tracks/vv_kyalami/marshals.kn5",
+      "size": 1143119,
+      "sha256": "f4e9dd2513dbcfadc18c736a8a8ac4057b0dd4ff11a7226e3aa575ce40b5bddb"
+    },
+    {
+      "path": "models.ini",
+      "archivePath": "content/tracks/vv_kyalami/models.ini",
+      "size": 588,
+      "sha256": "b4a6e759adf877c8f02eec634f7ea84d95915ddbf0528ef6ab2d31fc90ea8549"
+    },
+    {
+      "path": "models.vao-patch",
+      "archivePath": "content/tracks/vv_kyalami/models.vao-patch",
+      "size": 1846030,
+      "sha256": "71e0ac2b5e4ac99d8a9b800bd11fbf00474210bc8031169d8262c50b05d5d131"
+    },
+    {
+      "path": "read.me",
+      "archivePath": "content/tracks/vv_kyalami/read.me",
+      "size": 1252,
+      "sha256": "364ba175a1876f61213126e22567d999d28c3d32d4293fc9c0e0a9e4fd5aad54"
+    },
+    {
+      "path": "skids.kn5",
+      "archivePath": "content/tracks/vv_kyalami/skids.kn5",
+      "size": 3008358,
+      "sha256": "b87eac3169d6400b9bc29b6a5555481b068cf828dbf767e142129c2133db28a4"
+    },
+    {
+      "path": "texture/crowds_sitting.dds",
+      "archivePath": "content/tracks/vv_kyalami/texture/crowds_sitting.dds",
+      "size": 4784672,
+      "sha256": "a5060104b4f7ca2b76e3c00594b5400c741a6735d3bd37278d6d467a2e4e4c70"
+    },
+    {
+      "path": "texture/crowds_standing.dds",
+      "archivePath": "content/tracks/vv_kyalami/texture/crowds_standing.dds",
+      "size": 11108848,
+      "sha256": "4fc172110552d72c9fae28b6c94f7839f03ac0b747d62201c3ac0cdf060209db"
+    },
+    {
+      "path": "ui/logo.png",
+      "archivePath": "content/tracks/vv_kyalami/ui/logo.png",
+      "size": 17061,
+      "sha256": "bc3f78396a1f6e3ac102ad6ee3c4b16ea4b95325ee1e367a51c63848358ddf43"
+    },
+    {
+      "path": "ui/logo2.png",
+      "archivePath": "content/tracks/vv_kyalami/ui/logo2.png",
+      "size": 50351,
+      "sha256": "30af8b047daf734739320d3a5b3762bfa56ab55700186014865d938cd55e1bae"
+    },
+    {
+      "path": "ui/outline.png",
+      "archivePath": "content/tracks/vv_kyalami/ui/outline.png",
+      "size": 13595,
+      "sha256": "511910a8442b2329ab33d704af4e2ddc565f8a093709bacbd0fae010c0451647"
+    },
+    {
+      "path": "ui/preview.png",
+      "archivePath": "content/tracks/vv_kyalami/ui/preview.png",
+      "size": 196256,
+      "sha256": "a02786394126ec9527ee6cc5ce9513e26e63a77ad09a1f0754d704c233de492a"
+    },
+    {
+      "path": "ui/ui_track.json",
+      "archivePath": "content/tracks/vv_kyalami/ui/ui_track.json",
+      "size": 703,
+      "sha256": "1204e1554f79c37fc0e764949440d1d23e4fcf70315cc8446608c1f0e7167123"
+    },
+    {
+      "path": "vv_crowds.kn5",
+      "archivePath": "content/tracks/vv_kyalami/vv_crowds.kn5",
+      "size": 104560,
+      "sha256": "f23537c12bce64e06a41b1f9e096a17f9f38c5c3b454b54008e1993ae87c1eb5"
+    },
+    {
+      "path": "vv_kyalami.kn5",
+      "archivePath": "content/tracks/vv_kyalami/vv_kyalami.kn5",
+      "size": 504480321,
+      "sha256": "f1c601711085c2cfef9ace2bb641e36d53b1058fb147ebde0d731b102852dcf2"
+    },
+    {
+      "path": "vv_kyalami.vao-patch",
+      "archivePath": "content/tracks/vv_kyalami/vv_kyalami.vao-patch",
+      "size": 1562662,
+      "sha256": "eb5a48f7ac054ce0fa8673ecd141faf5b9b0895265f8ca276de1e9eb27535aa3"
+    },
+    {
+      "path": "vv_kyalami_flags.kn5",
+      "archivePath": "content/tracks/vv_kyalami/vv_kyalami_flags.kn5",
+      "size": 1216289,
+      "sha256": "ac9b4835ef123de5318564c736c8e1f9988740d8ebea122fc290b05e0e2295e6"
+    },
+    {
+      "path": "vv_kyalami_p.kn5",
+      "archivePath": "content/tracks/vv_kyalami/vv_kyalami_p.kn5",
+      "size": 3691889,
+      "sha256": "8c986ea647e59eea5eebd6a5a7c8f3b6b97f86a3bcb3c43a15a1709e08e9d9a0"
+    },
+    {
+      "path": "vv_kyalami_psy.kn5",
+      "archivePath": "content/tracks/vv_kyalami/vv_kyalami_psy.kn5",
+      "size": 40980,
+      "sha256": "588dc0db9e4cd0267c6a4b02ae732a856c9a4732f5babf129ffaf1446308a578"
+    },
+    {
+      "path": "vv_trees.kn5",
+      "archivePath": "content/tracks/vv_kyalami/vv_trees.kn5",
+      "size": 21824377,
+      "sha256": "29d42cc7e3d11193dbb1a67c656ca77be8343fe9a26153dab04dcd93572fe7eb"
+    }
+  ]
+}
