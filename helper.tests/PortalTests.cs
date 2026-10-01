@@ -151,12 +151,15 @@ public static class PortalTests
         var timing = ServerService.ParseTiming("""
             {"Name":"Practice","Track":"vv_kyalami","ConnectedDrivers":[
               {"Position":1,"TotalNumLaps":47,"IsInPits":false,"CarInfo":{"DriverName":"Carlos Leiva","RaceNumber":19,"CarName":"Porsche 911 GT3 CUP","CarModel":"porsche_cup"},"Cars":{"porsche_cup":{"BestLap":107488000000,"LastLap":176338000000}}},
-              {"Position":2,"TotalNumLaps":12,"IsInPits":true,"CarInfo":{"DriverName":"Other Driver","RaceNumber":7,"CarName":"GT3","CarModel":"gt3"},"Cars":{"gt3":{"BestLap":109000000000,"LastLap":110000000000}}}]}
+              {"Position":2,"TotalNumLaps":12,"IsInPits":true,"CarInfo":{"DriverName":"Other Driver","RaceNumber":7,"CarName":"GT3","CarModel":"gt3"},"Cars":{"gt3":{"BestLap":109000000000,"LastLap":110000000000}}}],
+             "DisconnectedDrivers":[{"Position":1,"TotalNumLaps":35,"LastSeen":"2026-10-01T17:25:00Z","CarInfo":{"DriverName":"Samuel Fernández","RaceNumber":16,"CarName":"Porsche CUP","CarModel":"porsche_cup"},"Cars":{"porsche_cup":{"BestLap":108123000000,"LastLap":109456000000}}}]}
             """, "ec3-practice");
         assert(timing.Session == "Practice" && timing.Track == "vv kyalami" && timing.DriverCount == 2 &&
             timing.Drivers[0].Position == 1 && timing.Drivers[0].Name == "Carlos Leiva" && timing.Drivers[0].Number == "19" &&
-            timing.Drivers[0].BestLapSeconds == 107.488 && timing.Drivers[1].InPits,
-            "JSON live timing leaderboard is normalized for the server UI");
+            timing.Drivers[0].BestLapSeconds == 107.488 && timing.Drivers[1].InPits && timing.OfflineDriverCount == 1 &&
+            timing.OfflineDrivers[0].Name == "Samuel Fernández" && timing.OfflineDrivers[0].Laps == 35 &&
+            timing.OfflineDrivers[0].BestLapSeconds == 108.123 && timing.OfflineDrivers[0].LastSeen == "2026-10-01T17:25:00Z",
+            "connected and offline JSON timing leaderboard groups are normalized for the server UI");
         reject(() => ServerService.ParseTiming("{}", "ec3-practice"), "unrelated JSON cannot masquerade as a live timing leaderboard");
     }
 }

@@ -64,14 +64,17 @@ export type LiveTimingDriver = {
   bestLapSeconds: number | null;
   lastLapSeconds: number | null;
   inPits: boolean;
+  lastSeen: string;
 };
 export type LiveTimingSnapshot = {
   serverId: string;
   session: string;
   track: string;
   driverCount: number;
+  offlineDriverCount: number;
   updatedAt: string;
   drivers: LiveTimingDriver[];
+  offlineDrivers: LiveTimingDriver[];
 };
 
 export const portalErrorMessage = (error: PortalError | string) =>

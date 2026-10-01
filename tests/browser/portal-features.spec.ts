@@ -138,6 +138,7 @@ async function mockFeatures(
         session: "Practice",
         track: "kyalami",
         driverCount: 1,
+        offlineDriverCount: 1,
         updatedAt: checkedAt,
         drivers: [{
           position: 1,
@@ -148,6 +149,18 @@ async function mockFeatures(
           bestLapSeconds: 107.488,
           lastLapSeconds: 108.321,
           inPits: false,
+          lastSeen: checkedAt,
+        }],
+        offlineDrivers: [{
+          position: 1,
+          number: "16",
+          name: "Samuel Fernández",
+          car: "Porsche CUP",
+          laps: 35,
+          bestLapSeconds: 108.123,
+          lastLapSeconds: 109.456,
+          inPits: true,
+          lastSeen: checkedAt,
         }],
       } satisfies LiveTimingSnapshot,
     }),
@@ -375,7 +388,7 @@ test("configured timing switches between an embedded view and an external page; 
   });
 });
 
-test("JSON live timing APIs render the leaderboard instead of an iframe", async ({ page }) => {
+test("JSON live timing APIs render connected and offline leaderboards instead of an iframe", async ({ page }) => {
   const apiUrl = "http://94.23.107.62:8772/api/live-timings/leaderboard.json?server=1";
   await mockFeatures(page, {
     servers: () => {
@@ -385,9 +398,12 @@ test("JSON live timing APIs render the leaderboard instead of an iframe", async 
     },
   });
   await page.goto("/#servers");
-  await expect(page.getByRole("table")).toBeVisible();
+  await expect(page.getByRole("table", { name: "Connected drivers" })).toBeVisible();
   await expect(page.getByRole("cell", { name: "Carlos Leiva" })).toBeVisible();
   await expect(page.getByRole("cell", { name: "1:47.488" })).toBeVisible();
+  await expect(page.getByRole("table", { name: "Offline drivers" })).toBeVisible();
+  await expect(page.getByRole("cell", { name: "Samuel Fernández" })).toBeVisible();
+  await expect(page.getByRole("cell", { name: "1:48.123" })).toBeVisible();
   await expect(page.locator("iframe.live-timing-frame")).toHaveCount(0);
   await expect(page.getByRole("link", { name: "Open JSON source" })).toHaveAttribute("href", apiUrl);
 });

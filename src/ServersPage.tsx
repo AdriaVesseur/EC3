@@ -21,6 +21,7 @@ import {
   isJsonTimingUrl,
   portalErrorMessage,
   timingUrl as validateTimingUrl,
+  type LiveTimingDriver,
   type LiveTimingSnapshot,
   type ServerJoinResponse,
   type ServerStatus,
@@ -47,6 +48,39 @@ const lapTime = (seconds: number | null) => {
   if (seconds == null || !Number.isFinite(seconds)) return "—";
   return `${Math.floor(seconds / 60)}:${(seconds % 60).toFixed(3).padStart(6, "0")}`;
 };
+
+function TimingDriverTable({
+  title,
+  drivers,
+  offline = false,
+}: {
+  title: string;
+  drivers: LiveTimingDriver[];
+  offline?: boolean;
+}) {
+  return (
+    <section className="live-timing-group" aria-label={title}>
+      <div className="live-timing-group-heading">
+        <h5>{title}</h5>
+        <span>{drivers.length}</span>
+      </div>
+      {drivers.length ? (
+        <div className="live-timing-table-wrap">
+          <table className="live-timing-table" aria-label={title}>
+            <thead><tr><th>Pos</th><th>No.</th><th>Driver</th><th>Car</th><th>Laps</th><th>Best</th>{offline ? <th>Last seen</th> : <th>Last</th>}</tr></thead>
+            <tbody>{drivers.map((driver) => (
+              <tr key={`${driver.position}-${driver.number}-${driver.name}`}>
+                <td>{driver.position}</td><td>{driver.number || "—"}</td><td>{driver.name || "Unknown driver"}</td>
+                <td>{driver.car || "—"}</td><td>{driver.laps}</td><td>{lapTime(driver.bestLapSeconds)}</td>
+                <td>{offline ? (driver.lastSeen ? checkedTime(driver.lastSeen) : "—") : lapTime(driver.lastLapSeconds)}</td>
+              </tr>
+            ))}</tbody>
+          </table>
+        </div>
+      ) : <p className="timing-data-empty">{offline ? "No offline drivers." : "No drivers are currently connected."}</p>}
+    </section>
+  );
+}
 
 function LiveTimingData({
   serverId,
@@ -100,7 +134,7 @@ function LiveTimingData({
   return (
     <div className="live-timing-data">
       <div className="live-timing-data-meta">
-        <span>{data ? `${data.driverCount} drivers` : loading ? "Loading leaderboard…" : "Live leaderboard"}</span>
+        <span>{data ? `${data.driverCount} connected · ${data.offlineDriverCount} offline` : loading ? "Loading leaderboard…" : "Live leaderboard"}</span>
         {data && <span>{[data.session, data.track].filter(Boolean).join(" · ")}</span>}
         <Button disabled={!connected || !active || loading} onClick={() => { setLoading(true); setRefreshKey((key) => key + 1); }}>
           <RefreshCw size={13} aria-hidden="true" className={loading ? "spin" : undefined} />
@@ -108,19 +142,10 @@ function LiveTimingData({
         </Button>
       </div>
       {error && <p className="timing-data-error" role="status">{data ? "Showing the last timing update. " : ""}{error}</p>}
-      {data?.drivers.length ? (
-        <div className="live-timing-table-wrap">
-          <table className="live-timing-table">
-            <thead><tr><th>Pos</th><th>No.</th><th>Driver</th><th>Car</th><th>Laps</th><th>Best</th><th>Last</th></tr></thead>
-            <tbody>{data.drivers.map((driver) => (
-              <tr key={`${driver.position}-${driver.number}-${driver.name}`}>
-                <td>{driver.position}</td><td>{driver.number || "—"}</td><td>{driver.name || "Unknown driver"}</td>
-                <td>{driver.car || "—"}</td><td>{driver.laps}</td><td>{lapTime(driver.bestLapSeconds)}</td><td>{lapTime(driver.lastLapSeconds)}</td>
-              </tr>
-            ))}</tbody>
-          </table>
-        </div>
-      ) : !loading && !error ? <p className="timing-data-empty">No drivers are currently on track.</p> : null}
+      {data && <>
+        <TimingDriverTable title="Connected drivers" drivers={data.drivers} />
+        <TimingDriverTable title="Offline drivers" drivers={data.offlineDrivers} offline />
+      </>}
       {data && <p className="timing-data-updated">Updated {checkedTime(data.updatedAt)} · refreshes every 15 seconds</p>}
     </div>
   );

@@ -21,8 +21,8 @@ public sealed record ServerInfo(
 public sealed record ServerError(string Code, string Message);
 public sealed record ServerCarOption(string Id, string Name);
 public sealed record ServerJoinRequest(string? CarId);
-public sealed record LiveTimingDriver(int Position, string Number, string Name, string Car, int Laps, double? BestLapSeconds, double? LastLapSeconds, bool InPits);
-public sealed record LiveTimingSnapshot(string ServerId, string Session, string Track, int DriverCount, DateTimeOffset UpdatedAt, LiveTimingDriver[] Drivers);
+public sealed record LiveTimingDriver(int Position, string Number, string Name, string Car, int Laps, double? BestLapSeconds, double? LastLapSeconds, bool InPits, string LastSeen);
+public sealed record LiveTimingSnapshot(string ServerId, string Session, string Track, int DriverCount, int OfflineDriverCount, DateTimeOffset UpdatedAt, LiveTimingDriver[] Drivers, LiveTimingDriver[] OfflineDrivers);
 public sealed record ServerStatus(
     PortalServer Server,
     string State,
@@ -277,33 +277,41 @@ public sealed class ServerService(PortalConfigService portal, AssettoDetectionSe
     {
         using var document = JsonDocument.Parse(json);
         var root = document.RootElement;
-        if (root.ValueKind != JsonValueKind.Object || !root.TryGetProperty("ConnectedDrivers", out var drivers) || drivers.ValueKind != JsonValueKind.Array)
-            throw new AppFault("TIMING_INVALID_RESPONSE", "The configured JSON does not contain an Assetto Corsa ConnectedDrivers leaderboard.");
+        if (root.ValueKind != JsonValueKind.Object || !root.TryGetProperty("ConnectedDrivers", out var drivers) || drivers.ValueKind != JsonValueKind.Array ||
+            !root.TryGetProperty("DisconnectedDrivers", out var offline) || offline.ValueKind != JsonValueKind.Array)
+            throw new AppFault("TIMING_INVALID_RESPONSE", "The configured JSON does not contain Assetto Corsa connected and disconnected driver lists.");
         string ReadRoot(string key) => root.TryGetProperty(key, out var property) && property.ValueKind == JsonValueKind.String
             ? property.GetString() ?? "" : "";
         int ReadInt(JsonElement obj, string key) => obj.TryGetProperty(key, out var property) && property.TryGetInt32(out var value) ? Math.Max(0, value) : 0;
         double? ReadLap(JsonElement obj, string key) => obj.TryGetProperty(key, out var property) && property.TryGetDouble(out var value) && value > 0
             ? Math.Round(value / 1_000_000_000d, 3) : null;
-        var entries = new List<LiveTimingDriver>();
-        foreach (var entry in drivers.EnumerateArray())
+        LiveTimingDriver[] ParseEntries(JsonElement source)
         {
-            if (!entry.TryGetProperty("CarInfo", out var carInfo) || carInfo.ValueKind != JsonValueKind.Object)
-                continue;
-            string ReadCar(string key) => carInfo.TryGetProperty(key, out var property) && property.ValueKind == JsonValueKind.String
-                ? property.GetString() ?? "" : "";
-            var position = ReadInt(entry, "Position");
-            var carModel = ReadCar("CarModel");
-            JsonElement car = default;
-            bool hasCar = carModel.Length > 0 && entry.TryGetProperty("Cars", out var cars) && cars.ValueKind == JsonValueKind.Object && cars.TryGetProperty(carModel, out car);
-            entries.Add(new(position > 0 ? position : entries.Count + 1,
-                ReadCar("RaceNumber") is { Length: > 0 } number ? number : ReadInt(carInfo, "RaceNumber").ToString(),
-                ReadCar("DriverName"), ReadCar("CarName") is { Length: > 0 } carName ? carName : carModel,
-                ReadInt(entry, "TotalNumLaps"), hasCar ? ReadLap(car, "BestLap") : null,
-                hasCar ? ReadLap(car, "LastLap") : null,
-                entry.TryGetProperty("IsInPits", out var pits) && pits.ValueKind == JsonValueKind.True));
+            var entries = new List<LiveTimingDriver>();
+            foreach (var entry in source.EnumerateArray())
+            {
+                if (!entry.TryGetProperty("CarInfo", out var carInfo) || carInfo.ValueKind != JsonValueKind.Object)
+                    continue;
+                string ReadCar(string key) => carInfo.TryGetProperty(key, out var property) && property.ValueKind == JsonValueKind.String
+                    ? property.GetString() ?? "" : "";
+                var position = ReadInt(entry, "Position");
+                var carModel = ReadCar("CarModel");
+                JsonElement car = default;
+                bool hasCar = carModel.Length > 0 && entry.TryGetProperty("Cars", out var cars) && cars.ValueKind == JsonValueKind.Object && cars.TryGetProperty(carModel, out car);
+                string lastSeen = entry.TryGetProperty("LastSeen", out var seen) && seen.ValueKind == JsonValueKind.String ? seen.GetString() ?? "" : "";
+                entries.Add(new(position > 0 ? position : entries.Count + 1,
+                    ReadInt(carInfo, "RaceNumber").ToString(),
+                    ReadCar("DriverName"), ReadCar("CarName") is { Length: > 0 } carName ? carName : carModel,
+                    ReadInt(entry, "TotalNumLaps"), hasCar ? ReadLap(car, "BestLap") : null,
+                    hasCar ? ReadLap(car, "LastLap") : null,
+                    entry.TryGetProperty("IsInPits", out var pits) && pits.ValueKind == JsonValueKind.True, lastSeen));
+            }
+            return entries.OrderBy(driver => driver.Position).Take(100).ToArray();
         }
-        return new(serverId, ReadRoot("Name"), ReadRoot("Track").Replace('_', ' '), entries.Count, DateTimeOffset.UtcNow,
-            entries.OrderBy(driver => driver.Position).Take(100).ToArray());
+        var connectedEntries = ParseEntries(drivers);
+        var offlineEntries = ParseEntries(offline);
+        return new(serverId, ReadRoot("Name"), ReadRoot("Track").Replace('_', ' '), connectedEntries.Length,
+            offlineEntries.Length, DateTimeOffset.UtcNow, connectedEntries, offlineEntries);
     }
 
     static bool IsInstalledCar(string gameRoot, string carId)
