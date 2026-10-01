@@ -625,7 +625,6 @@ export function ServersPage({
                               aria-label={`Choose your car, currently ${selectedCarInfo?.name ?? "none selected"}`}
                             >
                               <span className="server-car-picker-label">
-                                <span>YOUR GARAGE</span>
                                 <h3 id={`car-choice-${entry.server.id}`}>
                                   Choose your car
                                 </h3>

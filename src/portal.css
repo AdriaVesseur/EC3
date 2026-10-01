@@ -191,6 +191,7 @@
   margin-top: 22px;
 }
 .server-detail-options {
+  position: relative;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
@@ -269,18 +270,28 @@
 }
 .server-detail-car-section {
   position: relative;
+  z-index: 1;
+  overflow: visible;
   padding: 0;
 }
+.server-detail-options:has(.server-car-picker[open]) {
+  z-index: 10;
+}
 .server-car-picker {
-  height: 100%;
   position: relative;
+  height: 100%;
+  min-height: 275px;
+  overflow: visible;
+  border-radius: inherit;
 }
 .server-car-picker-summary {
   display: flex;
   height: 100%;
   min-height: 275px;
   flex-direction: column;
-  padding: 14px;
+  overflow: hidden;
+  border-radius: inherit;
+  padding: 0;
   cursor: pointer;
   list-style: none;
 }
@@ -288,39 +299,39 @@
   display: none;
 }
 .server-car-picker-label {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  margin-bottom: 12px;
-}
-.server-car-picker-label > span {
-  color: #a9b6ce;
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 0.11em;
+  position: absolute;
+  z-index: 2;
+  top: 16px;
+  right: 16px;
+  left: 16px;
 }
 .server-car-picker-label h3 {
   margin: 0;
-  color: var(--ec3-text);
+  color: #fff;
   font-family: "Transducer", sans-serif;
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 500;
+  line-height: 1.2;
+  text-shadow: 0 2px 12px rgb(0 0 0 / 85%);
 }
 .server-car-picker-current {
-  position: relative;
+  position: absolute;
+  inset: 0;
   display: flex;
-  flex: 1;
-  min-height: 0;
   align-items: flex-end;
   overflow: hidden;
-  border-radius: 6px;
+  border-radius: inherit;
   background: #131519;
 }
 .server-car-picker-current::after {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgb(10 12 15 / 5%) 25%, rgb(10 12 15 / 88%) 100%);
+  background: linear-gradient(
+    180deg,
+    rgb(10 12 15 / 55%) 0%,
+    rgb(10 12 15 / 5%) 34%,
+    rgb(10 12 15 / 88%) 100%
+  );
   content: "";
 }
 .server-car-picker-current > img:first-child {
@@ -366,10 +377,10 @@
 }
 .server-car-picker-menu {
   position: absolute;
-  z-index: 5;
-  top: calc(100% - 5px);
-  right: 10px;
-  left: 10px;
+  z-index: 11;
+  top: 54px;
+  right: 12px;
+  left: 12px;
   max-height: 260px;
   overflow-y: auto;
   padding: 5px;
