@@ -119,6 +119,7 @@ test("all application sections render without overflow or accessibility violatio
 }) => {
   for (const section of [
     "content",
+    "my-content",
     "championship",
     "results",
     "servers",
@@ -140,6 +141,46 @@ test("all application sections render without overflow or accessibility violatio
       animations: "disabled",
     });
   }
+});
+test("My Content shows only the launcher's local garage and skin preview states", async ({
+  page,
+}) => {
+  await page.route("**/api/my-content/cars", (route) =>
+    route.fulfill({
+      json: [
+        {
+          id: "ec3-demo-car",
+          name: "EC3 Test Car",
+          version: "1.0.0",
+          folder: "ec3_demo_car",
+          skins: [
+            {
+              id: "01_blue",
+              name: "Blue Stripe",
+              number: "16",
+              hasPreview: true,
+            },
+            { id: "02_red", name: "Red Logo", number: null, hasPreview: false },
+          ],
+        },
+      ],
+    }),
+  );
+  await page.goto("/#my-content");
+  await expect(
+    page.getByRole("heading", { name: "My Content." }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("Cars installed through this launcher"),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "View EC3 Test Car" }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "View EC3 Test Car" }).click();
+  await expect(page.getByRole("dialog")).toBeVisible();
+  await expect(page.getByText("Blue Stripe")).toBeVisible();
+  await expect(page.getByText("Red Logo")).toBeVisible();
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 });
 test("the desktop shell hides the browser-only install link", async ({
   page,

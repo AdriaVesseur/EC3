@@ -38,6 +38,26 @@ export async function api<T>(
   const text = await response.text();
   return (text ? JSON.parse(text) : undefined) as T;
 }
+export async function apiImage(
+  path: string,
+  signal?: AbortSignal,
+): Promise<Blob> {
+  const timeout = AbortSignal.timeout(45000);
+  const response = await fetch(endpoint + path, {
+    headers: {
+      "X-EC3-Client": "1",
+      ...(token ? { "X-EC3-Token": token } : {}),
+    },
+    signal: signal ? AbortSignal.any([signal, timeout]) : timeout,
+  });
+  if (!response.ok) {
+    const data = await response.json().catch(() => null);
+    throw new Error(
+      data?.message ?? `Helper request failed (${response.status}).`,
+    );
+  }
+  return response.blob();
+}
 export async function connect() {
   const session = await api<{ token: string }>("/session", {});
   token = session.token;

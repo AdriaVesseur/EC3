@@ -7,7 +7,7 @@ namespace Eurocup3;
 
 public static class Program
 {
-    public const string Version = "1.3.18";
+    public const string Version = "1.3.20";
 
     public static async Task Main(string[] args)
     {
@@ -53,6 +53,7 @@ public static class Program
         builder.Services.AddSingleton<ContentService>();
         builder.Services.AddSingleton<PortalConfigService>();
         builder.Services.AddSingleton<ServerService>();
+        builder.Services.AddSingleton<MyContentService>();
         builder.Services.AddSingleton<AppUpdateService>();
         builder.Logging.AddFilter("Microsoft.AspNetCore", LogLevel.Warning);
         builder.Logging.AddProvider(new FileLoggerProvider(Path.Combine(config.DataRoot, "logs")));
@@ -178,6 +179,12 @@ public static class Program
                     raceReady = c.RaceReady(),
                 };
             }
+        );
+        app.MapGet("/api/my-content/cars", (MyContentService garage) => garage.Cars());
+        app.MapGet(
+            "/api/my-content/cars/{id}/skins/{skinId}/preview",
+            (string id, string skinId, MyContentService garage) =>
+                Results.File(garage.PreviewPath(id, skinId), "image/jpeg")
         );
         app.MapGet(
             "/api/results",
