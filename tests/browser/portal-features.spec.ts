@@ -310,6 +310,20 @@ test("Servers loads only when opened, shows reported details and joins the selec
   ]);
   expect(trackBounds?.width).toBeCloseTo(carBounds?.width ?? 0, 0);
   expect(trackBounds?.height).toBeCloseTo(carBounds?.height ?? 0, 0);
+  const trackRadius = await trackCard.evaluate(
+    (element) => getComputedStyle(element).borderRadius,
+  );
+  const carRadius = await carCard.evaluate(
+    (element) => getComputedStyle(element).borderRadius,
+  );
+  const trackImageRadius = await trackCard
+    .locator(".server-detail-option-artwork")
+    .evaluate((element) => getComputedStyle(element).borderRadius);
+  const carImageRadius = await carCard
+    .locator(".server-car-picker-summary")
+    .evaluate((element) => getComputedStyle(element).borderRadius);
+  expect(trackRadius).toBe(carRadius);
+  expect(trackImageRadius).toBe(carImageRadius);
   await expect(
     practiceDetails.getByText("practice circuit", { exact: true }),
   ).toBeVisible();
