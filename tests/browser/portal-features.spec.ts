@@ -277,6 +277,12 @@ test("Servers loads only when opened, shows reported details and joins the selec
     .getByRole("navigation", { name: "Main navigation" })
     .getByRole("link", { name: "Servers", exact: true })
     .click();
+  const serverColumns = await page
+    .locator(".servers-grid")
+    .evaluate((element) =>
+      getComputedStyle(element).gridTemplateColumns.trim().split(/\s+/).length,
+    );
+  expect(serverColumns).toBe(1);
   const card = page
     .getByRole("article")
     .filter({ has: page.getByRole("heading", { name: practice.name }) });
@@ -296,6 +302,14 @@ test("Servers loads only when opened, shows reported details and joins the selec
     .click();
   const practiceDetails = page.getByRole("dialog", { name: practice.name });
   await expect(practiceDetails).toBeVisible();
+  const trackCard = practiceDetails.locator(".server-detail-option");
+  const carCard = practiceDetails.locator(".server-detail-car-section");
+  const [trackBounds, carBounds] = await Promise.all([
+    trackCard.boundingBox(),
+    carCard.boundingBox(),
+  ]);
+  expect(trackBounds?.width).toBeCloseTo(carBounds?.width ?? 0, 0);
+  expect(trackBounds?.height).toBeCloseTo(carBounds?.height ?? 0, 0);
   await expect(
     practiceDetails.getByText("practice circuit", { exact: true }),
   ).toBeVisible();

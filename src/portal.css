@@ -40,10 +40,7 @@
 }
 .servers-grid {
   display: grid;
-  grid-template-columns: repeat(
-    auto-fit,
-    minmax(min(100%, max(360px, calc((100% - 18px) / 2))), 1fr)
-  );
+  grid-template-columns: minmax(0, 1fr);
   gap: 18px;
 }
 .server-card {
@@ -73,7 +70,7 @@
   position: relative;
   display: flex;
   width: 100%;
-  min-height: 226px;
+  min-height: clamp(250px, 24vw, 330px);
   flex-direction: column;
   justify-content: space-between;
   overflow: hidden;
@@ -205,9 +202,15 @@
   border-radius: 8px;
   background: #1d2026;
 }
-.server-detail-option-artwork {
+.server-detail-option {
   position: relative;
-  min-height: 230px;
+  min-height: 275px;
+  background: #131519;
+}
+.server-detail-option-artwork {
+  position: absolute;
+  inset: 0;
+  min-height: 0;
   overflow: hidden;
   background: #131519;
 }
@@ -222,15 +225,29 @@
   object-fit: cover;
 }
 .server-detail-option-shade {
+  z-index: 1;
   background: linear-gradient(
     180deg,
-    rgb(10 12 15 / 5%) 24%,
-    rgb(10 12 15 / 88%) 100%
+    rgb(10 12 15 / 48%) 0%,
+    rgb(10 12 15 / 3%) 38%,
+    rgb(10 12 15 / 90%) 100%
   );
+}
+.server-detail-option-eyebrow {
+  position: absolute;
+  z-index: 2;
+  top: 16px;
+  left: 16px;
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.11em;
+  text-shadow: 0 2px 12px rgb(0 0 0 / 85%);
 }
 .server-detail-option-copy {
   position: absolute;
-  inset: auto 16px 15px;
+  z-index: 2;
+  inset: auto 16px 53px;
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -255,11 +272,18 @@
   font-size: 11px;
 }
 .server-detail-option-meta {
+  position: absolute;
+  z-index: 2;
+  right: 0;
+  bottom: 0;
+  left: 0;
   display: flex;
   align-items: center;
   gap: 7px;
-  padding: 12px 14px;
-  color: var(--ec3-muted);
+  min-height: 40px;
+  padding: 10px 14px;
+  border-top: 1px solid rgb(255 255 255 / 14%);
+  color: rgb(244 246 250 / 82%);
   font-size: 11px;
 }
 .server-detail-option-icon {
@@ -308,10 +332,11 @@
 .server-car-picker-label h3 {
   margin: 0;
   color: #fff;
-  font-family: "Transducer", sans-serif;
-  font-size: 20px;
-  font-weight: 500;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.11em;
   line-height: 1.2;
+  text-transform: uppercase;
   text-shadow: 0 2px 12px rgb(0 0 0 / 85%);
 }
 .server-car-picker-current {
@@ -363,7 +388,10 @@
 }
 .server-car-picker-current strong {
   color: #fff;
-  font-size: 15px;
+  font-family: "Transducer", sans-serif;
+  font-size: 20px;
+  line-height: 1.25;
+  text-shadow: 0 2px 12px rgb(0 0 0 / 55%);
 }
 .server-car-picker-current small {
   color: rgb(244 246 250 / 76%);
@@ -932,7 +960,7 @@
     padding: 0;
   }
   .server-card-cover {
-    min-height: 196px;
+    min-height: 210px;
     padding: 14px;
   }
   .server-card-details {
@@ -954,6 +982,13 @@
   }
   .server-detail-option-artwork {
     min-height: 190px;
+  }
+  .server-detail-option {
+    min-height: 230px;
+  }
+  .server-car-picker,
+  .server-car-picker-summary {
+    min-height: 230px;
   }
   .server-detail-modal > .server-details {
     margin-right: 14px;

@@ -593,25 +593,27 @@ export function ServersPage({
                         <div className="server-detail-option-artwork">
                           <img src={packagePhoto(trackPackage)} alt="" />
                           <span className="server-detail-option-shade" />
+                          <span className="server-detail-option-eyebrow">
+                            CIRCUIT
+                          </span>
                           <span className="server-detail-option-copy">
-                            <small>CIRCUIT</small>
                             <strong>
                               {info?.track?.replaceAll("_", " ") ||
                                 "Circuit unavailable"}
                             </strong>
                             <span>{session || "Server session"}</span>
                           </span>
-                        </div>
-                        <div className="server-detail-option-meta">
-                          <MapPin size={15} aria-hidden="true" />
-                          {trackPackage?.icon && (
-                            <img
-                              className="server-detail-option-icon"
-                              src={trackPackage.icon}
-                              alt=""
-                            />
-                          )}
-                          {trackPackage?.name ?? "Track for this server"}
+                          <span className="server-detail-option-meta">
+                            <MapPin size={14} aria-hidden="true" />
+                            {trackPackage?.name ?? "Track for this server"}
+                            {trackPackage?.icon && (
+                              <img
+                                className="server-detail-option-icon"
+                                src={trackPackage.icon}
+                                alt=""
+                              />
+                            )}
+                          </span>
                         </div>
                       </article>
                       <section
