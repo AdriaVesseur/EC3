@@ -473,8 +473,8 @@ export default function App() {
                 >
                   <img
                     className="featured-package-image"
-                    src="./images/race-action.jpg"
-                    alt="Eurocup 3 cars racing through a corner at Portimão"
+                    src="./images/home-zallara-barcelona.jpg"
+                    alt="Eurocup 3 Zallara Z320 racing at Barcelona"
                     fetchPriority="high"
                   />
                   <div className="featured-package-shade" />

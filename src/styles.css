@@ -2999,7 +2999,7 @@ main {
     min-height: 410px;
   }
   .featured-package-image {
-    object-position: 59% center;
+    object-position: 40% center;
   }
   .featured-package-shade {
     background:
@@ -3372,7 +3372,7 @@ input:focus-visible {
   background: #171d20;
 }
 .featured-package-image {
-  filter: saturate(0.78) contrast(1.04);
+  filter: saturate(0.88) contrast(1.04) brightness(1.08);
 }
 .featured-package-shade {
   background:
