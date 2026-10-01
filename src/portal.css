@@ -165,6 +165,194 @@
 .server-card-details[hidden] {
   display: none;
 }
+.server-detail-modal {
+  width: min(1120px, calc(100vw - 40px));
+  max-height: min(92dvh, 980px);
+  padding: 0;
+  border-radius: 10px;
+}
+.server-detail-modal .modal-heading {
+  position: sticky;
+  z-index: 5;
+  top: 0;
+  margin: 0;
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--ec3-line);
+  background: #191c21;
+}
+.server-detail-modal .modal-heading h2 {
+  font-size: 22px;
+}
+.server-detail-modal > :not(.modal-heading) {
+  margin-right: 22px;
+  margin-left: 22px;
+}
+.server-detail-modal > .server-detail-options {
+  margin-top: 22px;
+}
+.server-detail-options {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: 16px;
+  min-width: 0;
+}
+.server-detail-option,
+.server-detail-car-section {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--ec3-border);
+  border-radius: 8px;
+  background: #1d2026;
+}
+.server-detail-option-artwork {
+  position: relative;
+  min-height: 230px;
+  overflow: hidden;
+  background: #131519;
+}
+.server-detail-option-artwork > img,
+.server-detail-option-shade {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.server-detail-option-artwork > img {
+  object-fit: cover;
+}
+.server-detail-option-shade {
+  background: linear-gradient(
+    180deg,
+    rgb(10 12 15 / 5%) 24%,
+    rgb(10 12 15 / 88%) 100%
+  );
+}
+.server-detail-option-copy {
+  position: absolute;
+  inset: auto 16px 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: #fff;
+}
+.server-detail-option-copy small,
+.server-detail-section-heading > div > span {
+  color: #a9b6ce;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.11em;
+}
+.server-detail-option-copy strong {
+  font-family: "Transducer", sans-serif;
+  font-size: 20px;
+  line-height: 1.25;
+  text-transform: capitalize;
+  overflow-wrap: anywhere;
+}
+.server-detail-option-copy > span {
+  color: rgb(244 246 250 / 76%);
+  font-size: 11px;
+}
+.server-detail-option-meta {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 12px 14px;
+  color: var(--ec3-muted);
+  font-size: 11px;
+}
+.server-detail-car-section {
+  padding: 15px;
+}
+.server-detail-section-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.server-detail-section-heading h3 {
+  margin-top: 4px;
+  color: var(--ec3-text);
+  font-family: "Transducer", sans-serif;
+  font-size: 18px;
+  font-weight: 500;
+}
+.server-detail-section-heading > span {
+  color: var(--ec3-quiet);
+  font-size: 10px;
+}
+.server-detail-car-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr));
+  gap: 10px;
+}
+.server-detail-car {
+  min-width: 0;
+  padding: 0 0 10px;
+  overflow: hidden;
+  border: 1px solid var(--ec3-border);
+  border-radius: 7px;
+  background: #17191e;
+  color: var(--ec3-text);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color 160ms var(--ec3-ease),
+    background 160ms var(--ec3-ease);
+}
+.server-detail-car:hover,
+.server-detail-car.selected {
+  border-color: #e33a4c;
+  background: #241d22;
+}
+.server-detail-car:focus-visible {
+  outline: 2px solid #f09ca6;
+  outline-offset: 2px;
+}
+.server-detail-car-artwork {
+  display: block;
+  height: 106px;
+  overflow: hidden;
+  background: #111318;
+}
+.server-detail-car-artwork img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.server-detail-car-name,
+.server-detail-car-id {
+  display: block;
+  margin: 8px 10px 0;
+  overflow-wrap: anywhere;
+}
+.server-detail-car-name {
+  font-size: 11px;
+  font-weight: 600;
+}
+.server-detail-car-id {
+  color: var(--ec3-quiet);
+  font-size: 9px;
+}
+.server-detail-modal > .server-address {
+  margin-top: 18px;
+}
+.server-detail-modal > .server-description {
+  margin-top: 14px;
+}
+.server-detail-modal > .server-details {
+  margin: 18px 22px;
+}
+.server-detail-modal > .server-live-timing {
+  margin-top: 20px;
+}
+.server-detail-modal > .server-card-footer {
+  margin: 18px 22px 22px;
+}
+.server-detail-modal .live-timing-table-wrap {
+  overflow-x: auto;
+}
 .server-card-heading {
   display: flex;
   flex-wrap: wrap;
@@ -570,6 +758,30 @@
   }
   .server-card-details {
     padding: 16px;
+  }
+  .server-detail-modal {
+    width: calc(100vw - 20px);
+    max-height: 95dvh;
+  }
+  .server-detail-modal .modal-heading {
+    padding: 14px;
+  }
+  .server-detail-modal > :not(.modal-heading) {
+    margin-right: 14px;
+    margin-left: 14px;
+  }
+  .server-detail-options {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .server-detail-option-artwork {
+    min-height: 190px;
+  }
+  .server-detail-modal > .server-details {
+    margin-right: 14px;
+    margin-left: 14px;
+  }
+  .server-detail-modal > .server-card-footer {
+    margin: 18px 14px 14px;
   }
   .server-card-heading {
     gap: 10px;

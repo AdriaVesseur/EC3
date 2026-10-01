@@ -41,12 +41,16 @@ function serverResponse(available = true): ServersResponse {
         maxPlayers: 30,
         session: index ? 3 : 1,
         timeLeft: index ? 1200 : 905,
-        cars: ["ec3_fixture_car"],
+        cars: ["ec3_fixture_car", "ec3_alternate_car"],
         passwordRequired: !!index,
       },
       error: null,
       checkedAt,
       joinAvailable: available,
+      availableCars: [
+        { id: "ec3_fixture_car", name: "EC3 Fixture Car" },
+        { id: "ec3_alternate_car", name: "EC3 Alternate Car" },
+      ],
     })),
     contentManagerAvailable: available,
     errors: [],
@@ -262,9 +266,8 @@ test("Servers loads only when opened, shows reported details and joins the selec
   });
   await page.route("https://assets.example.test/practice.jpg", (route) =>
     route.fulfill({
-      status: 200,
-      contentType: "image/jpeg",
-      body: Buffer.from("ec3 photo"),
+      contentType: "image/svg+xml",
+      body: '<svg xmlns="http://www.w3.org/2000/svg" width="320" height="180"><rect width="320" height="180" fill="#252932"/></svg>',
     }),
   );
   await page.goto("/");
@@ -285,25 +288,48 @@ test("Servers loads only when opened, shows reported details and joins the selec
   await expect(
     card.getByText("View server details", { exact: true }),
   ).toBeVisible();
-  await expect(card.locator(".server-card-details")).toBeHidden();
+  await expect(page.getByRole("dialog", { name: practice.name })).toHaveCount(
+    0,
+  );
   await card
     .getByRole("button", { name: `View details for ${practice.name}` })
     .click();
-  await expect(card.locator(".server-card-details")).toBeVisible();
-  await expect(card.getByText("Server IP", { exact: true })).toBeVisible();
-  await expect(card.getByText(practice.ip!, { exact: true })).toBeVisible();
-  await card
+  const practiceDetails = page.getByRole("dialog", { name: practice.name });
+  await expect(practiceDetails).toBeVisible();
+  await expect(
+    practiceDetails.getByText("practice circuit", { exact: true }),
+  ).toBeVisible();
+  await expect(
+    practiceDetails.getByRole("heading", { name: "Choose your car" }),
+  ).toBeVisible();
+  await practiceDetails
+    .getByRole("button", { name: "Select car EC3 Alternate Car" })
+    .click();
+  await expect(
+    practiceDetails.getByRole("button", {
+      name: "Select car EC3 Alternate Car",
+    }),
+  ).toHaveAttribute("aria-pressed", "true");
+  await expect(
+    practiceDetails.getByText("Server IP", { exact: true }),
+  ).toBeVisible();
+  await expect(
+    practiceDetails.getByText(practice.ip!, { exact: true }),
+  ).toBeVisible();
+  await practiceDetails
     .getByRole("button", { name: `Copy server address ${practice.ip}` })
     .click();
   const copyFailure = page.getByText(
     "Copy is unavailable. Select the server address and copy it manually.",
   );
   await expect(copyFailure).toBeVisible();
-  await card
+  await practiceDetails
     .getByRole("button", { name: `Copy server address ${practice.ip}` })
     .click();
   await expect(copyFailure).toHaveCount(0);
-  await expect(card.getByText("Copied", { exact: true })).toBeVisible();
+  await expect(
+    practiceDetails.getByText("Copied", { exact: true }),
+  ).toBeVisible();
   expect(
     await page.evaluate(
       () => (window as Window & { copiedServerIP?: string }).copiedServerIP,
@@ -311,25 +337,43 @@ test("Servers loads only when opened, shows reported details and joins the selec
   ).toBe(practice.ip);
   expect(statusRequests).toBeGreaterThan(0);
   await expect(
-    card.getByText("practice circuit", { exact: true }),
+    practiceDetails.getByText("12 / 30", { exact: true }),
   ).toBeVisible();
-  await expect(card.getByText("12 / 30", { exact: true })).toBeVisible();
-  await expect(card.getByText("Practice", { exact: true })).toBeVisible();
-  await expect(card.getByText("15:05", { exact: true })).toBeVisible();
+  await expect(
+    practiceDetails
+      .locator(".server-details dd")
+      .filter({ hasText: "Practice" }),
+  ).toBeVisible();
+  await expect(
+    practiceDetails.getByText("15:05", { exact: true }),
+  ).toBeVisible();
+  await practiceDetails.getByRole("button", { name: "Close details" }).click();
   const raceCard = page
     .getByRole("article")
     .filter({ has: page.getByRole("heading", { name: race.name }) });
   await raceCard
     .getByRole("button", { name: `View details for ${race.name}` })
     .click();
-  await expect(raceCard.getByText("Race", { exact: true })).toBeVisible();
-  await expect(raceCard.getByText("Password protected")).toBeVisible();
+  const raceDetails = page.getByRole("dialog", { name: race.name });
+  await expect(
+    raceDetails.locator(".server-details dd").filter({ hasText: "Race" }),
+  ).toBeVisible();
+  await expect(raceDetails.getByText("Password protected")).toBeVisible();
+  await raceDetails.getByRole("button", { name: "Close details" }).click();
   expect(joins).toEqual([]);
-  await card.getByRole("button", { name: "Join server", exact: true }).click();
+  await card
+    .getByRole("button", { name: `View details for ${practice.name}` })
+    .click();
+  const reopenedPractice = page.getByRole("dialog", { name: practice.name });
+  await reopenedPractice
+    .getByRole("button", { name: "Join server", exact: true })
+    .click();
   await expect(
     page.getByText("Content Manager has been opened for this server."),
   ).toBeVisible();
-  expect(joins).toEqual([{ id: practice.id, method: "POST", body: {} }]);
+  expect(joins).toEqual([
+    { id: practice.id, method: "POST", body: { carId: "ec3_alternate_car" } },
+  ]);
   expect(
     (await new AxeBuilder({ page }).exclude(".live-timing-frame").analyze())
       .violations,
@@ -381,16 +425,30 @@ test("configured timing switches between an embedded view and an external page; 
     page.getByRole("link", { name: "Open full view" }).first(),
   ).toHaveAttribute("href", practice.liveTimingUrl!);
   await expect(page.locator("iframe.live-timing-frame")).toHaveCount(1);
+  await expect(frame).toBeVisible();
+  await page
+    .getByRole("dialog", { name: practice.name })
+    .getByRole("button", { name: "Close details" })
+    .click();
   const raceCard = page.locator(".server-card").filter({ hasText: race.name });
   await raceCard
     .getByRole("button", { name: `View details for ${race.name}` })
     .click();
+  const raceDetails = page.getByRole("dialog", { name: race.name });
   await expect(
-    raceCard.getByRole("link", { name: "Open full view" }),
+    raceDetails.getByRole("link", { name: "Open full view" }),
   ).toHaveAttribute("href", race.liveTimingUrl!);
-  await expect(raceCard.locator("iframe.live-timing-frame")).toHaveCount(0);
+  await raceDetails.getByRole("button", { name: "Close details" }).click();
   await page
     .getByRole("button", { name: `View details for ${practice.name}` })
+    .click();
+  await page.screenshot({
+    path: "artifacts/server-detail-dialog-1440.png",
+    animations: "disabled",
+  });
+  await page
+    .getByRole("dialog", { name: practice.name })
+    .getByRole("button", { name: "Close details" })
     .click();
   const sponsor = page.getByRole("link", {
     name: "Fixture Racing Partner",
@@ -413,7 +471,6 @@ test("configured timing switches between an embedded view and an external page; 
   const dimensions = await logo.boundingBox();
   expect(dimensions).not.toBeNull();
   expect(dimensions!.width / dimensions!.height).toBeCloseTo(4, 1);
-  await expect(frame).toBeVisible();
   await page.evaluate(() => window.scrollTo(0, 0));
   await page.screenshot({
     path: "artifacts/servers-timing-sponsors-1440.png",
@@ -421,6 +478,18 @@ test("configured timing switches between an embedded view and an external page; 
     animations: "disabled",
   });
   await page.setViewportSize({ width: 390, height: 844 });
+  await page
+    .getByRole("button", { name: `View details for ${practice.name}` })
+    .click();
+  const mobileDetails = page.getByRole("dialog", { name: practice.name });
+  await expect(mobileDetails).toBeVisible();
+  const dialogBounds = await mobileDetails.boundingBox();
+  expect(dialogBounds).not.toBeNull();
+  expect(dialogBounds!.width).toBeLessThanOrEqual(390);
+  await page.screenshot({
+    path: "artifacts/server-detail-dialog-390.png",
+    animations: "disabled",
+  });
   expect(
     await page.evaluate(
       () => document.documentElement.scrollWidth <= innerWidth,
@@ -430,6 +499,7 @@ test("configured timing switches between an embedded view and an external page; 
     (await new AxeBuilder({ page }).exclude(".live-timing-frame").analyze())
       .violations,
   ).toEqual([]);
+  await mobileDetails.getByRole("button", { name: "Close details" }).click();
   await page.evaluate(() => window.scrollTo(0, 0));
   await page.screenshot({
     path: "artifacts/servers-timing-sponsors-390.png",
@@ -498,6 +568,10 @@ test("missing Content Manager disables Join and a failed refresh labels preserve
     await expect(button).toBeDisabled();
   }
   await expect(page.getByText("12 / 30", { exact: true })).toBeVisible();
+  await page
+    .getByRole("dialog", { name: practice.name })
+    .getByRole("button", { name: "Close details" })
+    .click();
   failRefresh = true;
   await page
     .getByRole("button", { name: "Refresh servers", exact: true })
@@ -508,7 +582,9 @@ test("missing Content Manager disables Join and a failed refresh labels preserve
   await expect(
     page.getByText("Last known online", { exact: true }),
   ).toHaveCount(2);
-  await expect(page.getByText("12 / 30", { exact: true })).toBeVisible();
+  await expect(
+    page.locator(".server-card").filter({ hasText: practice.name }),
+  ).toContainText("12 / 30 drivers");
 });
 
 test("an empty server catalog shows an explicit empty state without fabricated telemetry or sponsors", async ({

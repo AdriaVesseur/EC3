@@ -977,7 +977,11 @@ export default function App() {
             </>
           )}
           {page === "servers" && (
-            <ServersPage connected={connected} active={page === "servers"} />
+            <ServersPage
+              connected={connected}
+              active={page === "servers"}
+              packages={snapshot?.catalog?.manifest.content ?? []}
+            />
           )}
           {page === "content" && contentTab === "downloads" && (
             <>

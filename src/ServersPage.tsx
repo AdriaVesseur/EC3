@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { api } from "./api";
 import { Badge, Button, EmptyState, Modal } from "./components";
+import type { Package } from "./types";
 import {
   httpsUrl,
   isJsonTimingUrl,
@@ -48,6 +49,10 @@ const lapTime = (seconds: number | null) => {
   if (seconds == null || !Number.isFinite(seconds)) return "—";
   return `${Math.floor(seconds / 60)}:${(seconds % 60).toFixed(3).padStart(6, "0")}`;
 };
+const normalizeAssetId = (value: string) =>
+  value.toLowerCase().replace(/[^a-z0-9]/g, "");
+const packagePhoto = (item: Package | undefined) =>
+  item?.image || item?.icon || "/images/race-action.jpg";
 
 function TimingDriverTable({
   title,
@@ -223,9 +228,11 @@ function LiveTimingData({
 export function ServersPage({
   connected,
   active = true,
+  packages = [],
 }: {
   connected: boolean;
   active?: boolean;
+  packages?: Package[];
 }) {
   const { data, loading, error, refresh, stale } =
     usePortalResource<ServersResponse>("/servers", connected, active, 30000);
@@ -240,7 +247,6 @@ export function ServersPage({
     null,
   );
   const [selectedCars, setSelectedCars] = useState<Record<string, string>>({});
-  const carSelectId = useId();
   const timingPanelId = useId();
   const autoOpenedTiming = useRef(false);
   const joinRequest = useRef<AbortController | null>(null);
@@ -452,21 +458,21 @@ export function ServersPage({
             )
               ? selectedCars[entry.server.id]
               : (availableCars[0]?.id ?? "");
+            const trackKey = normalizeAssetId(info?.track ?? "");
+            const trackPackage = packages.find(
+              (item) =>
+                item.type === "track" &&
+                (normalizeAssetId(item.id) === trackKey ||
+                  normalizeAssetId(item.name) === trackKey),
+            );
             return (
-              <article
-                className={`server-card ${selectedServerId === entry.server.id ? "is-open" : ""}`}
-                key={entry.server.id}
-              >
+              <article className="server-card" key={entry.server.id}>
                 <button
                   className="server-card-cover"
                   type="button"
-                  aria-expanded={selectedServerId === entry.server.id}
-                  aria-label={`${selectedServerId === entry.server.id ? "Hide" : "View"} details for ${entry.server.name}`}
-                  onClick={() =>
-                    setSelectedServerId((current) =>
-                      current === entry.server.id ? null : entry.server.id,
-                    )
-                  }
+                  aria-haspopup="dialog"
+                  aria-label={`View details for ${entry.server.name}`}
+                  onClick={() => setSelectedServerId(entry.server.id)}
                 >
                   <img
                     src={entry.server.image || "/images/race-action.jpg"}
@@ -515,228 +521,280 @@ export function ServersPage({
                         "Championship server"}
                     </span>
                     <span className="server-card-view-hint">
-                      {selectedServerId === entry.server.id
-                        ? "Hide details"
-                        : "View server details"}{" "}
+                      View server details{" "}
                       <ExternalLink size={13} aria-hidden="true" />
                     </span>
                   </span>
                 </button>
-                <div
-                  className="server-card-details"
-                  hidden={selectedServerId !== entry.server.id}
-                >
-                  {address && (
-                    <div className="server-address">
-                      <div>
-                        <span>
-                          {entry.server.ip ? "Server IP" : "Server address"}
-                        </span>
-                        <code>{address}</code>
-                        <span>HTTP port {entry.server.httpPort}</span>
-                      </div>
-                      <Button
-                        onClick={() => void copyAddress(address)}
-                        aria-label={`Copy server address ${address}`}
+                {selectedServerId === entry.server.id && (
+                  <Modal
+                    title={entry.server.name}
+                    className="server-detail-modal"
+                    onClose={() => setSelectedServerId(null)}
+                  >
+                    <div className="server-detail-options">
+                      <article className="server-detail-option">
+                        <div className="server-detail-option-artwork">
+                          <img src={packagePhoto(trackPackage)} alt="" />
+                          <span className="server-detail-option-shade" />
+                          <span className="server-detail-option-copy">
+                            <small>CIRCUIT</small>
+                            <strong>
+                              {info?.track?.replaceAll("_", " ") ||
+                                "Circuit unavailable"}
+                            </strong>
+                            <span>{session || "Server session"}</span>
+                          </span>
+                        </div>
+                        <div className="server-detail-option-meta">
+                          <MapPin size={15} aria-hidden="true" />
+                          {trackPackage?.name ?? "Track for this server"}
+                        </div>
+                      </article>
+                      <section
+                        className="server-detail-car-section"
+                        aria-labelledby={`car-choice-${entry.server.id}`}
                       >
-                        {copiedAddress === address ? (
-                          <Check size={14} aria-hidden="true" />
+                        <div className="server-detail-section-heading">
+                          <div>
+                            <span>YOUR GARAGE</span>
+                            <h3 id={`car-choice-${entry.server.id}`}>
+                              Choose your car
+                            </h3>
+                          </div>
+                          <span>{availableCars.length} available</span>
+                        </div>
+                        {availableCars.length ? (
+                          <div
+                            className="server-detail-car-grid"
+                            role="group"
+                            aria-label="Choose your car"
+                          >
+                            {availableCars.map((car) => {
+                              const carPackage = packages.find(
+                                (item) =>
+                                  item.type === "car" &&
+                                  item.id.toLowerCase() ===
+                                    car.id.toLowerCase(),
+                              );
+                              return (
+                                <button
+                                  key={car.id}
+                                  type="button"
+                                  className={`server-detail-car ${selectedCar === car.id ? "selected" : ""}`}
+                                  aria-label={`Select car ${car.name}`}
+                                  aria-pressed={selectedCar === car.id}
+                                  disabled={!!joining}
+                                  onClick={() =>
+                                    setSelectedCars((current) => ({
+                                      ...current,
+                                      [entry.server.id]: car.id,
+                                    }))
+                                  }
+                                >
+                                  <span className="server-detail-car-artwork">
+                                    <img
+                                      src={packagePhoto(carPackage)}
+                                      alt=""
+                                    />
+                                  </span>
+                                  <span className="server-detail-car-name">
+                                    {car.name}
+                                  </span>
+                                  <span className="server-detail-car-id">
+                                    {car.id}
+                                  </span>
+                                </button>
+                              );
+                            })}
+                          </div>
                         ) : (
-                          <Copy size={14} aria-hidden="true" />
+                          <p className="server-unavailable">
+                            {entry.state === "online" && info?.cars.length
+                              ? "None of this server’s cars is installed. Install a permitted car from Content to join."
+                              : "The server has not published a car selection yet."}
+                          </p>
                         )}
-                        {copiedAddress === address ? "Copied" : "Copy"}
+                      </section>
+                    </div>
+                    {address && (
+                      <div className="server-address">
+                        <div>
+                          <span>
+                            {entry.server.ip ? "Server IP" : "Server address"}
+                          </span>
+                          <code>{address}</code>
+                          <span>HTTP port {entry.server.httpPort}</span>
+                        </div>
+                        <Button
+                          onClick={() => void copyAddress(address)}
+                          aria-label={`Copy server address ${address}`}
+                        >
+                          {copiedAddress === address ? (
+                            <Check size={14} aria-hidden="true" />
+                          ) : (
+                            <Copy size={14} aria-hidden="true" />
+                          )}
+                          {copiedAddress === address ? "Copied" : "Copy"}
+                        </Button>
+                      </div>
+                    )}
+                    {entry.server.description && (
+                      <p className="server-description">
+                        {entry.server.description}
+                      </p>
+                    )}
+                    {info ? (
+                      <dl className="server-details">
+                        {info.currentPlayers != null && (
+                          <div>
+                            <dt>
+                              <UsersRound size={14} aria-hidden="true" />
+                              Drivers
+                            </dt>
+                            <dd>
+                              {info.currentPlayers}
+                              {info.maxPlayers != null
+                                ? ` / ${info.maxPlayers}`
+                                : ""}
+                            </dd>
+                          </div>
+                        )}
+                        {session && (
+                          <div>
+                            <dt>
+                              <Flag size={14} aria-hidden="true" />
+                              Session
+                            </dt>
+                            <dd>{session}</dd>
+                          </div>
+                        )}
+                        {info.timeLeft != null && (
+                          <div>
+                            <dt>
+                              <Timer size={14} aria-hidden="true" />
+                              Time remaining
+                            </dt>
+                            <dd>{remainingTime(info.timeLeft)}</dd>
+                          </div>
+                        )}
+                      </dl>
+                    ) : (
+                      <p className="server-unavailable">
+                        {entry.error?.message ??
+                          "Live server details are unavailable."}
+                      </p>
+                    )}
+                    <section
+                      className="server-live-timing"
+                      aria-label={`Live timing for ${entry.server.name}`}
+                    >
+                      <div className="server-live-timing-heading">
+                        <div className="server-live-timing-title">
+                          <Timer size={17} aria-hidden="true" />
+                          <div>
+                            <span>LIVE TIMING</span>
+                            <p className="server-live-timing-name">
+                              {timingUrl ? "Server timing" : "Not configured"}
+                            </p>
+                          </div>
+                        </div>
+                        {timingUrl ? (
+                          <div className="server-live-timing-actions">
+                            {entry.server.embedTiming && !apiTiming && (
+                              <Button
+                                aria-expanded={timingOpen}
+                                aria-controls={timingId}
+                                onClick={() =>
+                                  setOpenTimingServerId((current) =>
+                                    current === entry.server.id
+                                      ? null
+                                      : entry.server.id,
+                                  )
+                                }
+                              >
+                                {timingOpen ? "Hide timing" : "Show timing"}
+                              </Button>
+                            )}
+                            <a
+                              className="text-link"
+                              href={timingUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              {apiTiming
+                                ? "Open JSON source"
+                                : "Open full view"}{" "}
+                              <ExternalLink size={13} />
+                            </a>
+                          </div>
+                        ) : (
+                          <span className="server-live-timing-hint">
+                            Add liveTimingUrl in servers.json
+                          </span>
+                        )}
+                      </div>
+                      {timingUrl && apiTiming && (
+                        <LiveTimingData
+                          serverId={entry.server.id}
+                          connected={connected}
+                          active={
+                            active && selectedServerId === entry.server.id
+                          }
+                        />
+                      )}
+                      {timingUrl && !apiTiming && entry.server.embedTiming && (
+                        <div
+                          id={timingId}
+                          className="server-live-timing-frame-wrap"
+                          hidden={!timingOpen}
+                        >
+                          {timingOpen && (
+                            <>
+                              <iframe
+                                key={entry.server.id + timingUrl}
+                                className="live-timing-frame"
+                                src={timingUrl}
+                                title={`${entry.server.name} live timing`}
+                                sandbox="allow-scripts allow-same-origin"
+                                referrerPolicy="no-referrer"
+                                loading="lazy"
+                              />
+                              <p className="timing-help">
+                                If the timing view is unavailable here, use Open
+                                full view.
+                              </p>
+                            </>
+                          )}
+                        </div>
+                      )}
+                    </section>
+                    {info?.passwordRequired && (
+                      <p className="server-password">
+                        <LockKeyhole size={13} />
+                        Password protected
+                      </p>
+                    )}
+                    <div className="server-card-footer">
+                      <p>Last checked {checkedTime(entry.checkedAt)}</p>
+                      <Button
+                        variant="primary"
+                        disabled={
+                          !connected ||
+                          !active ||
+                          !entry.joinAvailable ||
+                          !!joining
+                        }
+                        onClick={() => void join(entry, selectedCar)}
+                      >
+                        <Play size={14} aria-hidden="true" />
+                        {joining === entry.server.id
+                          ? "Opening Assetto Corsa…"
+                          : "Join server"}
                       </Button>
                     </div>
-                  )}
-                  {entry.server.description && (
-                    <p className="server-description">
-                      {entry.server.description}
-                    </p>
-                  )}
-                  {info ? (
-                    <dl className="server-details">
-                      {info.track && (
-                        <div>
-                          <dt>
-                            <MapPin size={14} aria-hidden="true" />
-                            Circuit
-                          </dt>
-                          <dd>{info.track.replaceAll("_", " ")}</dd>
-                        </div>
-                      )}
-                      {info.currentPlayers != null && (
-                        <div>
-                          <dt>
-                            <UsersRound size={14} aria-hidden="true" />
-                            Drivers
-                          </dt>
-                          <dd>
-                            {info.currentPlayers}
-                            {info.maxPlayers != null
-                              ? ` / ${info.maxPlayers}`
-                              : ""}
-                          </dd>
-                        </div>
-                      )}
-                      {session && (
-                        <div>
-                          <dt>
-                            <Flag size={14} aria-hidden="true" />
-                            Session
-                          </dt>
-                          <dd>{session}</dd>
-                        </div>
-                      )}
-                      {info.timeLeft != null && (
-                        <div>
-                          <dt>
-                            <Timer size={14} aria-hidden="true" />
-                            Time remaining
-                          </dt>
-                          <dd>{remainingTime(info.timeLeft)}</dd>
-                        </div>
-                      )}
-                    </dl>
-                  ) : (
-                    <p className="server-unavailable">
-                      {entry.error?.message ??
-                        "Live server details are unavailable."}
-                    </p>
-                  )}
-                  <section
-                    className="server-live-timing"
-                    aria-label={`Live timing for ${entry.server.name}`}
-                  >
-                    <div className="server-live-timing-heading">
-                      <div className="server-live-timing-title">
-                        <Timer size={17} aria-hidden="true" />
-                        <div>
-                          <span>LIVE TIMING</span>
-                          <p className="server-live-timing-name">
-                            {timingUrl ? "Server timing" : "Not configured"}
-                          </p>
-                        </div>
-                      </div>
-                      {timingUrl ? (
-                        <div className="server-live-timing-actions">
-                          {entry.server.embedTiming && !apiTiming && (
-                            <Button
-                              aria-expanded={timingOpen}
-                              aria-controls={timingId}
-                              onClick={() =>
-                                setOpenTimingServerId((current) =>
-                                  current === entry.server.id
-                                    ? null
-                                    : entry.server.id,
-                                )
-                              }
-                            >
-                              {timingOpen ? "Hide timing" : "Show timing"}
-                            </Button>
-                          )}
-                          <a
-                            className="text-link"
-                            href={timingUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            {apiTiming ? "Open JSON source" : "Open full view"}{" "}
-                            <ExternalLink size={13} />
-                          </a>
-                        </div>
-                      ) : (
-                        <span className="server-live-timing-hint">
-                          Add liveTimingUrl in servers.json
-                        </span>
-                      )}
-                    </div>
-                    {timingUrl && apiTiming && (
-                      <LiveTimingData
-                        serverId={entry.server.id}
-                        connected={connected}
-                        active={active && selectedServerId === entry.server.id}
-                      />
-                    )}
-                    {timingUrl && !apiTiming && entry.server.embedTiming && (
-                      <div
-                        id={timingId}
-                        className="server-live-timing-frame-wrap"
-                        hidden={!timingOpen}
-                      >
-                        {timingOpen && (
-                          <>
-                            <iframe
-                              key={entry.server.id + timingUrl}
-                              className="live-timing-frame"
-                              src={timingUrl}
-                              title={`${entry.server.name} live timing`}
-                              sandbox="allow-scripts allow-same-origin"
-                              referrerPolicy="no-referrer"
-                              loading="lazy"
-                            />
-                            <p className="timing-help">
-                              If the timing view is unavailable here, use Open
-                              full view.
-                            </p>
-                          </>
-                        )}
-                      </div>
-                    )}
-                  </section>
-                  {availableCars.length > 0 ? (
-                    <div className="timing-server-choice server-car-choice">
-                      <label htmlFor={`${carSelectId}-${entry.server.id}`}>
-                        Car for this session
-                      </label>
-                      <select
-                        id={`${carSelectId}-${entry.server.id}`}
-                        value={selectedCar}
-                        disabled={!!joining}
-                        onChange={(event) =>
-                          setSelectedCars((current) => ({
-                            ...current,
-                            [entry.server.id]: event.target.value,
-                          }))
-                        }
-                      >
-                        {availableCars.map((car) => (
-                          <option value={car.id} key={car.id}>
-                            {car.name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  ) : entry.state === "online" && info?.cars.length ? (
-                    <p className="server-unavailable">
-                      None of this server’s cars is installed. Install a
-                      permitted car from Content to join.
-                    </p>
-                  ) : null}
-                  {info?.passwordRequired && (
-                    <p className="server-password">
-                      <LockKeyhole size={13} />
-                      Password protected
-                    </p>
-                  )}
-                  <div className="server-card-footer">
-                    <p>Last checked {checkedTime(entry.checkedAt)}</p>
-                    <Button
-                      variant="primary"
-                      disabled={
-                        !connected ||
-                        !active ||
-                        !entry.joinAvailable ||
-                        !!joining
-                      }
-                      onClick={() => void join(entry, selectedCar)}
-                    >
-                      <Play size={14} aria-hidden="true" />
-                      {joining === entry.server.id
-                        ? "Opening Assetto Corsa…"
-                        : "Join server"}
-                    </Button>
-                  </div>
-                </div>
+                  </Modal>
+                )}
               </article>
             );
           })}
