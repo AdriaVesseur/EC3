@@ -145,7 +145,9 @@ test("My Content is temporarily hidden and its old deep link returns Home", asyn
   page,
 }) => {
   await page.goto("/#my-content");
-  await expect(page.getByRole("heading", { name: "Content hub." })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Content hub." }),
+  ).toBeVisible();
   await expect(
     page
       .getByRole("navigation", { name: "Main navigation" })
@@ -335,6 +337,38 @@ test("race readiness explains a missing catalog instead of showing false zeroes"
     fullPage: true,
     animations: "disabled",
   });
+});
+test("Race Ready shows a spinner while content files are being verified", async ({
+  page,
+}) => {
+  await page.route("**/api/status", async (route) => {
+    const response = await route.fetch();
+    const snapshot = await response.json();
+    snapshot.jobs = [
+      {
+        id: "verification-in-progress",
+        packageId: "ec3-demo-car",
+        name: "EC3 Test Car",
+        action: "verify",
+        state: "verifying",
+        bytes: 0,
+        total: 0,
+        bytesPerSecond: 0,
+        checkedFiles: 18,
+        totalFiles: 42,
+        error: null,
+        createdAt: "2026-10-02T12:00:00Z",
+      },
+    ];
+    await route.fulfill({ response, json: snapshot });
+  });
+
+  await page.goto("/");
+  const verification = page
+    .getByRole("region", { name: "Race Ready" })
+    .getByRole("status");
+  await expect(verification).toContainText("Verifying content");
+  await expect(verification.locator("svg")).toHaveClass(/spin/);
 });
 test("offline state never reports race ready and provides installation action", async ({
   page,

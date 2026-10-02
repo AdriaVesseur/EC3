@@ -45,12 +45,7 @@ import { usePortal } from "./usePortal";
 import { portalErrorMessage } from "./portal-types";
 import { AppUpdateNotice, useAppUpdate } from "./AppUpdateNotice";
 type Page =
-  | "home"
-  | "content"
-  | "championship"
-  | "results"
-  | "servers"
-  | "settings";
+  "home" | "content" | "championship" | "results" | "servers" | "settings";
 const pages = [
   ["home", "Home", Home],
   ["content", "Content library", Layers],
@@ -224,6 +219,11 @@ export default function App() {
   const content = snapshot?.content ?? [],
     jobs = snapshot?.jobs ?? [],
     ongoing = jobs.filter((j) => active(j.state)),
+    verificationRunning =
+      connecting ||
+      ongoing.some(
+        (job) => job.state === "checking" || job.state === "verifying",
+      ),
     ready = snapshot?.raceReady,
     cat = snapshot?.catalog,
     canAct = connected && !!snapshot?.assettoPath && !!cat && !pending;
@@ -525,7 +525,7 @@ export default function App() {
                   </div>
                 </section>
                 <section
-                  className={`race-ready-card ${allReady ? "is-ready" : ""}`}
+                  className={`race-ready-card ${allReady && !verificationRunning ? "is-ready" : ""}`}
                   aria-labelledby="race-title"
                 >
                   <div className="race-ready-heading">
@@ -535,28 +535,41 @@ export default function App() {
                     </div>
                     <Badge
                       state={
-                        allReady
-                          ? "ready"
-                          : !connected
-                            ? "offline"
-                            : !cat || !hasRequiredPackages
-                              ? "unverified"
-                              : ongoing.length
-                                ? "downloading"
-                                : "outdated"
+                        verificationRunning
+                          ? "verifying"
+                          : allReady
+                            ? "ready"
+                            : !connected
+                              ? "offline"
+                              : !cat || !hasRequiredPackages
+                                ? "unverified"
+                                : ongoing.length
+                                  ? "downloading"
+                                  : "outdated"
                       }
                     >
-                      {allReady
-                        ? "Ready"
-                        : !connected
-                          ? "Helper offline"
-                          : ongoing.length
-                            ? "In progress"
-                            : !cat
-                              ? "Catalog unavailable"
-                              : !hasRequiredPackages
-                                ? "No requirements yet"
-                                : "Missing content"}
+                      {verificationRunning ? (
+                        <span role="status" aria-live="polite">
+                          <LoaderCircle
+                            size={12}
+                            className="spin"
+                            aria-hidden="true"
+                          />
+                          Verifying content
+                        </span>
+                      ) : allReady ? (
+                        "Ready"
+                      ) : !connected ? (
+                        "Helper offline"
+                      ) : ongoing.length ? (
+                        "In progress"
+                      ) : !cat ? (
+                        "Catalog unavailable"
+                      ) : !hasRequiredPackages ? (
+                        "No requirements yet"
+                      ) : (
+                        "Missing content"
+                      )}
                     </Badge>
                   </div>
                   {cat && hasRequiredPackages ? (

@@ -778,6 +778,14 @@ input:focus-visible {
   background: rgb(172 189 219 / 7%);
   color: #acbddb;
 }
+.badge.verifying .dot {
+  display: none;
+}
+.badge.verifying [role="status"] {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
 .race-ready-heading .badge,
 .compact-list .badge,
 .latest-content-item > .badge {
