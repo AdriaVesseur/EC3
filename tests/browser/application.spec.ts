@@ -342,6 +342,9 @@ test("race readiness explains a missing catalog instead of showing false zeroes"
 test("Race Ready shows a spinner while content files are being verified", async ({
   page,
 }) => {
+  const statusResponse = page.waitForResponse((response) =>
+    response.url().endsWith("/api/status"),
+  );
   await page.route("**/api/status", async (route) => {
     const response = await route.fetch();
     const snapshot = await response.json();
@@ -365,6 +368,7 @@ test("Race Ready shows a spinner while content files are being verified", async 
   });
 
   await page.goto("/");
+  await statusResponse;
   const verification = page
     .getByRole("region", { name: "Race Ready" })
     .getByRole("status");
