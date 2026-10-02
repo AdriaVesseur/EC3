@@ -43,7 +43,7 @@ import { ServersPage } from "./ServersPage";
 import { SponsorsFooter } from "./SponsorsFooter";
 import { usePortal } from "./usePortal";
 import { portalErrorMessage } from "./portal-types";
-import { TeamDriver } from "./TeamDriver";
+import { resolveTeam, TeamDriver } from "./TeamDriver";
 import { AppUpdateNotice, useAppUpdate } from "./AppUpdateNotice";
 type Page =
   "home" | "content" | "championship" | "results" | "servers" | "settings";
@@ -1192,12 +1192,20 @@ export default function App() {
                   results &&
                   (results.standings.length ? (
                     <div className="results-table-wrap">
-                      <table className="results-table">
+                      <table className="results-table championship-standings-table">
+                        <colgroup>
+                          <col className="standings-position-column" />
+                          <col className="standings-number-column" />
+                          <col className="standings-driver-column" />
+                          <col className="standings-team-column" />
+                          <col className="standings-points-column" />
+                        </colgroup>
                         <thead>
                           <tr>
                             <th>Pos</th>
                             <th>#</th>
                             <th>Driver</th>
+                            <th>Team</th>
                             <th>Points</th>
                           </tr>
                         </thead>
@@ -1221,6 +1229,13 @@ export default function App() {
                                   driverName={row.driver}
                                   teams={portal.portal?.teams ?? []}
                                 />
+                              </td>
+                              <td className="standings-team-name">
+                                {resolveTeam(
+                                  row.driver,
+                                  "",
+                                  portal.portal?.teams ?? [],
+                                )?.name ?? ""}
                               </td>
                               <td className="driver-points">{row.points}</td>
                             </tr>

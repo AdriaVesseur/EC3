@@ -775,6 +775,22 @@ test("team marks appear consistently in home standings, Championship and race Re
   await page.route("**/api/status", async (route) => {
     const response = await route.fetch();
     const snapshot = await response.json();
+    snapshot.catalog ??= {
+      manifest: {
+        championship: "https://www.makrobeasts.com/championships/fixture",
+        season: "2026",
+        build: "1.0.0",
+        demo: false,
+        content: [],
+      },
+      championship: {
+        minimumHelperVersion: "1.0.0",
+        resultsUrl: null,
+        requiredContent: [],
+        events: [],
+      },
+      fetchedAt: checkedAt,
+    };
     snapshot.catalog.championship.resultsUrl =
       "https://www.makrobeasts.com/championships/fixture";
     await route.fulfill({ response, json: snapshot });
@@ -827,6 +843,22 @@ test("team marks appear consistently in home standings, Championship and race Re
     .getByRole("navigation", { name: "Main navigation" })
     .getByRole("link", { name: "Championship", exact: true })
     .click();
+  const standings = page.locator(".championship-standings-table");
+  await expect(
+    standings.getByRole("columnheader", { name: "Team" }),
+  ).toBeVisible();
+  await expect(
+    standings.locator("tbody tr").first().locator("td").nth(3),
+  ).toHaveText("EC3 Racing");
+  const positionX = await standings
+    .locator(".standing-position")
+    .first()
+    .evaluate((element) => element.getBoundingClientRect().x);
+  const numberX = await standings
+    .locator(".driver-number")
+    .first()
+    .evaluate((element) => element.getBoundingClientRect().x);
+  expect(numberX - positionX).toBeLessThan(100);
   await expect(page.locator(".results-table .team-driver")).toContainText(
     "EC3 Racing",
   );

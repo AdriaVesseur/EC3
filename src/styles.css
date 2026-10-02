@@ -961,6 +961,31 @@ main {
   border-collapse: collapse;
   text-align: left;
 }
+.championship-standings-table {
+  min-width: 600px;
+  table-layout: fixed;
+}
+.standings-position-column {
+  width: 64px;
+}
+.standings-number-column {
+  width: 92px;
+}
+.standings-team-column {
+  width: 180px;
+}
+.standings-points-column {
+  width: 88px;
+}
+.championship-standings-table th,
+.championship-standings-table td {
+  padding-right: 12px;
+  padding-left: 12px;
+}
+.championship-standings-table .standings-team-name {
+  color: var(--ec3-muted);
+  font-size: 12px;
+}
 .results-table th {
   padding: 13px 18px;
   color: #777f8d;
