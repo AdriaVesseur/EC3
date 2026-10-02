@@ -1129,7 +1129,7 @@ main {
   gap: 12px;
   min-height: 44px;
   padding: 0 18px;
-  color: var(--ec3-primary);
+  color: #f17380;
   font-size: 12px;
   font-weight: 700;
   cursor: pointer;

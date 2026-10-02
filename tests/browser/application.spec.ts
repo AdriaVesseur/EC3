@@ -257,6 +257,7 @@ test("championship shows standings and results shows race classifications", asyn
     await expect(
       page.getByRole("heading", { name: "Race results" }),
     ).toBeVisible();
+    await page.getByText("Full results", { exact: true }).click();
     await expect(
       page.getByText("Sofia Example", { exact: true }),
     ).toBeVisible();
