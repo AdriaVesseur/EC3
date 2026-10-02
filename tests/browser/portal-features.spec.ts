@@ -689,6 +689,12 @@ test("JSON live timing APIs render connected and offline leaderboards instead of
     "style",
     "--team-color: #e52e46;",
   );
+  const driverMark = connectedTable.locator(".team-driver-mark").first();
+  await expect(driverMark).toHaveCSS("border-top-width", "0px");
+  await expect(driverMark).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
+  await expect(
+    connectedTable.locator(".team-driver-mark + .team-driver-accent"),
+  ).toHaveCount(1);
   await expect(
     offlineTable.getByRole("row", { name: /Samuel Fernández/ }),
   ).toBeVisible();

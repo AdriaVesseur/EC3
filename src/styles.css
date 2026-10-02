@@ -999,40 +999,29 @@ main {
 .team-driver {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 7px;
   min-width: 0;
 }
-.team-driver::before {
-  width: 3px;
-  height: 19px;
-  flex: 0 0 3px;
-  border-radius: 2px;
-  background: var(--team-color);
-  content: "";
-}
 .team-driver-mark {
-  position: relative;
-  display: grid;
-  width: 25px;
-  height: 25px;
-  flex: 0 0 25px;
-  place-items: center;
+  display: block;
+  width: 29px;
+  height: 29px;
+  flex: 0 0 29px;
   overflow: hidden;
-  border: 1px solid color-mix(in srgb, var(--team-color) 45%, transparent);
-  border-radius: 5px;
-  background: color-mix(in srgb, var(--team-color) 12%, #191b20);
-  color: var(--team-color);
-  font-size: 11px;
-  font-weight: 700;
+  background: transparent;
 }
 .team-driver-mark img {
-  position: absolute;
-  inset: 0;
+  display: block;
   width: 100%;
   height: 100%;
-  padding: 2px;
   object-fit: contain;
-  background: #191b20;
+}
+.team-driver-accent {
+  width: 2px;
+  height: 21px;
+  flex: 0 0 2px;
+  border-radius: 1px;
+  background: var(--team-color);
 }
 .driver-points {
   color: var(--ec3-primary);

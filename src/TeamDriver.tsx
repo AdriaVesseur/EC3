@@ -45,7 +45,6 @@ export function TeamDriver({
       title={`${driverName} · ${team.name}`}
     >
       <span className="team-driver-mark" aria-hidden="true">
-        <span>{team.name.slice(0, 1).toLocaleUpperCase()}</span>
         <img
           src={team.logo}
           alt=""
@@ -55,6 +54,7 @@ export function TeamDriver({
           }}
         />
       </span>
+      <span className="team-driver-accent" aria-hidden="true" />
       <span>{driverName}</span>
       <span className="sr-only">, {team.name}</span>
     </span>
