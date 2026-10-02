@@ -9,6 +9,14 @@
       "liveTimingNames": []
     },
     {
+      "id": "tc",
+      "name": "TC Racing",
+      "color": "#A3843A",
+      "logo": "https://liquipedia.net/commons/images/7/7e/TC_Racing_allmode.png",
+      "driverNames": ["Enrique Marañón"],
+      "liveTimingNames": []
+    },
+    {
       "id": "srl",
       "name": "Sim Racing Lleida",
       "color": "#FE2700",
