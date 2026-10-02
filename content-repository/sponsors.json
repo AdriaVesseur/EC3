@@ -1,3 +1,11 @@
 {
-  "sponsors": []
+  "sponsors": [
+    {
+      "id": "ec3",
+      "name": "Eurocup3",
+      "logo": "https://grs-team.com/wp-content/uploads/2025/04/Eurocup.webp",
+      "url": "https://eurocup3.org/",
+      "order": 1
+    }
+  ]
 }
