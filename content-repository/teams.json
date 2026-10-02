@@ -1,11 +1,19 @@
 {
   "teams": [
     {
-      "id": "ec3-racing",
-      "name": "EC3 Racing",
+      "id": "var",
+      "name": "Van Amesfort Racing",
       "color": "#FE6500",
       "logo": "https://f4championship.com/images/team/39.png",
       "driverNames": ["Samuel Fernández", "S. Fernández | mkbt.es"],
+      "liveTimingNames": []
+    },
+    {
+      "id": "srl",
+      "name": "Sim Racing Lleida",
+      "color": "#FE2700",
+      "logo": "https://simracinglleida.com/assets/logos/logo.png",
+      "driverNames": ["Edel Calin"],
       "liveTimingNames": []
     }
   ]
