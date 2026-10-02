@@ -65,6 +65,36 @@ const getContentTab = () =>
   location.hash.slice(1).split("?")[0] === "downloads"
     ? "downloads"
     : "library";
+
+const raceTimeSeconds = (value: string) => {
+  const parts = value.split(":").map(Number);
+  if (parts.length < 2 || parts.length > 3 || parts.some(Number.isNaN)) {
+    return null;
+  }
+  return parts.length === 3
+    ? parts[0] * 3600 + parts[1] * 60 + parts[2]
+    : parts[0] * 60 + parts[1];
+};
+
+const formatRaceResultTime = (results: { time: string }[], index: number) => {
+  const time = results[index]?.time ?? "—";
+  if (index === 0) return time;
+  const winnerTime = raceTimeSeconds(results[0]?.time ?? "");
+  const driverTime = raceTimeSeconds(time);
+  if (winnerTime === null || driverTime === null || driverTime < winnerTime) {
+    return time;
+  }
+  const gap = driverTime - winnerTime;
+  const seconds = (gap % 60).toFixed(3).padStart(6, "0");
+  const formatted =
+    gap >= 3600
+      ? `${Math.floor(gap / 3600)}:${String(Math.floor(gap / 60) % 60).padStart(2, "0")}:${seconds}`
+      : gap >= 60
+        ? `${Math.floor(gap / 60)}:${seconds}`
+        : gap.toFixed(3);
+  return `+${formatted}`;
+};
+
 export default function App() {
   const isDesktopApp =
     new URLSearchParams(window.location.search).get("desktop") === "1";
@@ -1482,49 +1512,63 @@ export default function App() {
                                 entries
                               </span>
                             </summary>
-                            {race.sessions.map((session) => (
-                              <section
-                                className="race-session-results"
-                                key={session.name}
-                                aria-label={`${race.name} · ${session.name}`}
-                              >
-                                <h4>{session.name}</h4>
-                                <div className="podium-row podium-columns" aria-hidden="true">
-                                  <span>Pos</span>
-                                  <span>#</span>
-                                  <span>Driver</span>
-                                  <span>Car</span>
-                                  <span>Time</span>
-                                </div>
-                                <div className="podium-list">
-                                  {session.results.map((entry) => (
+                            <div className="race-sessions-grid">
+                              {[...race.sessions]
+                                .sort((a, b) =>
+                                  a.name.localeCompare(b.name, undefined, {
+                                    numeric: true,
+                                  }),
+                                )
+                                .map((session) => (
+                                  <section
+                                    className="race-session-results"
+                                    key={session.name}
+                                    aria-label={`${race.name} · ${session.name}`}
+                                  >
+                                    <h4>{session.name}</h4>
                                     <div
-                                      className={`podium-row podium-${entry.position}`}
-                                      key={`${entry.position}-${entry.driver}`}
+                                      className="podium-row podium-columns"
+                                      aria-hidden="true"
                                     >
-                                      <span className="podium-place">
-                                        {entry.position}
-                                      </span>
-                                      <span className="driver-number">
-                                        {entry.number}
-                                      </span>
-                                      <strong>
-                                        <TeamDriver
-                                          driverName={entry.driver}
-                                          teams={portal.portal?.teams ?? []}
-                                        />
-                                      </strong>
-                                      <span className="result-car">
-                                        {entry.car || "—"}
-                                      </span>
-                                      <span className="podium-time">
-                                        {entry.time}
-                                      </span>
+                                      <span>Pos</span>
+                                      <span>#</span>
+                                      <span>Driver</span>
+                                      <span>Car</span>
+                                      <span>Time / gap</span>
                                     </div>
-                                  ))}
-                                </div>
-                              </section>
-                            ))}
+                                    <div className="podium-list">
+                                      {session.results.map((entry, index) => (
+                                        <div
+                                          className={`podium-row podium-${entry.position}`}
+                                          key={`${entry.position}-${entry.driver}`}
+                                        >
+                                          <span className="podium-place">
+                                            {entry.position}
+                                          </span>
+                                          <span className="driver-number">
+                                            {entry.number}
+                                          </span>
+                                          <strong>
+                                            <TeamDriver
+                                              driverName={entry.driver}
+                                              teams={portal.portal?.teams ?? []}
+                                            />
+                                          </strong>
+                                          <span className="result-car">
+                                            {entry.car || "—"}
+                                          </span>
+                                          <span className="podium-time">
+                                            {formatRaceResultTime(
+                                              session.results,
+                                              index,
+                                            )}
+                                          </span>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </section>
+                                ))}
+                            </div>
                           </details>
                         </article>
                       ))}

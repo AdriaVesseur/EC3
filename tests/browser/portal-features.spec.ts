@@ -712,9 +712,13 @@ test("JSON live timing APIs render connected and offline leaderboards instead of
     "style",
     "--team-color: #e52e46;",
   );
-  const connectedRow = connectedTable.getByRole("row", { name: /Carlos Leiva/ });
+  const connectedRow = connectedTable.getByRole("row", {
+    name: /Carlos Leiva/,
+  });
   const connectedRowBox = await connectedRow.boundingBox();
-  const connectedDriverBox = await connectedRow.locator(".team-driver").boundingBox();
+  const connectedDriverBox = await connectedRow
+    .locator(".team-driver")
+    .boundingBox();
   expect(connectedRowBox).not.toBeNull();
   expect(connectedDriverBox).not.toBeNull();
   expect(
@@ -830,7 +834,7 @@ test("team marks appear consistently in home standings, Championship and race Re
             url: "https://www.makrobeasts.com/championships/fixture",
             sessions: [
               {
-                name: "Race",
+                name: "Carrera 1",
                 results: [
                   {
                     position: 1,
@@ -838,6 +842,46 @@ test("team marks appear consistently in home standings, Championship and race Re
                     driver: "Fixture Driver",
                     car: "EC3 Fixture Car",
                     time: "1:50.000",
+                  },
+                  {
+                    position: 2,
+                    number: "8",
+                    driver: "Second Fixture Driver",
+                    car: "EC3 Fixture Car",
+                    time: "1:50.500",
+                  },
+                  {
+                    position: 3,
+                    number: "9",
+                    driver: "Third Fixture Driver",
+                    car: "EC3 Fixture Car",
+                    time: "1:51.250",
+                  },
+                ],
+              },
+              {
+                name: "Carrera 2",
+                results: [
+                  {
+                    position: 1,
+                    number: "7",
+                    driver: "Fixture Driver",
+                    car: "EC3 Fixture Car",
+                    time: "38:10.125",
+                  },
+                  {
+                    position: 2,
+                    number: "8",
+                    driver: "Second Fixture Driver",
+                    car: "EC3 Fixture Car",
+                    time: "38:10.750",
+                  },
+                  {
+                    position: 3,
+                    number: "9",
+                    driver: "Third Fixture Driver",
+                    car: "EC3 Fixture Car",
+                    time: "38:11.000",
                   },
                 ],
               },
@@ -859,7 +903,9 @@ test("team marks appear consistently in home standings, Championship and race Re
   );
   const previewRow = page.locator(".standings-preview-table tbody tr").first();
   const previewRowBox = await previewRow.boundingBox();
-  const previewDriverBox = await previewRow.locator(".team-driver").boundingBox();
+  const previewDriverBox = await previewRow
+    .locator(".team-driver")
+    .boundingBox();
   expect(previewRowBox).not.toBeNull();
   expect(previewDriverBox).not.toBeNull();
   expect(
@@ -923,13 +969,34 @@ test("team marks appear consistently in home standings, Championship and race Re
   await expect(fullResults).not.toHaveAttribute("open", "");
   await fullResults.getByText("Full results").click();
   await expect(fullResults).toHaveAttribute("open", "");
-  await expect(page.locator(".podium-row .team-driver")).toContainText(
+  await expect(page.locator(".podium-row .team-driver").first()).toContainText(
     "EC3 Racing",
   );
-  await expect(page.locator(".race-session-results h4")).toHaveText("Race");
-  await expect(page.locator(".podium-row:not(.podium-columns)").first()).toContainText(
-    "EC3 Fixture Car",
+  await expect(page.locator(".race-session-results h4")).toHaveText([
+    "Carrera 1",
+    "Carrera 2",
+  ]);
+  await expect(fullResults.locator(".race-results-count")).toHaveText(
+    "6 entries",
   );
+  const resultRows = fullResults.locator(".podium-row:not(.podium-columns)");
+  await expect(resultRows).toHaveCount(6);
+  await expect(resultRows.nth(0).locator(".podium-time")).toHaveText(
+    "1:50.000",
+  );
+  await expect(resultRows.nth(1).locator(".podium-time")).toHaveText("+0.500");
+  await expect(resultRows.nth(2).locator(".podium-time")).toHaveText("+1.250");
+  await expect(resultRows.nth(4).locator(".podium-time")).toHaveText("+0.625");
+  const sessionOne = page.locator(".race-session-results").nth(0);
+  const sessionTwo = page.locator(".race-session-results").nth(1);
+  const sessionOneBox = await sessionOne.boundingBox();
+  const sessionTwoBox = await sessionTwo.boundingBox();
+  expect(sessionOneBox).not.toBeNull();
+  expect(sessionTwoBox).not.toBeNull();
+  expect(sessionOneBox!.x).toBeLessThan(sessionTwoBox!.x);
+  await expect(
+    page.locator(".podium-row:not(.podium-columns)").first(),
+  ).toContainText("EC3 Fixture Car");
   const podiumRow = page.locator(".podium-row:not(.podium-columns)").first();
   const podiumRowBox = await podiumRow.boundingBox();
   const podiumDriverBox = await podiumRow.locator(".team-driver").boundingBox();

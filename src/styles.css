@@ -1058,17 +1058,21 @@ main {
   vertical-align: middle;
 }
 .team-driver-mark {
-  display: block;
-  width: 29px;
-  height: 29px;
-  flex: 0 0 29px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 42px;
+  height: 22px;
+  flex: 0 0 42px;
   overflow: hidden;
   background: transparent;
 }
 .team-driver-mark img {
   display: block;
-  width: 100%;
-  height: 100%;
+  width: auto;
+  max-width: 42px;
+  height: 20px;
+  max-height: 20px;
   object-fit: contain;
 }
 .team-driver-accent {
@@ -1152,14 +1156,21 @@ main {
   font-size: 10px;
   font-weight: 500;
 }
-.race-session-results {
-  padding: 0 18px 12px;
+.race-sessions-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  padding: 0 18px 16px;
 }
-.race-session-results + .race-session-results {
-  border-top: 1px solid #ffffff0b;
+.race-session-results {
+  min-width: 0;
+  padding: 0 12px 8px;
+  border: 1px solid #ffffff0b;
+  background: #111316;
 }
 .race-session-results h4 {
   padding-top: 12px;
+  padding-bottom: 8px;
   color: #9ba2af;
   font-size: 10px;
   font-weight: 700;
@@ -1214,6 +1225,12 @@ main {
   color: #a2a9b4;
   text-align: right;
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+@media (max-width: 900px) {
+  .race-sessions-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 @media (max-width: 620px) {
   .results-source-card .section-heading,
@@ -1234,12 +1251,22 @@ main {
     padding-left: 0;
   }
   .podium-row {
-    grid-template-columns: 22px 30px minmax(90px, 1.2fr) minmax(64px, 0.8fr) 62px;
+    grid-template-columns:
+      22px 30px minmax(90px, 1.2fr) minmax(64px, 0.8fr)
+      62px;
     gap: 8px;
     font-size: 11px;
   }
   .podium-columns {
     font-size: 8px;
+  }
+  .race-sessions-grid {
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+  .race-session-results {
+    padding-right: 8px;
+    padding-left: 8px;
   }
 }
 .event-art {
@@ -3898,7 +3925,9 @@ input:focus-visible {
     padding-inline: 0;
   }
   .podium-row {
-    grid-template-columns: 24px 30px minmax(75px, 1.2fr) minmax(55px, 0.8fr) 60px;
+    grid-template-columns:
+      24px 30px minmax(75px, 1.2fr) minmax(55px, 0.8fr)
+      60px;
     gap: 8px;
     font-size: 11px;
   }
