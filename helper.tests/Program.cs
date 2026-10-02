@@ -65,6 +65,7 @@ try
     Assert(Versions.Compare("1.0.0-rc.1", "1.0.0") < 0, "release after prerelease");
     Assert(!Versions.Valid("1.0.0-01"), "reject leading-zero prerelease");
     ResultsService.ValidateSourceUrl("https://www.makrobeasts.com/championships/porsche-sprint-cup");
+    ResultsService.ValidateSourceUrl("https://www.makrobeasts.com/championships/formula-3-2026#results");
     Assert(true, "accept MakroBeasts championship results source");
     Reject(
         () => ResultsService.ValidateSourceUrl("https://example.com/championships/test"),
@@ -108,13 +109,13 @@ try
         var live = await new ResultsService().Get(
             new Championship(
                 "2026", "1.0.0", "1.0.0", [], [],
-                "https://www.makrobeasts.com/championships/porsche-sprint-cup"
+                "https://www.makrobeasts.com/championships/formula-3-2026#results"
             ),
             force: true
         );
         Assert(live.Standings.Length > 0, "load live MakroBeasts driver standings");
-        Assert(live.Standings.All(standing => standing.TeamNames is null or { Length: 0 }), "keep general profile affiliations out of a driver-only championship");
-        Assert(live.Races.Length > 0 && live.Races.All(r => r.Sessions.Length > 0), "load live MakroBeasts race podiums");
+        Assert(live.Standings.Any(standing => standing.TeamNames?.Length > 0), "match Formula 3 drivers to teams enrolled in the championship");
+        Assert(live.Races.Length == 6 && live.Races.All(r => r.Sessions.Length > 0), "load all six Formula 3 event result summaries");
     }
     if (Environment.GetEnvironmentVariable("EC3_LIVE_TEAM_RESULTS_TEST") == "1")
     {

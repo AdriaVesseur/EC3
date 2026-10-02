@@ -919,10 +919,18 @@ test("team marks appear consistently in home standings, Championship and race Re
     .getByRole("navigation", { name: "Main navigation" })
     .getByRole("link", { name: "Results", exact: true })
     .click();
+  const fullResults = page.locator(".race-full-results");
+  await expect(fullResults).not.toHaveAttribute("open", "");
+  await fullResults.getByText("Full results").click();
+  await expect(fullResults).toHaveAttribute("open", "");
   await expect(page.locator(".podium-row .team-driver")).toContainText(
     "EC3 Racing",
   );
-  const podiumRow = page.locator(".podium-row").first();
+  await expect(page.locator(".race-session-results h4")).toHaveText("Race");
+  await expect(page.locator(".podium-row:not(.podium-columns)").first()).toContainText(
+    "EC3 Fixture Car",
+  );
+  const podiumRow = page.locator(".podium-row:not(.podium-columns)").first();
   const podiumRowBox = await podiumRow.boundingBox();
   const podiumDriverBox = await podiumRow.locator(".team-driver").boundingBox();
   expect(podiumRowBox).not.toBeNull();

@@ -1470,32 +1470,62 @@ export default function App() {
                               Official page <ExternalLink size={14} />
                             </a>
                           </div>
-                          {race.sessions.map((session) => (
-                            <div className="podium-list" key={session.name}>
-                              {session.results.map((entry) => (
-                                <div
-                                  className={`podium-row podium-${entry.position}`}
-                                  key={`${entry.position}-${entry.driver}`}
-                                >
-                                  <span className="podium-place">
-                                    {entry.position}
-                                  </span>
-                                  <span className="driver-number">
-                                    {entry.number}
-                                  </span>
-                                  <strong>
-                                    <TeamDriver
-                                      driverName={entry.driver}
-                                      teams={portal.portal?.teams ?? []}
-                                    />
-                                  </strong>
-                                  <span className="podium-time">
-                                    {entry.time}
-                                  </span>
+                          <details className="race-full-results">
+                            <summary>
+                              <span>Full results</span>
+                              <span className="race-results-count">
+                                {race.sessions.reduce(
+                                  (total, session) =>
+                                    total + session.results.length,
+                                  0,
+                                )}{" "}
+                                entries
+                              </span>
+                            </summary>
+                            {race.sessions.map((session) => (
+                              <section
+                                className="race-session-results"
+                                key={session.name}
+                                aria-label={`${race.name} · ${session.name}`}
+                              >
+                                <h4>{session.name}</h4>
+                                <div className="podium-row podium-columns" aria-hidden="true">
+                                  <span>Pos</span>
+                                  <span>#</span>
+                                  <span>Driver</span>
+                                  <span>Car</span>
+                                  <span>Time</span>
                                 </div>
-                              ))}
-                            </div>
-                          ))}
+                                <div className="podium-list">
+                                  {session.results.map((entry) => (
+                                    <div
+                                      className={`podium-row podium-${entry.position}`}
+                                      key={`${entry.position}-${entry.driver}`}
+                                    >
+                                      <span className="podium-place">
+                                        {entry.position}
+                                      </span>
+                                      <span className="driver-number">
+                                        {entry.number}
+                                      </span>
+                                      <strong>
+                                        <TeamDriver
+                                          driverName={entry.driver}
+                                          teams={portal.portal?.teams ?? []}
+                                        />
+                                      </strong>
+                                      <span className="result-car">
+                                        {entry.car || "—"}
+                                      </span>
+                                      <span className="podium-time">
+                                        {entry.time}
+                                      </span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </section>
+                            ))}
+                          </details>
                         </article>
                       ))}
                     </div>
