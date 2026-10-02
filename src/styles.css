@@ -988,15 +988,6 @@ main {
 .championship-standings-table td {
   vertical-align: middle;
 }
-.championship-standings-table .driver-name {
-  vertical-align: middle;
-  line-height: 1;
-}
-.championship-standings-table .driver-name > .team-driver {
-  height: 29px;
-  align-items: center;
-  vertical-align: middle;
-}
 .championship-standings-table .standings-team-name {
   color: var(--ec3-muted);
   font-size: 12px;
@@ -1033,6 +1024,7 @@ main {
   padding: 12px 18px;
   border-top: 1px solid #ffffff0b;
   font-size: 13px;
+  vertical-align: middle;
 }
 .standing-position {
   color: #9299a5;
@@ -1060,7 +1052,10 @@ main {
   display: inline-flex;
   align-items: center;
   gap: 7px;
+  min-height: 29px;
   min-width: 0;
+  line-height: 1;
+  vertical-align: middle;
 }
 .team-driver-mark {
   display: block;

@@ -712,6 +712,18 @@ test("JSON live timing APIs render connected and offline leaderboards instead of
     "style",
     "--team-color: #e52e46;",
   );
+  const connectedRow = connectedTable.getByRole("row", { name: /Carlos Leiva/ });
+  const connectedRowBox = await connectedRow.boundingBox();
+  const connectedDriverBox = await connectedRow.locator(".team-driver").boundingBox();
+  expect(connectedRowBox).not.toBeNull();
+  expect(connectedDriverBox).not.toBeNull();
+  expect(
+    Math.abs(
+      connectedDriverBox!.y +
+        connectedDriverBox!.height / 2 -
+        (connectedRowBox!.y + connectedRowBox!.height / 2),
+    ),
+  ).toBeLessThan(2);
   const driverMark = connectedTable.locator(".team-driver-mark").first();
   await expect(driverMark).toHaveCSS("border-top-width", "0px");
   await expect(driverMark).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
@@ -845,6 +857,18 @@ test("team marks appear consistently in home standings, Championship and race Re
   await expect(page.locator(".standings-preview .team-driver")).toContainText(
     "EC3 Racing",
   );
+  const previewRow = page.locator(".standings-preview-table tbody tr").first();
+  const previewRowBox = await previewRow.boundingBox();
+  const previewDriverBox = await previewRow.locator(".team-driver").boundingBox();
+  expect(previewRowBox).not.toBeNull();
+  expect(previewDriverBox).not.toBeNull();
+  expect(
+    Math.abs(
+      previewDriverBox!.y +
+        previewDriverBox!.height / 2 -
+        (previewRowBox!.y + previewRowBox!.height / 2),
+    ),
+  ).toBeLessThan(2);
   await page
     .getByRole("navigation", { name: "Main navigation" })
     .getByRole("link", { name: "Championship", exact: true })
@@ -898,6 +922,18 @@ test("team marks appear consistently in home standings, Championship and race Re
   await expect(page.locator(".podium-row .team-driver")).toContainText(
     "EC3 Racing",
   );
+  const podiumRow = page.locator(".podium-row").first();
+  const podiumRowBox = await podiumRow.boundingBox();
+  const podiumDriverBox = await podiumRow.locator(".team-driver").boundingBox();
+  expect(podiumRowBox).not.toBeNull();
+  expect(podiumDriverBox).not.toBeNull();
+  expect(
+    Math.abs(
+      podiumDriverBox!.y +
+        podiumDriverBox!.height / 2 -
+        (podiumRowBox!.y + podiumRowBox!.height / 2),
+    ),
+  ).toBeLessThan(2);
 });
 
 test("missing Content Manager disables Join and a failed refresh labels preserved server data as last known", async ({

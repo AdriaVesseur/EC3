@@ -814,6 +814,9 @@
   text-align: left;
   font-variant-numeric: tabular-nums;
 }
+.live-timing-table td {
+  vertical-align: middle;
+}
 .live-timing-table th {
   color: var(--ec3-quiet);
   font-size: 9px;
