@@ -1,0 +1,63 @@
+{
+  "id": "ec3-car",
+  "version": "1.0.0",
+  "installPath": "content/cars/zr_zallara_z320",
+  "size": 1798602,
+  "sha256": "3f0472bbabfd0925a60865b9e121215452254a0cb1cd679857fde2a164ae2479",
+  "files": [
+    {
+      "path": "skins/ec3 - copia/preview.jpg",
+      "archivePath": "content/cars/zr_zallara_z320/skins/ec3 - copia/preview.jpg",
+      "size": 131538,
+      "sha256": "d5e581c17bbfaa669482f0b617a8fae65f66f55aae11151ec433311c41cb664e"
+    },
+    {
+      "path": "skins/ec3 - copia/livery.png",
+      "archivePath": "content/cars/zr_zallara_z320/skins/ec3 - copia/livery.png",
+      "size": 2590,
+      "sha256": "80495447febc4935a70257485506f83683e60ab2fe08f39c86c37cb6488baf27"
+    },
+    {
+      "path": "skins/ec3 - copia/ui_skin.json",
+      "archivePath": "content/cars/zr_zallara_z320/skins/ec3 - copia/ui_skin.json",
+      "size": 97,
+      "sha256": "7db8a5f527007310b1d1aa6bc7c9cd7d1e6c19beae0f837626c46198ab6d465d"
+    },
+    {
+      "path": "skins/ec3 - copia/cm_skin_for.json",
+      "archivePath": "content/cars/zr_zallara_z320/skins/ec3 - copia/cm_skin_for.json",
+      "size": 31,
+      "sha256": "0a85d4da17e7149d8be18dc52ec3a30b7105434878780cdbe3aa85c3448f6749"
+    },
+    {
+      "path": "skins/ec3 - copia/chassis.dds",
+      "archivePath": "content/cars/zr_zallara_z320/skins/ec3 - copia/chassis.dds",
+      "size": 21335488,
+      "sha256": "ef751b1a4e3d3b39b9024f11671b6dc111e24adcdd4041632ca7962d2dfd3362"
+    },
+    {
+      "path": "skins/ec3 - copia/sponsor_panel.dds",
+      "archivePath": "content/cars/zr_zallara_z320/skins/ec3 - copia/sponsor_panel.dds",
+      "size": 31970528,
+      "sha256": "7dd41f3c1a6323245c0d023dc44f442b2a1b5b1e2618ee19d217dbffc33f68fc"
+    },
+    {
+      "path": "skins/ec3 - copia/tyres.dds",
+      "archivePath": "content/cars/zr_zallara_z320/skins/ec3 - copia/tyres.dds",
+      "size": 1398256,
+      "sha256": "e5e7ffd96f17a6b5030bbeaa723610a79ac5e89fdd49373fa46045f9c38e6ae7"
+    },
+    {
+      "path": "skins/ec3 - copia/rear wing pattern.png",
+      "archivePath": "content/cars/zr_zallara_z320/skins/ec3 - copia/rear wing pattern.png",
+      "size": 21241,
+      "sha256": "7fa9c9f8e544cd0b368f41c105e215cb1b35ddc8e7c3b16bf0cda59b107b05b6"
+    },
+    {
+      "path": "ReadMe.txt",
+      "archivePath": "ReadMe.txt",
+      "size": 194,
+      "sha256": "43ab03b2daf1e155ed6d16b1bb2c1d1c25fa821cdb7c662d3a9bc65b87c55d62"
+    }
+  ]
+}
