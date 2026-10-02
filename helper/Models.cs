@@ -84,7 +84,8 @@ public sealed record ChampionshipStanding(
     int Position,
     string Number,
     string Driver,
-    string Points
+    string Points,
+    string[]? TeamNames = null
 );
 
 public sealed record RaceResultEntry(

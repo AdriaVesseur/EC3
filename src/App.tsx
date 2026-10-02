@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, type CSSProperties } from "react";
 import {
   ArrowRight,
   ArrowUpRight,
@@ -1210,36 +1210,86 @@ export default function App() {
                           </tr>
                         </thead>
                         <tbody>
-                          {results.standings.map((row) => (
-                            <tr key={`${row.position}-${row.driver}`}>
-                              <td>
-                                <span
-                                  className={
-                                    row.position <= 3
-                                      ? `standing-position p${row.position}`
-                                      : "standing-position"
-                                  }
-                                >
-                                  {row.position.toString().padStart(2, "0")}
-                                </span>
-                              </td>
-                              <td className="driver-number">{row.number}</td>
-                              <td className="driver-name">
-                                <TeamDriver
-                                  driverName={row.driver}
-                                  teams={portal.portal?.teams ?? []}
-                                />
-                              </td>
-                              <td className="standings-team-name">
-                                {resolveTeam(
-                                  row.driver,
-                                  "",
-                                  portal.portal?.teams ?? [],
-                                )?.name ?? ""}
-                              </td>
-                              <td className="driver-points">{row.points}</td>
-                            </tr>
-                          ))}
+                          {results.standings.map((row) => {
+                            const teamCatalog = portal.portal?.teams ?? [];
+                            const configuredTeam = resolveTeam(
+                              row.driver,
+                              "",
+                              teamCatalog,
+                            );
+                            const teamNames = [
+                              ...(configuredTeam ? [configuredTeam.name] : []),
+                              ...(row.teamNames ?? []),
+                            ].filter(
+                              (name, index, names) =>
+                                names.findIndex(
+                                  (candidate) =>
+                                    candidate.localeCompare(name, undefined, {
+                                      sensitivity: "base",
+                                    }) === 0,
+                                ) === index,
+                            );
+                            const matchedTeam = (row.teamNames ?? []).find(
+                              (name) => resolveTeam("", name, teamCatalog),
+                            );
+                            return (
+                              <tr key={`${row.position}-${row.driver}`}>
+                                <td>
+                                  <span
+                                    className={
+                                      row.position <= 3
+                                        ? `standing-position p${row.position}`
+                                        : "standing-position"
+                                    }
+                                  >
+                                    {row.position.toString().padStart(2, "0")}
+                                  </span>
+                                </td>
+                                <td className="driver-number">{row.number}</td>
+                                <td className="driver-name">
+                                  <TeamDriver
+                                    driverName={row.driver}
+                                    teamName={matchedTeam ?? ""}
+                                    teams={teamCatalog}
+                                  />
+                                </td>
+                                <td className="standings-team-name">
+                                  <div className="standings-team-list">
+                                    {teamNames.map((name) => {
+                                      const team = resolveTeam(
+                                        "",
+                                        name,
+                                        teamCatalog,
+                                      );
+                                      return (
+                                        <span
+                                          className="standings-team-item"
+                                          key={name}
+                                          style={
+                                            team
+                                              ? ({
+                                                  "--team-color": team.color,
+                                                } as CSSProperties)
+                                              : undefined
+                                          }
+                                        >
+                                          {team ? (
+                                            <img
+                                              src={team.logo}
+                                              alt=""
+                                              loading="lazy"
+                                            />
+                                          ) : null}
+                                          {name}
+                                        </span>
+                                      );
+                                    })}
+                                  </div>
+                                </td>
+                                <td className="driver-points">{row.points}</td>
+                              </tr>
+                            );
+                          })}
                         </tbody>
                       </table>
                     </div>

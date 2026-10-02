@@ -77,6 +77,12 @@ try
         """;
     var standing = ResultsService.ParseStandings(standingsHtml).Single();
     Assert(standing.Position == 1 && standing.Number == "#16" && standing.Driver == "Samuel Fernández" && standing.Points == "64", "parse championship standings");
+    var pilotTeams = ResultsService.ParsePilotTeams("""
+        <a href="/teams/one"><p>Elite Racing Team</p><span>[ERT]</span></a>
+        <a href="/teams/two"><p>La Secsoneta</p><span>[SECSO]</span></a>
+        <a href="/teams/one"><p>Elite Racing Team</p></a>
+        """);
+    Assert(pilotTeams.SequenceEqual(new[] { "Elite Racing Team", "La Secsoneta" }), "parse and deduplicate MakroBeasts pilot teams");
     var meta = ResultsService.ParseEventMeta(
         "<span>R1</span><h3>Ronda 1 | Hockenheim GP</h3><span><i class=\"location-dot\"></i>Hockenheimring GP</span><a href=\"/events/e0cd5f39-2ced-42fe-9a8e-961c06b36e2d/results\">Results</a>",
         "e0cd5f39-2ced-42fe-9a8e-961c06b36e2d",
@@ -100,6 +106,7 @@ try
             force: true
         );
         Assert(live.Standings.Length > 0, "load live MakroBeasts driver standings");
+        Assert(live.Standings.Any(standing => standing.TeamNames?.Length > 0), "load team affiliations from public MakroBeasts profiles");
         Assert(live.Races.Length > 0 && live.Races.All(r => r.Sessions.Length > 0), "load live MakroBeasts race podiums");
     }
     foreach (

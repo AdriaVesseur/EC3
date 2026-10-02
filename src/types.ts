@@ -54,6 +54,7 @@ export type ChampionshipResults = {
     number: string;
     driver: string;
     points: string;
+    teamNames?: string[] | null;
   }[];
   races: {
     id: string;

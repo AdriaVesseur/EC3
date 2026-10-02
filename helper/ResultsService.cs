@@ -14,6 +14,8 @@ public sealed class ResultsService
         DefaultRequestHeaders = { UserAgent = { ProductInfoHeaderValue.Parse("Eurocup3-Helper/1.2.0") } },
     };
     readonly SemaphoreSlim gate = new(1, 1);
+    readonly SemaphoreSlim profileGate = new(6, 6);
+    readonly Dictionary<string, (DateTimeOffset CachedAt, string[] Teams)> profileCache = new(StringComparer.OrdinalIgnoreCase);
     ChampionshipResults? cached;
 
     public async Task<ChampionshipResults> Get(Championship championship, bool force = false, CancellationToken ct = default)
@@ -43,6 +45,20 @@ public sealed class ResultsService
                 throw new AppFault("RESULTS_UNAVAILABLE", "The configured page does not expose a supported championship.");
 
             var standings = ParseStandings(html);
+            using (var profileTimeout = CancellationTokenSource.CreateLinkedTokenSource(ct))
+            {
+                profileTimeout.CancelAfter(TimeSpan.FromSeconds(12));
+                try
+                {
+                    standings = await AddPilotTeams(
+                        html,
+                        new Uri(championship.ResultsUrl),
+                        standings,
+                        profileTimeout.Token
+                    );
+                }
+                catch (OperationCanceledException) when (!ct.IsCancellationRequested) { }
+            }
             var eventIds = Regex.Matches(html, @"data-event=""(?<id>[0-9a-f-]{36})""", RegexOptions.IgnoreCase)
                 .Select(m => m.Groups["id"].Value)
                 .Distinct(StringComparer.OrdinalIgnoreCase)
@@ -119,6 +135,100 @@ public sealed class ResultsService
         return rows.ToArray();
     }
 
+    public static string[] ParsePilotTeams(string html)
+    {
+        var teams = new List<string>();
+        foreach (Match link in Regex.Matches(
+            html,
+            "<a\\b(?=[^>]*href\\s*=\\s*['\\\"]/teams/[^'\\\"]+['\\\"])[^>]*>(?<body>[\\s\\S]*?)</a>",
+            RegexOptions.IgnoreCase
+        ))
+        {
+            var body = link.Groups["body"].Value;
+            var name = Regex.Match(body, "<p\\b[^>]*>(?<name>[\\s\\S]*?)</p>", RegexOptions.IgnoreCase);
+            var value = Clean(name.Success ? name.Groups["name"].Value : body);
+            if (value.Length is 0 or > 100 || teams.Any(team => Normalize(team) == Normalize(value)))
+                continue;
+            teams.Add(value);
+        }
+        return teams.ToArray();
+    }
+
+    async Task<ChampionshipStanding[]> AddPilotTeams(
+        string html,
+        Uri championshipUri,
+        ChampionshipStanding[] standings,
+        CancellationToken ct
+    )
+    {
+        var marker = html.IndexOf("id=\"standings-pane-pilots\"", StringComparison.OrdinalIgnoreCase);
+        if (marker < 0)
+            return standings;
+        var table = Regex.Match(html[marker..], @"<table\b[\s\S]*?</table>", RegexOptions.IgnoreCase);
+        if (!table.Success)
+            return standings;
+
+        var profilePaths = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        foreach (Match row in Regex.Matches(table.Value, @"<tr\b[^>]*>(?<body>[\s\S]*?)</tr>", RegexOptions.IgnoreCase))
+        {
+            var cells = Regex.Matches(row.Groups["body"].Value, @"<td\b[^>]*>(?<body>[\s\S]*?)</td>", RegexOptions.IgnoreCase);
+            if (cells.Count < 4)
+                continue;
+            var driver = Clean(cells[2].Groups["body"].Value);
+            var profile = Regex.Match(cells[2].Groups["body"].Value, "href\\s*=\\s*['\\\"](?<path>/pilot/[^'\\\"?#]+)", RegexOptions.IgnoreCase);
+            if (driver.Length == 0 || !profile.Success)
+                continue;
+            var path = WebUtility.HtmlDecode(profile.Groups["path"].Value);
+            profilePaths[driver] = path;
+        }
+
+        return await Task.WhenAll(standings.Select(async standing =>
+        {
+            if (!profilePaths.TryGetValue(standing.Driver, out var path))
+                return standing;
+            var teams = await GetPilotTeams(championshipUri, path, ct);
+            return standing with { TeamNames = teams };
+        }));
+    }
+
+    async Task<string[]> GetPilotTeams(Uri championshipUri, string path, CancellationToken ct)
+    {
+        if (profileCache.TryGetValue(path, out var cachedProfile)
+            && DateTimeOffset.UtcNow - cachedProfile.CachedAt < TimeSpan.FromHours(1))
+            return cachedProfile.Teams;
+
+        await profileGate.WaitAsync(ct);
+        try
+        {
+            if (profileCache.TryGetValue(path, out cachedProfile)
+                && DateTimeOffset.UtcNow - cachedProfile.CachedAt < TimeSpan.FromHours(1))
+                return cachedProfile.Teams;
+
+            var profileUri = new Uri(championshipUri.GetLeftPart(UriPartial.Authority) + path);
+            using var response = await Http.GetAsync(profileUri, ct);
+            if (!response.IsSuccessStatusCode || response.Content.Headers.ContentLength > 2 * 1024 * 1024)
+                return [];
+            var profileHtml = await response.Content.ReadAsStringAsync(ct);
+            if (profileHtml.Length > 2 * 1024 * 1024)
+                return [];
+            var teams = ParsePilotTeams(profileHtml);
+            profileCache[path] = (DateTimeOffset.UtcNow, teams);
+            return teams;
+        }
+        catch (HttpRequestException) when (!ct.IsCancellationRequested)
+        {
+            return [];
+        }
+        catch (TaskCanceledException) when (!ct.IsCancellationRequested)
+        {
+            return [];
+        }
+        finally
+        {
+            profileGate.Release();
+        }
+    }
+
     public static (string Round, string Name, string Venue) ParseEventMeta(string html, string eventId, int fallbackRound)
     {
         var link = html.IndexOf("/events/" + eventId + "/results", StringComparison.OrdinalIgnoreCase);
@@ -177,4 +287,10 @@ public sealed class ResultsService
             .Trim();
         return Regex.Replace(text, @"\s+", " ");
     }
+
+    static string Normalize(string value) => Regex.Replace(
+        value.Normalize(System.Text.NormalizationForm.FormD),
+        @"\p{Mn}|[^\p{L}\p{N}]",
+        ""
+    ).ToLowerInvariant();
 }

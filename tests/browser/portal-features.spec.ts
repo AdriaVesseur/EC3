@@ -801,7 +801,13 @@ test("team marks appear consistently in home standings, Championship and race Re
         sourceUrl: "https://www.makrobeasts.com/championships/fixture",
         updatedAt: checkedAt,
         standings: [
-          { position: 1, number: "7", driver: "Fixture Driver", points: "25" },
+          {
+            position: 1,
+            number: "7",
+            driver: "Fixture Driver",
+            points: "25",
+            teamNames: ["EC3 Racing", "Fixture Motorsport"],
+          },
         ],
         races: [
           {
@@ -847,9 +853,10 @@ test("team marks appear consistently in home standings, Championship and race Re
   await expect(
     standings.getByRole("columnheader", { name: "Team" }),
   ).toBeVisible();
-  await expect(
-    standings.locator("tbody tr").first().locator("td").nth(3),
-  ).toHaveText("EC3 Racing");
+  const teamCell = standings.locator("tbody tr").first().locator("td").nth(3);
+  await expect(teamCell).toContainText("EC3 Racing");
+  await expect(teamCell).toContainText("Fixture Motorsport");
+  await expect(teamCell.locator("img")).toBeVisible();
   const positionX = await standings
     .locator(".standing-position")
     .first()
@@ -859,6 +866,14 @@ test("team marks appear consistently in home standings, Championship and race Re
     .first()
     .evaluate((element) => element.getBoundingClientRect().x);
   expect(numberX - positionX).toBeLessThan(100);
+  const driverColumnX = await standings
+    .locator("tbody tr td.driver-name")
+    .first()
+    .evaluate((element) => element.getBoundingClientRect().x);
+  const teamColumnX = await teamCell.evaluate(
+    (element) => element.getBoundingClientRect().x,
+  );
+  expect(teamColumnX - driverColumnX).toBeLessThan(650);
   const firstStandingRow = standings.locator("tbody tr").first();
   const rowBox = await firstStandingRow.boundingBox();
   const driverNameBox = await firstStandingRow
