@@ -19,6 +19,20 @@
       ]
     },
     {
+      "id": "ec3-car",
+      "name": "Dallara 326",
+      "type": "car",
+      "version": "1.0.0",
+      "required": true,
+      "icon": "https://exclusivecarregistry.com/images/brands/preview/bid_60.png",
+      "image": "https://i.imgur.com/GCMl8kI.jpeg",
+      "download": "https://github.com/AdriaVesseur/EC3/releases/download/car-ec3/EC.test1.zip",
+      "description": "Coche de prueba para validar la instalación automática desde su ZIP.",
+      "changelog": [
+        "Primera release para probar la instalación automática."
+      ]
+    },
+    {
       "id": "paul-ricard",
       "name": "Paul Ricard",
       "type": "track",
