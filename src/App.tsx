@@ -95,6 +95,9 @@ const formatRaceResultTime = (results: { time: string }[], index: number) => {
   return `+${formatted}`;
 };
 
+const formatRaceSessionName = (name: string) =>
+  name.trim().toLocaleLowerCase() === "carrera" ? "Carrera 1" : name;
+
 export default function App() {
   const isDesktopApp =
     new URLSearchParams(window.location.search).get("desktop") === "1";
@@ -1484,7 +1487,9 @@ export default function App() {
                               <span className="eyebrow">
                                 {race.round} ·{" "}
                                 {race.sessions
-                                  .map((session) => session.name)
+                                  .map((session) =>
+                                    formatRaceSessionName(session.name),
+                                  )
                                   .join(" / ")}
                               </span>
                               <h3>{race.name}</h3>
@@ -1525,7 +1530,9 @@ export default function App() {
                                     key={session.name}
                                     aria-label={`${race.name} · ${session.name}`}
                                   >
-                                    <h4>{session.name}</h4>
+                                    <h4>
+                                      {formatRaceSessionName(session.name)}
+                                    </h4>
                                     <div
                                       className="podium-row podium-columns"
                                       aria-hidden="true"

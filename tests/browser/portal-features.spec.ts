@@ -834,7 +834,7 @@ test("team marks appear consistently in home standings, Championship and race Re
             url: "https://www.makrobeasts.com/championships/fixture",
             sessions: [
               {
-                name: "Carrera 1",
+                name: "Carrera",
                 results: [
                   {
                     position: 1,
@@ -976,6 +976,9 @@ test("team marks appear consistently in home standings, Championship and race Re
     "Carrera 1",
     "Carrera 2",
   ]);
+  await expect(
+    page.locator(".race-result-heading .eyebrow").first(),
+  ).toContainText("Carrera 1 / Carrera 2");
   await expect(fullResults.locator(".race-results-count")).toHaveText(
     "6 entries",
   );
