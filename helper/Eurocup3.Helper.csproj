@@ -7,7 +7,7 @@
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
     <OutputType>WinExe</OutputType>
     <ApplicationIcon>Assets\ec3.ico</ApplicationIcon>
-    <Version>1.3.30</Version>
+    <Version>1.3.31</Version>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>NETSDK1138</NoWarn>
   </PropertyGroup>

@@ -859,6 +859,20 @@ test("team marks appear consistently in home standings, Championship and race Re
     .first()
     .evaluate((element) => element.getBoundingClientRect().x);
   expect(numberX - positionX).toBeLessThan(100);
+  const firstStandingRow = standings.locator("tbody tr").first();
+  const rowBox = await firstStandingRow.boundingBox();
+  const driverNameBox = await firstStandingRow
+    .locator(".driver-name .team-driver > span:nth-child(3)")
+    .boundingBox();
+  expect(rowBox).not.toBeNull();
+  expect(driverNameBox).not.toBeNull();
+  expect(
+    Math.abs(
+      driverNameBox!.y +
+        driverNameBox!.height / 2 -
+        (rowBox!.y + rowBox!.height / 2),
+    ),
+  ).toBeLessThan(2);
   await expect(page.locator(".results-table .team-driver")).toContainText(
     "EC3 Racing",
   );

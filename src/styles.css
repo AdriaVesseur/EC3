@@ -982,6 +982,18 @@ main {
   padding-right: 12px;
   padding-left: 12px;
 }
+.championship-standings-table td {
+  vertical-align: middle;
+}
+.championship-standings-table .driver-name {
+  vertical-align: middle;
+  line-height: 1;
+}
+.championship-standings-table .driver-name > .team-driver {
+  height: 29px;
+  align-items: center;
+  vertical-align: middle;
+}
 .championship-standings-table .standings-team-name {
   color: var(--ec3-muted);
   font-size: 12px;
