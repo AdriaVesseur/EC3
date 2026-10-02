@@ -77,12 +77,19 @@ try
         """;
     var standing = ResultsService.ParseStandings(standingsHtml).Single();
     Assert(standing.Position == 1 && standing.Number == "#16" && standing.Driver == "Samuel Fernández" && standing.Points == "64", "parse championship standings");
-    var pilotTeams = ResultsService.ParsePilotTeams("""
-        <a href="/teams/one"><p>Elite Racing Team</p><span>[ERT]</span></a>
-        <a href="/teams/two"><p>La Secsoneta</p><span>[SECSO]</span></a>
-        <a href="/teams/one"><p>Elite Racing Team</p></a>
+    var competitionTeams = ResultsService.ParseCompetitionTeams("""
+        <div id="standings-pane-teams"><table><tbody>
+        <tr><td>1</td><td><img src="logo.png"><a href="/teams/one">Beasts Sim Racing</a></td><td>3</td><td>100</td></tr>
+        <tr><td>2</td><td><a href="/teams/two">Elite Racing Academy</a></td><td>2</td><td>83</td></tr>
+        </tbody></table></div>
         """);
-    Assert(pilotTeams.SequenceEqual(new[] { "Elite Racing Team", "La Secsoneta" }), "parse and deduplicate MakroBeasts pilot teams");
+    Assert(competitionTeams.SequenceEqual(new[] { ("Beasts Sim Racing", "/teams/one"), ("Elite Racing Academy", "/teams/two") }), "parse teams participating in the configured championship");
+    var teamDrivers = ResultsService.ParseTeamDrivers("""
+        <a href="/pilot/driver-one"><img src="avatar.png" alt=""></a>
+        <a href="/pilot/driver-one">Samuel Fernández</a>
+        <a href="/pilot/driver-two">Pau Espina</a>
+        """);
+    Assert(teamDrivers.SequenceEqual(new[] { "Samuel Fernández", "Pau Espina" }), "parse deduplicated drivers from a championship team roster");
     var meta = ResultsService.ParseEventMeta(
         "<span>R1</span><h3>Ronda 1 | Hockenheim GP</h3><span><i class=\"location-dot\"></i>Hockenheimring GP</span><a href=\"/events/e0cd5f39-2ced-42fe-9a8e-961c06b36e2d/results\">Results</a>",
         "e0cd5f39-2ced-42fe-9a8e-961c06b36e2d",
@@ -106,8 +113,20 @@ try
             force: true
         );
         Assert(live.Standings.Length > 0, "load live MakroBeasts driver standings");
-        Assert(live.Standings.Any(standing => standing.TeamNames?.Length > 0), "load team affiliations from public MakroBeasts profiles");
+        Assert(live.Standings.All(standing => standing.TeamNames is null or { Length: 0 }), "keep general profile affiliations out of a driver-only championship");
         Assert(live.Races.Length > 0 && live.Races.All(r => r.Sessions.Length > 0), "load live MakroBeasts race podiums");
+    }
+    if (Environment.GetEnvironmentVariable("EC3_LIVE_TEAM_RESULTS_TEST") == "1")
+    {
+        var live = await new ResultsService().Get(
+            new Championship(
+                "2026", "1.0.0", "1.0.0", [], [],
+                "https://makrobeasts.com/championships/porsche-sprint-cup-s2-2026"
+            ),
+            force: true
+        );
+        Assert(live.Standings.Length > 0, "load live MakroBeasts team-championship driver standings");
+        Assert(live.Standings.Any(standing => standing.TeamNames?.Length > 0), "match standings drivers to teams enrolled in that championship");
     }
     foreach (
         var p in new[]

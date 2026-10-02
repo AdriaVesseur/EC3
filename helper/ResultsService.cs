@@ -14,8 +14,8 @@ public sealed class ResultsService
         DefaultRequestHeaders = { UserAgent = { ProductInfoHeaderValue.Parse("Eurocup3-Helper/1.2.0") } },
     };
     readonly SemaphoreSlim gate = new(1, 1);
-    readonly SemaphoreSlim profileGate = new(6, 6);
-    readonly Dictionary<string, (DateTimeOffset CachedAt, string[] Teams)> profileCache = new(StringComparer.OrdinalIgnoreCase);
+    readonly SemaphoreSlim teamRosterGate = new(6, 6);
+    readonly Dictionary<string, (DateTimeOffset CachedAt, string[] Drivers)> teamRosterCache = new(StringComparer.OrdinalIgnoreCase);
     ChampionshipResults? cached;
 
     public async Task<ChampionshipResults> Get(Championship championship, bool force = false, CancellationToken ct = default)
@@ -45,16 +45,16 @@ public sealed class ResultsService
                 throw new AppFault("RESULTS_UNAVAILABLE", "The configured page does not expose a supported championship.");
 
             var standings = ParseStandings(html);
-            using (var profileTimeout = CancellationTokenSource.CreateLinkedTokenSource(ct))
+            using (var teamTimeout = CancellationTokenSource.CreateLinkedTokenSource(ct))
             {
-                profileTimeout.CancelAfter(TimeSpan.FromSeconds(12));
+                teamTimeout.CancelAfter(TimeSpan.FromSeconds(12));
                 try
                 {
-                    standings = await AddPilotTeams(
+                    standings = await AddCompetitionTeams(
                         html,
                         new Uri(championship.ResultsUrl),
                         standings,
-                        profileTimeout.Token
+                        teamTimeout.Token
                     );
                 }
                 catch (OperationCanceledException) when (!ct.IsCancellationRequested) { }
@@ -135,85 +135,103 @@ public sealed class ResultsService
         return rows.ToArray();
     }
 
-    public static string[] ParsePilotTeams(string html)
+    public static (string Name, string Path)[] ParseCompetitionTeams(string html)
     {
-        var teams = new List<string>();
-        foreach (Match link in Regex.Matches(
-            html,
-            "<a\\b(?=[^>]*href\\s*=\\s*['\\\"]/teams/[^'\\\"]+['\\\"])[^>]*>(?<body>[\\s\\S]*?)</a>",
-            RegexOptions.IgnoreCase
-        ))
+        var marker = Regex.Match(html, "id\\s*=\\s*['\\\"]standings-pane-teams['\\\"]", RegexOptions.IgnoreCase);
+        if (!marker.Success)
+            return [];
+        var table = Regex.Match(html[marker.Index..], @"<table\b[\s\S]*?</table>", RegexOptions.IgnoreCase);
+        if (!table.Success)
+            return [];
+
+        var teams = new List<(string Name, string Path)>();
+        foreach (Match row in Regex.Matches(table.Value, @"<tr\b[^>]*>(?<body>[\s\S]*?)</tr>", RegexOptions.IgnoreCase))
         {
-            var body = link.Groups["body"].Value;
-            var name = Regex.Match(body, "<p\\b[^>]*>(?<name>[\\s\\S]*?)</p>", RegexOptions.IgnoreCase);
-            var value = Clean(name.Success ? name.Groups["name"].Value : body);
-            if (value.Length is 0 or > 100 || teams.Any(team => Normalize(team) == Normalize(value)))
+            var cells = Regex.Matches(row.Groups["body"].Value, @"<td\b[^>]*>(?<body>[\s\S]*?)</td>", RegexOptions.IgnoreCase);
+            if (cells.Count < 2)
                 continue;
-            teams.Add(value);
+            var link = Regex.Match(cells[1].Groups["body"].Value,
+                "<a\\b[^>]*href\\s*=\\s*['\\\"](?<path>/teams/[^'\\\"?#]+)['\\\"][^>]*>(?<name>[\\s\\S]*?)</a>",
+                RegexOptions.IgnoreCase);
+            if (!link.Success)
+                continue;
+            var name = Clean(link.Groups["name"].Value);
+            var path = WebUtility.HtmlDecode(link.Groups["path"].Value);
+            if (name.Length is 0 or > 100 || teams.Any(team => team.Path.Equals(path, StringComparison.OrdinalIgnoreCase)))
+                continue;
+            teams.Add((name, path));
         }
         return teams.ToArray();
     }
 
-    async Task<ChampionshipStanding[]> AddPilotTeams(
+    public static string[] ParseTeamDrivers(string html)
+    {
+        var drivers = new List<string>();
+        foreach (Match link in Regex.Matches(
+            html,
+            "<a\\b[^>]*href\\s*=\\s*['\\\"]/pilot/[^'\\\"?#]+['\\\"][^>]*>(?<body>[\\s\\S]*?)</a>",
+            RegexOptions.IgnoreCase
+        ))
+        {
+            var name = Clean(link.Groups["body"].Value);
+            if (name.Length is 0 or > 100 || drivers.Any(driver => Normalize(driver) == Normalize(name)))
+                continue;
+            drivers.Add(name);
+        }
+        return drivers.ToArray();
+    }
+
+    async Task<ChampionshipStanding[]> AddCompetitionTeams(
         string html,
         Uri championshipUri,
         ChampionshipStanding[] standings,
         CancellationToken ct
     )
     {
-        var marker = html.IndexOf("id=\"standings-pane-pilots\"", StringComparison.OrdinalIgnoreCase);
-        if (marker < 0)
+        var teams = ParseCompetitionTeams(html);
+        if (teams.Length == 0 || standings.Length == 0)
             return standings;
-        var table = Regex.Match(html[marker..], @"<table\b[\s\S]*?</table>", RegexOptions.IgnoreCase);
-        if (!table.Success)
-            return standings;
-
-        var profilePaths = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-        foreach (Match row in Regex.Matches(table.Value, @"<tr\b[^>]*>(?<body>[\s\S]*?)</tr>", RegexOptions.IgnoreCase))
+        var driversByTeam = await Task.WhenAll(teams.Select(async team =>
         {
-            var cells = Regex.Matches(row.Groups["body"].Value, @"<td\b[^>]*>(?<body>[\s\S]*?)</td>", RegexOptions.IgnoreCase);
-            if (cells.Count < 4)
-                continue;
-            var driver = Clean(cells[2].Groups["body"].Value);
-            var profile = Regex.Match(cells[2].Groups["body"].Value, "href\\s*=\\s*['\\\"](?<path>/pilot/[^'\\\"?#]+)", RegexOptions.IgnoreCase);
-            if (driver.Length == 0 || !profile.Success)
-                continue;
-            var path = WebUtility.HtmlDecode(profile.Groups["path"].Value);
-            profilePaths[driver] = path;
-        }
-
-        return await Task.WhenAll(standings.Select(async standing =>
-        {
-            if (!profilePaths.TryGetValue(standing.Driver, out var path))
-                return standing;
-            var teams = await GetPilotTeams(championshipUri, path, ct);
-            return standing with { TeamNames = teams };
+            var drivers = await GetTeamDrivers(championshipUri, team.Path, ct);
+            return (team.Name, Drivers: drivers.Select(Normalize).ToHashSet(StringComparer.Ordinal));
         }));
+
+        return standings.Select(standing => standing with
+        {
+            TeamNames = driversByTeam
+                .Where(team => team.Drivers.Contains(Normalize(standing.Driver)))
+                .Select(team => team.Name)
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToArray()
+        }).ToArray();
     }
 
-    async Task<string[]> GetPilotTeams(Uri championshipUri, string path, CancellationToken ct)
+    async Task<string[]> GetTeamDrivers(Uri championshipUri, string path, CancellationToken ct)
     {
-        if (profileCache.TryGetValue(path, out var cachedProfile)
-            && DateTimeOffset.UtcNow - cachedProfile.CachedAt < TimeSpan.FromHours(1))
-            return cachedProfile.Teams;
+        if (!path.StartsWith("/teams/", StringComparison.OrdinalIgnoreCase))
+            return [];
+        if (teamRosterCache.TryGetValue(path, out var cachedRoster)
+            && DateTimeOffset.UtcNow - cachedRoster.CachedAt < TimeSpan.FromHours(1))
+            return cachedRoster.Drivers;
 
-        await profileGate.WaitAsync(ct);
+        await teamRosterGate.WaitAsync(ct);
         try
         {
-            if (profileCache.TryGetValue(path, out cachedProfile)
-                && DateTimeOffset.UtcNow - cachedProfile.CachedAt < TimeSpan.FromHours(1))
-                return cachedProfile.Teams;
+            if (teamRosterCache.TryGetValue(path, out cachedRoster)
+                && DateTimeOffset.UtcNow - cachedRoster.CachedAt < TimeSpan.FromHours(1))
+                return cachedRoster.Drivers;
 
-            var profileUri = new Uri(championshipUri.GetLeftPart(UriPartial.Authority) + path);
-            using var response = await Http.GetAsync(profileUri, ct);
+            var teamUri = new Uri(championshipUri.GetLeftPart(UriPartial.Authority) + path);
+            using var response = await Http.GetAsync(teamUri, ct);
             if (!response.IsSuccessStatusCode || response.Content.Headers.ContentLength > 2 * 1024 * 1024)
                 return [];
-            var profileHtml = await response.Content.ReadAsStringAsync(ct);
-            if (profileHtml.Length > 2 * 1024 * 1024)
+            var teamHtml = await response.Content.ReadAsStringAsync(ct);
+            if (teamHtml.Length > 2 * 1024 * 1024)
                 return [];
-            var teams = ParsePilotTeams(profileHtml);
-            profileCache[path] = (DateTimeOffset.UtcNow, teams);
-            return teams;
+            var drivers = ParseTeamDrivers(teamHtml);
+            teamRosterCache[path] = (DateTimeOffset.UtcNow, drivers);
+            return drivers;
         }
         catch (HttpRequestException) when (!ct.IsCancellationRequested)
         {
@@ -225,7 +243,7 @@ public sealed class ResultsService
         }
         finally
         {
-            profileGate.Release();
+            teamRosterGate.Release();
         }
     }
 
