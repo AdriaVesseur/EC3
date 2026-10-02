@@ -1,7 +1,7 @@
 [Setup]
 AppId={{C6CA9810-EC30-4FB2-86DB-40608F30F240}
 AppName=Eurocup 3 Content Manager
-AppVersion=1.3.26
+AppVersion=1.3.27
 AppPublisher=Eurocup 3
 DefaultDirName={localappdata}\Programs\Eurocup3
 DefaultGroupName=Eurocup 3

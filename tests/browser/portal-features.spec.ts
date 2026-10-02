@@ -62,6 +62,7 @@ function portalResponse(): PortalResponse {
   return {
     servers: [practice, race],
     sponsors: [],
+    teams: [],
     errors: [],
     fetchedAt: checkedAt,
   };
@@ -279,8 +280,10 @@ test("Servers loads only when opened, shows reported details and joins the selec
     .click();
   const serverColumns = await page
     .locator(".servers-grid")
-    .evaluate((element) =>
-      getComputedStyle(element).gridTemplateColumns.trim().split(/\s+/).length,
+    .evaluate(
+      (element) =>
+        getComputedStyle(element).gridTemplateColumns.trim().split(/\s+/)
+          .length,
     );
   expect(serverColumns).toBe(1);
   const card = page
@@ -342,9 +345,7 @@ test("Servers loads only when opened, shows reported details and joins the selec
   await practiceDetails
     .getByRole("button", { name: /EC3 Alternate Car/ })
     .click();
-  await expect(
-    carPicker.locator("summary"),
-  ).toContainText("EC3 Alternate Car");
+  await expect(carPicker.locator("summary")).toContainText("EC3 Alternate Car");
   await expect(carPicker.locator(".server-car-picker-menu")).toBeHidden();
   await expect(practiceDetails.locator(".server-details > div")).toHaveCount(3);
   await expect(practiceDetails.locator(".server-details dt").first()).toHaveCSS(
@@ -502,9 +503,9 @@ test("server cards use the matched circuit artwork and clean circuit name", asyn
   await expect(
     details.locator(".server-detail-option-artwork img"),
   ).toHaveAttribute("src", circuitImage);
-  await expect(
-    details.locator(".server-detail-option-copy strong"),
-  ).toHaveText("Kyalami");
+  await expect(details.locator(".server-detail-option-copy strong")).toHaveText(
+    "Kyalami",
+  );
 });
 
 test("configured timing switches between an embedded view and an external page; sponsors retain their links and logo", async ({
@@ -641,6 +642,27 @@ test("JSON live timing APIs render connected and offline leaderboards instead of
   const apiUrl =
     "http://94.23.107.62:8772/api/live-timings/leaderboard.json?server=1";
   await mockFeatures(page, {
+    portal: () => ({
+      ...portalResponse(),
+      teams: [
+        {
+          id: "ec3-racing",
+          name: "EC3 Racing",
+          color: "#e52e46",
+          logo: "https://assets.example.test/ec3-logo.svg",
+          driverNames: ["Carlos Leiva"],
+          liveTimingNames: ["EC3 Racing"],
+        },
+        {
+          id: "team-sixteen",
+          name: "Team 16",
+          color: "#3c9b81",
+          logo: "https://assets.example.test/team-16.svg",
+          driverNames: ["Samuel Fernández"],
+          liveTimingNames: ["Team 16"],
+        },
+      ],
+    }),
     servers: () => {
       const response = serverResponse();
       response.servers[0].server = {
@@ -660,19 +682,115 @@ test("JSON live timing APIs render connected and offline leaderboards instead of
   await expect(
     connectedTable.getByRole("row", { name: /Carlos Leiva/ }),
   ).toBeVisible();
+  await expect(connectedTable.locator(".team-driver")).toContainText(
+    "EC3 Racing",
+  );
+  await expect(connectedTable.locator(".team-driver")).toHaveAttribute(
+    "style",
+    "--team-color: #e52e46;",
+  );
   await expect(
     offlineTable.getByRole("row", { name: /Samuel Fernández/ }),
   ).toBeVisible();
+  await expect(offlineTable.locator(".team-driver")).toContainText("Team 16");
   await expect(page.getByText("Connected drivers")).toBeVisible();
   await expect(page.getByText("1:47.488")).toBeVisible();
   await expect(page.getByText("Offline drivers")).toBeVisible();
   await expect(page.getByText("1:48.123")).toBeVisible();
   await expect(page.locator("iframe.live-timing-frame")).toHaveCount(0);
-  await expect(page.getByRole("link", { name: "Open JSON source" })).toHaveCount(0);
+  await expect(
+    page.getByRole("link", { name: "Open JSON source" }),
+  ).toHaveCount(0);
   expect(
     (await new AxeBuilder({ page }).exclude(".live-timing-frame").analyze())
       .violations,
   ).toEqual([]);
+});
+
+test("team marks appear consistently in home standings, Championship and race Results", async ({
+  page,
+}) => {
+  const logo = "https://assets.example.test/ec3-team.svg";
+  await mockFeatures(page, {
+    portal: () => ({
+      ...portalResponse(),
+      teams: [
+        {
+          id: "ec3-racing",
+          name: "EC3 Racing",
+          color: "#e52e46",
+          logo,
+          driverNames: ["Fixture Driver"],
+          liveTimingNames: [],
+        },
+      ],
+    }),
+  });
+  await page.route("**/api/status", async (route) => {
+    const response = await route.fetch();
+    const snapshot = await response.json();
+    snapshot.catalog.championship.resultsUrl =
+      "https://www.makrobeasts.com/championships/fixture";
+    await route.fulfill({ response, json: snapshot });
+  });
+  await page.route(`${api}/results**`, (route) =>
+    route.fulfill({
+      json: {
+        sourceUrl: "https://www.makrobeasts.com/championships/fixture",
+        updatedAt: checkedAt,
+        standings: [
+          { position: 1, number: "7", driver: "Fixture Driver", points: "25" },
+        ],
+        races: [
+          {
+            id: "round-one",
+            round: "R1",
+            name: "Round 1",
+            venue: "Fixture Circuit",
+            url: "https://www.makrobeasts.com/championships/fixture",
+            sessions: [
+              {
+                name: "Race",
+                results: [
+                  {
+                    position: 1,
+                    number: "7",
+                    driver: "Fixture Driver",
+                    car: "EC3 Fixture Car",
+                    time: "1:50.000",
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    }),
+  );
+  await page.route(logo, (route) =>
+    route.fulfill({
+      contentType: "image/svg+xml",
+      body: '<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80"><rect width="80" height="80" fill="#fff"/></svg>',
+    }),
+  );
+  await page.goto("/");
+  await expect(page.locator(".standings-preview .team-driver")).toContainText(
+    "EC3 Racing",
+  );
+  await page
+    .getByRole("navigation", { name: "Main navigation" })
+    .getByRole("link", { name: "Championship", exact: true })
+    .click();
+  await expect(page.locator(".results-table .team-driver")).toContainText(
+    "EC3 Racing",
+  );
+  await page
+    .getByRole("navigation", { name: "Main navigation" })
+    .getByRole("link", { name: "Results", exact: true })
+    .click();
+  await expect(page.locator(".podium-row .team-driver")).toContainText(
+    "EC3 Racing",
+  );
 });
 
 test("missing Content Manager disables Join and a failed refresh labels preserved server data as last known", async ({

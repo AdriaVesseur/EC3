@@ -103,11 +103,37 @@ public static class PortalTests
         reject(() => PortalConfigService.ParseSponsors(JsonSerializer.Serialize(new { sponsors = new[] { sponsor with { Url = "http://sponsor.example.com" } } }, Json.Options)),
             "sponsor website must use HTTPS");
 
+        var team = new PortalTeam("ec3-racing", "EC3 Racing", "#E52E46",
+            "https://images.example.com/ec3-racing.png", ["Carlos Leiva"], ["EC3 Racing", "EC3"]);
+        var teams = PortalConfigService.ParseTeams(JsonSerializer.Serialize(new { teams = new[] { team } }, Json.Options));
+        assert(teams.Length == 1 && teams[0].Id == team.Id && teams[0].Name == team.Name &&
+            teams[0].Color == team.Color && teams[0].Logo == team.Logo &&
+            teams[0].DriverNames.SequenceEqual(team.DriverNames) &&
+            teams[0].LiveTimingNames.SequenceEqual(team.LiveTimingNames),
+            "portal preserves team colors, logos and matching aliases");
+        assert(PortalConfigService.ParseTeams("{\"teams\":[]}").Length == 0,
+            "empty team configuration is valid while the organizer fills it in");
+        reject(() => PortalConfigService.ParseTeams(JsonSerializer.Serialize(new { teams = new[] { team, team with { Id = "ec3-junior" } } }, Json.Options)),
+            "portal rejects a driver assigned to two teams");
+        reject(() => PortalConfigService.ParseTeams(JsonSerializer.Serialize(new { teams = new[]
+        {
+            team with { DriverNames = ["Sergi Morera"] },
+            team with { Id = "ec3-junior", DriverNames = ["Sergí-Morera"] },
+        } }, Json.Options)), "portal rejects aliases that normalize to the same driver name");
+        reject(() => PortalConfigService.ParseTeams(JsonSerializer.Serialize(new { teams = new[] { team with { Color = "red" } } }, Json.Options)),
+            "team color must be a CSS-safe six-digit hex value");
+        reject(() => PortalConfigService.ParseTeams(JsonSerializer.Serialize(new { teams = new[] { team with { Logo = "data:image/png;base64,AAAA" } } }, Json.Options)),
+            "team logos require a public HTTPS URL");
+        reject(() => PortalConfigService.ParseTeams("{\"teams\":[{\"id\":\"team-one\",\"name\":\"Team\",\"color\":\"#123456\",\"logo\":\"https://x.example/logo.png\",\"driverNames\":[]}] }"),
+            "team config rejects missing alias sources");
+
         const string manifest = "https://raw.githubusercontent.com/AdriaVesseur/EC3/main/content-repository/manifest.json";
         assert(PortalConfigService.BuildConfigUrl(manifest, "AdriaVesseur/EC3", "servers.json") ==
             "https://raw.githubusercontent.com/AdriaVesseur/EC3/main/content-repository/servers.json", "portal config derives trusted catalog directory");
         assert(PortalConfigService.BuildConfigUrl("http://127.0.0.1:32146/manifest.json", "AdriaVesseur/EC3", "sponsors.json", true) ==
             "http://127.0.0.1:32146/sponsors.json", "portal test fixture supports only dedicated catalog origin");
+        assert(PortalConfigService.BuildConfigUrl(manifest, "AdriaVesseur/EC3", "teams.json") ==
+            "https://raw.githubusercontent.com/AdriaVesseur/EC3/main/content-repository/teams.json", "team config uses the trusted catalog repository");
         reject(() => PortalConfigService.BuildConfigUrl("http://127.0.0.1:32146/manifest.json", "AdriaVesseur/EC3", "servers.json"),
             "portal loopback fixture is disabled outside test mode");
         reject(() => PortalConfigService.BuildConfigUrl(manifest.Replace("AdriaVesseur/EC3", "attacker/repo"), "AdriaVesseur/EC3", "servers.json"),

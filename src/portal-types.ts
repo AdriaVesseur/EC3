@@ -18,9 +18,18 @@ export type Sponsor = {
   url: string;
   order?: number;
 };
+export type Team = {
+  id: string;
+  name: string;
+  color: string;
+  logo: string;
+  driverNames: string[];
+  liveTimingNames: string[];
+};
 export type PortalResponse = {
   servers: ServerConfig[];
   sponsors: Sponsor[];
+  teams: Team[];
   errors: (PortalError | string)[];
   fetchedAt: string;
 };

@@ -17,6 +17,7 @@ import {
 import { api } from "./api";
 import { Badge, Button, EmptyState, Modal } from "./components";
 import type { Package } from "./types";
+import { TeamDriver } from "./TeamDriver";
 import {
   httpsUrl,
   isJsonTimingUrl,
@@ -27,6 +28,7 @@ import {
   type ServerJoinResponse,
   type ServerStatus,
   type ServersResponse,
+  type Team,
 } from "./portal-types";
 import { usePortalResource } from "./usePortal";
 import "./portal.css";
@@ -119,10 +121,12 @@ const displayTrackName = (value: string | null | undefined) => {
 function TimingDriverTable({
   title,
   drivers,
+  teams,
   offline = false,
 }: {
   title: string;
   drivers: LiveTimingDriver[];
+  teams: Team[];
   offline?: boolean;
 }) {
   return (
@@ -154,7 +158,13 @@ function TimingDriverTable({
                 <tr key={`${driver.position}-${driver.number}-${driver.name}`}>
                   <td>{driver.position}</td>
                   <td>{driver.number || "—"}</td>
-                  <td>{driver.name || "Unknown driver"}</td>
+                  <td>
+                    <TeamDriver
+                      driverName={driver.name || "Unknown driver"}
+                      teamName={driver.team}
+                      teams={teams}
+                    />
+                  </td>
                   <td>{driver.car || "—"}</td>
                   <td>{driver.laps}</td>
                   <td>{lapTime(driver.bestLapSeconds)}</td>
@@ -185,10 +195,12 @@ function LiveTimingData({
   serverId,
   connected,
   active,
+  teams,
 }: {
   serverId: string;
   connected: boolean;
   active: boolean;
+  teams: Team[];
 }) {
   const [data, setData] = useState<LiveTimingSnapshot | null>(null);
   const [error, setError] = useState("");
@@ -270,10 +282,15 @@ function LiveTimingData({
       )}
       {data && (
         <>
-          <TimingDriverTable title="Connected drivers" drivers={data.drivers} />
+          <TimingDriverTable
+            title="Connected drivers"
+            drivers={data.drivers}
+            teams={teams}
+          />
           <TimingDriverTable
             title="Offline drivers"
             drivers={data.offlineDrivers}
+            teams={teams}
             offline
           />
         </>
@@ -291,10 +308,12 @@ export function ServersPage({
   connected,
   active = true,
   packages = [],
+  teams = [],
 }: {
   connected: boolean;
   active?: boolean;
   packages?: Package[];
+  teams?: Team[];
 }) {
   const { data, loading, error, refresh, stale } =
     usePortalResource<ServersResponse>("/servers", connected, active, 30000);
@@ -836,6 +855,7 @@ export function ServersPage({
                           active={
                             active && selectedServerId === entry.server.id
                           }
+                          teams={teams}
                         />
                       )}
                       {timingUrl && !apiTiming && entry.server.embedTiming && (

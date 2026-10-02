@@ -1,7 +1,9 @@
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using System.Net;
+using System.Globalization;
 
 namespace Eurocup3;
 
@@ -19,10 +21,12 @@ public sealed record PortalServer(
 );
 
 public sealed record PortalSponsor(string Id, string Name, string Logo, string Url, int Order = 0);
+public sealed record PortalTeam(string Id, string Name, string Color, string Logo, string[] DriverNames, string[] LiveTimingNames);
 public sealed record PortalConfigError(string Source, string Code, string Message);
 public sealed record PortalSnapshot(
     PortalServer[] Servers,
     PortalSponsor[] Sponsors,
+    PortalTeam[] Teams,
     PortalConfigError[] Errors,
     DateTimeOffset FetchedAt
 );
@@ -52,11 +56,13 @@ public sealed class PortalConfigService(ConfigService config)
                 return latest;
             var serversTask = Read("servers", ParseServers, cached?.Servers ?? [], ct);
             var sponsorsTask = Read("sponsors", ParseSponsors, cached?.Sponsors ?? [], ct);
-            await Task.WhenAll(serversTask, sponsorsTask);
+            var teamsTask = Read("teams", ParseTeams, cached?.Teams ?? [], ct);
+            await Task.WhenAll(serversTask, sponsorsTask, teamsTask);
             var servers = await serversTask;
             var sponsors = await sponsorsTask;
-            cached = new(servers.Items, sponsors.Items,
-                new[] { servers.Error, sponsors.Error }.OfType<PortalConfigError>().ToArray(), DateTimeOffset.UtcNow);
+            var teams = await teamsTask;
+            cached = new(servers.Items, sponsors.Items, teams.Items,
+                new[] { servers.Error, sponsors.Error, teams.Error }.OfType<PortalConfigError>().ToArray(), DateTimeOffset.UtcNow);
             return cached;
         }
         finally
@@ -91,7 +97,7 @@ public sealed class PortalConfigService(ConfigService config)
 
     public static string BuildConfigUrl(string manifestUrl, string repository, string filename, bool testMode = false)
     {
-        if (filename is not ("servers.json" or "sponsors.json") ||
+        if (filename is not ("servers.json" or "sponsors.json" or "teams.json") ||
             !Uri.TryCreate(manifestUrl, UriKind.Absolute, out var uri) ||
             uri.UserInfo.Length != 0 || uri.Fragment.Length != 0)
             throw new AppFault("UNTRUSTED_PORTAL_CONFIG", "Portal configuration must use the configured catalog location.");
@@ -169,6 +175,48 @@ public sealed class PortalConfigService(ConfigService config)
         return document.Sponsors.OrderBy(s => s.Order).ThenBy(s => s.Id, StringComparer.Ordinal).ToArray();
     }
 
+    public static PortalTeam[] ParseTeams(string json)
+    {
+        var document = Deserialize<TeamsDocument>(json, "INVALID_TEAMS")
+            ?? throw new AppFault("INVALID_TEAMS", "Empty teams configuration.");
+        if (document.Teams is null || document.Teams.Length > 32)
+            throw new AppFault("INVALID_TEAMS", "teams must be an array containing at most 32 entries.");
+        var ids = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var driverAliases = new HashSet<string>(StringComparer.Ordinal);
+        var timingAliases = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var team in document.Teams)
+        {
+            if (team is null)
+                throw new AppFault("INVALID_TEAMS", "Team entries must be objects.");
+            ValidateId(team.Id, ids, "INVALID_TEAMS");
+            ValidateText(team.Name, 120, false, "Team name", "INVALID_TEAMS");
+            if (!Regex.IsMatch(team.Color ?? "", "^#[0-9A-Fa-f]{6}$"))
+                throw new AppFault("INVALID_TEAMS", "Team color must be a six-digit hexadecimal color such as #E52E46.");
+            ValidateHttpsUrl(team.Logo, "INVALID_TEAMS");
+            if (team.DriverNames is null || team.DriverNames.Length > 100 ||
+                team.LiveTimingNames is null || team.LiveTimingNames.Length > 100)
+                throw new AppFault("INVALID_TEAMS", "Each team must have driverNames and liveTimingNames arrays with at most 100 entries.");
+            foreach (var name in team.DriverNames)
+            {
+                ValidateText(name, 120, false, "Driver name", "INVALID_TEAMS");
+                if (!driverAliases.Add(NormalizeTeamAlias(name)))
+                    throw new AppFault("INVALID_TEAMS", "A driver name cannot be assigned to multiple teams.");
+            }
+            foreach (var name in team.LiveTimingNames)
+            {
+                ValidateText(name, 120, false, "Live timing team name", "INVALID_TEAMS");
+                if (!timingAliases.Add(NormalizeTeamAlias(name)))
+                    throw new AppFault("INVALID_TEAMS", "A live timing team name cannot be assigned to multiple teams.");
+            }
+        }
+        return document.Teams;
+    }
+
+    static string NormalizeTeamAlias(string value) => string.Concat(value
+        .Normalize(NormalizationForm.FormKD)
+        .Where(c => CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark && char.IsLetterOrDigit(c)))
+        .ToLowerInvariant();
+
     static void ValidateId(string id, HashSet<string> ids, string code)
     {
         if (id is null || !Regex.IsMatch(id, @"^[a-z0-9][a-z0-9-]{0,63}$") || !ids.Add(id))
@@ -242,4 +290,5 @@ public sealed class PortalConfigService(ConfigService config)
 
     sealed record ServersDocument(PortalServer[] Servers);
     sealed record SponsorsDocument(PortalSponsor[] Sponsors);
+    sealed record TeamsDocument(PortalTeam[] Teams);
 }

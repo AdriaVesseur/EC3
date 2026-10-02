@@ -1,6 +1,6 @@
 # Servidores y patrocinadores
 
-Edita `content-repository/servers.json` y `content-repository/sponsors.json` en GitHub. Los archivos están preparados con listas vacías para que añadas tus datos reales. No añadas comentarios dentro de los JSON. Cada `id` debe ser único en su archivo y contener solo minúsculas, números y guiones.
+Edita `content-repository/servers.json`, `content-repository/sponsors.json` y `content-repository/teams.json` en GitHub. Los archivos están preparados con listas vacías para que añadas tus datos reales. No añadas comentarios dentro de los JSON. Cada `id` debe ser único en su archivo y contener solo minúsculas, números y guiones.
 
 La app descarga estos archivos desde la misma carpeta y rama que `manifest.json`, sin que dependan de que todos los paquetes del catálogo estén disponibles. Conserva la última configuración válida si una actualización falla y muestra el error correspondiente. Las configuraciones se consultan cada cinco minutos; el botón de actualizar fuerza una nueva consulta. Los estados de servidor tienen una caché de quince segundos.
 
@@ -25,17 +25,17 @@ Ejemplo de formato: sustituye la IP, nombre y URL por los del servidor real ante
 }
 ```
 
-| Campo           | Qué debes poner                                                                                                                                                                                                                                                 |
-| --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `id`            | Identificador estable del servidor.                                                                                                                                                                                                                             |
-| `name`          | Nombre que aparece en la app.                                                                                                                                                                                                                                   |
-| `ip`            | IP pública IPv4 o IPv6 del servidor, sin `http://`, sin corchetes, sin ruta y sin puerto. Es el formato recomendado para configuraciones nuevas.                                                                                                                |
-| `host`          | Campo antiguo compatible con IP o dominio. Úsalo solo si ya tienes una configuración que lo necesita; no lo combines con `ip`. Debe existir exactamente uno de los dos campos.                                                                                  |
-| `httpPort`      | Puerto **HTTP** configurado en AC, normalmente `8081`. No es el puerto de carrera UDP/TCP, normalmente `9600`.                                                                                                                                                  |
-| `description`   | Texto opcional de hasta 1000 caracteres.                                                                                                                                                                                                                        |
-| `image`         | Foto opcional del servidor, mediante una URL pública HTTPS. Se muestra en su tarjeta; si se omite o no carga, aparece la foto general de carreras.                                                                                                               |
-| `allowLan`      | Opcional, `false` por defecto. Pon `true` únicamente si quieres que los usuarios consulten una IP privada de su red local.                                                                                                                                      |
-| `liveTimingUrl` | URL opcional de la página de cronometraje (HTTPS) o de una API leaderboard en JSON. Para una API JSON por HTTP se admite únicamente una IP pública literal; HTTPS también admite dominios públicos.                                                                                                                                                                                                |
+| Campo           | Qué debes poner                                                                                                                                                                                                                                                                                                                                                      |
+| --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`            | Identificador estable del servidor.                                                                                                                                                                                                                                                                                                                                  |
+| `name`          | Nombre que aparece en la app.                                                                                                                                                                                                                                                                                                                                        |
+| `ip`            | IP pública IPv4 o IPv6 del servidor, sin `http://`, sin corchetes, sin ruta y sin puerto. Es el formato recomendado para configuraciones nuevas.                                                                                                                                                                                                                     |
+| `host`          | Campo antiguo compatible con IP o dominio. Úsalo solo si ya tienes una configuración que lo necesita; no lo combines con `ip`. Debe existir exactamente uno de los dos campos.                                                                                                                                                                                       |
+| `httpPort`      | Puerto **HTTP** configurado en AC, normalmente `8081`. No es el puerto de carrera UDP/TCP, normalmente `9600`.                                                                                                                                                                                                                                                       |
+| `description`   | Texto opcional de hasta 1000 caracteres.                                                                                                                                                                                                                                                                                                                             |
+| `image`         | Foto opcional del servidor, mediante una URL pública HTTPS. Se muestra en su tarjeta; si se omite o no carga, aparece la foto general de carreras.                                                                                                                                                                                                                   |
+| `allowLan`      | Opcional, `false` por defecto. Pon `true` únicamente si quieres que los usuarios consulten una IP privada de su red local.                                                                                                                                                                                                                                           |
+| `liveTimingUrl` | URL opcional de la página de cronometraje (HTTPS) o de una API leaderboard en JSON. Para una API JSON por HTTP se admite únicamente una IP pública literal; HTTPS también admite dominios públicos.                                                                                                                                                                  |
 | `embedTiming`   | Opcional, `false` por defecto. Pon `true` para incrustar una página HTTPS que permita iframes. Si `liveTimingUrl` acaba en `.json`, la app consulta la API desde el helper y muestra tablas separadas de pilotos conectados y desconectados, con posición, coche, vueltas, tiempos y última conexión; no necesita `embedTiming`. El enlace externo sigue disponible. |
 
 La app consulta `/INFO` en la IP y puerto HTTP que configures, por ejemplo `http://203.0.113.10:8081/INFO`. Para IPv6, el helper añade automáticamente los corchetes necesarios a la URL de consulta; en el JSON escribe únicamente la dirección, por ejemplo `"ip": "2001:db8::10"`. Además del nombre, circuito, jugadores, sesión y tiempo, `/INFO` proporciona el puerto de carrera y los coches habilitados. La app los usa al unirse: selecciona el primer coche permitido que encuentre instalado y prepara la sesión. `session` significa `0` Booking, `1` Practice, `2` Qualifying y `3` Race. `/INFO` no ofrece vueltas ni una clasificación de pilotos: esos datos deben venir de la página de cronometraje indicada en `liveTimingUrl`.
@@ -68,15 +68,36 @@ Ejemplo de formato: sustituye todos los valores por los de tus patrocinadores.
 
 `id`, `name`, `logo` y `url` son obligatorios. `logo` debe ser una imagen pública HTTPS, preferiblemente PNG/WebP transparente o SVG preparado para el fondo de la app. `url` es la web que se abre al pulsar el logo; si falta, el helper informa de un error de configuración. `order` es opcional y ordena los logos de menor a mayor; los empates se ordenan por `id`. Puedes alojar las imágenes en el repo y utilizar sus enlaces de GitHub Raw. Todos los enlaces deben usar HTTPS sin credenciales. Hay un máximo de 32 servidores y 32 patrocinadores; cada archivo admite hasta 512 KiB.
 
+## teams.json
+
+Define cada equipo una vez y la app asociará sus colores y logo a los pilotos en **Championship**, **Results** y **Live Timing**. El archivo empieza vacío; añade una entrada como esta por equipo:
+
+```json
+{
+  "teams": [
+    {
+      "id": "ec3-racing",
+      "name": "EC3 Racing",
+      "color": "#E52E46",
+      "logo": "https://raw.githubusercontent.com/AdriaVesseur/EC3/main/content-repository/images/teams/ec3-racing.png",
+      "driverNames": ["Nombre exacto del piloto en MakroBeasts"],
+      "liveTimingNames": ["Nombre del equipo que devuelve el live timing"]
+    }
+  ]
+}
+```
+
+`id` es único en este archivo; `color` debe ser un color hexadecimal `#RRGGBB`; `logo` debe ser una imagen pública HTTPS. En `driverNames`, escribe los nombres tal como aparecen en Standings y Results. En `liveTimingNames`, escribe los nombres que publica la API de Assetto Corsa para el campo Team. Ambas listas pueden estar vacías si ese equipo todavía no aparece en esa fuente. Los nombres se comparan sin distinguir mayúsculas, espacios ni acentos. Los nombres de piloto y los nombres de equipo del live timing no deben repetirse entre equipos. Si un piloto no coincide con ninguna entrada, se seguirá mostrando normalmente sin marca. El helper valida este archivo junto con las otras configuraciones; admite hasta 32 equipos y 100 alias por lista.
+
 ## Contratos del helper
 
-- `GET /api/portal` devuelve `{ servers, sponsors, errors, fetchedAt }`. Los errores incluyen `source`, `code` y `message`; el fallo de un archivo no impide cargar el otro.
+- `GET /api/portal` devuelve `{ servers, sponsors, teams, errors, fetchedAt }`. Los errores incluyen `source`, `code` y `message`; el fallo de un archivo no impide cargar los demás.
 - `GET /api/servers` devuelve `{ servers, contentManagerAvailable, assettoCorsaAvailable, errors, checkedAt }`. Cada entrada contiene `{ server, state, info, error, checkedAt, joinAvailable, availableCars }`; `availableCars` solo incluye coches permitidos por el servidor y detectados en la instalación local, con su nombre visible. `joinAvailable` requiere AC y el protocolo de Content Manager, además de un puerto y al menos un coche instalado en `/INFO`.
 - Cada `server` conserva `ip` si se configuró mediante IP, o `host` para configuraciones antiguas. El frontend utiliza `ip ?? host` para mostrar la dirección. No se inventan ni se reemplazan IP en el catálogo.
 - `info` contiene `{ name, track, currentPlayers, maxPlayers, session, timeLeft, racePort, cars, passwordRequired }`. Los datos ausentes son `null`, salvo `cars`, que será `[]`. `timeLeft` está expresado en segundos.
 - `POST /api/servers/{id}/join` acepta `{ "carId": "..." }` y verifica de nuevo que el coche sigue permitido e instalado antes de lanzar. Solo admite un ID de `servers.json`. Devuelve `{ serverId, launched: true, message }` al entregar la petición a Windows.
 
-Los esquemas `servers.schema.json` y `sponsors.schema.json` describen el formato editable. La validación del helper añade comprobaciones de IDs duplicados, hosts y seguridad de red.
+Los esquemas `servers.schema.json`, `sponsors.schema.json` y `teams.schema.json` describen los formatos editables. La validación del helper añade comprobaciones de IDs y alias duplicados, hosts y seguridad de red.
 
 ## Fuentes del protocolo
 

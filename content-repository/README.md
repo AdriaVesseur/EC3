@@ -60,7 +60,7 @@ Usa el enlace **Raw** o el enlace directo al archivo, no a su página en GitHub.
 
 ## Servidores y sponsors
 
-Rellena `servers.json` para configurar servidores y sus enlaces de live timing, y `sponsors.json` para los logos y webs que aparecen al pie de todas las páginas. Ambos empiezan con una lista vacía. Consulta [los ejemplos y los campos](portal-config.md).
+Rellena `servers.json` para configurar servidores y sus enlaces de live timing, `sponsors.json` para los logos y webs que aparecen al pie de todas las páginas, y `teams.json` para asignar logos y colores a pilotos en las tablas de Standings, Results y Live Timing. Empiezan con listas vacías. Consulta [los ejemplos y los campos](portal-config.md).
 
 ## Resultados y clasificación
 

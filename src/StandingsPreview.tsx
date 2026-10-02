@@ -1,5 +1,7 @@
 import { ArrowRight, LoaderCircle, Trophy } from "lucide-react";
 import type { ChampionshipResults } from "./types";
+import { TeamDriver } from "./TeamDriver";
+import type { Team } from "./portal-types";
 
 export function StandingsPreview({
   results,
@@ -7,12 +9,14 @@ export function StandingsPreview({
   error,
   connected,
   configured,
+  teams,
 }: {
   results: ChampionshipResults | null;
   loading: boolean;
   error: string;
   connected: boolean;
   configured: boolean;
+  teams: Team[];
 }) {
   const rows =
     results?.standings
@@ -62,7 +66,9 @@ export function StandingsPreview({
                     {row.position.toString().padStart(2, "0")}
                   </span>
                 </td>
-                <td className="preview-driver">{row.driver}</td>
+                <td className="preview-driver">
+                  <TeamDriver driverName={row.driver} teams={teams} />
+                </td>
                 <td className="preview-points">{row.points}</td>
               </tr>
             ))}

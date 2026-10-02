@@ -43,6 +43,7 @@ import { ServersPage } from "./ServersPage";
 import { SponsorsFooter } from "./SponsorsFooter";
 import { usePortal } from "./usePortal";
 import { portalErrorMessage } from "./portal-types";
+import { TeamDriver } from "./TeamDriver";
 import { AppUpdateNotice, useAppUpdate } from "./AppUpdateNotice";
 type Page =
   "home" | "content" | "championship" | "results" | "servers" | "settings";
@@ -893,6 +894,7 @@ export default function App() {
                   error={resultsError}
                   connected={connected}
                   configured={!cat || !!resultsSource}
+                  teams={portal.portal?.teams ?? []}
                 />
               </div>
             </>
@@ -999,6 +1001,7 @@ export default function App() {
               connected={connected}
               active={page === "servers"}
               packages={snapshot?.catalog?.manifest.content ?? []}
+              teams={portal.portal?.teams ?? []}
             />
           )}
           {page === "content" && contentTab === "downloads" && (
@@ -1213,7 +1216,12 @@ export default function App() {
                                 </span>
                               </td>
                               <td className="driver-number">{row.number}</td>
-                              <td className="driver-name">{row.driver}</td>
+                              <td className="driver-name">
+                                <TeamDriver
+                                  driverName={row.driver}
+                                  teams={portal.portal?.teams ?? []}
+                                />
+                              </td>
                               <td className="driver-points">{row.points}</td>
                             </tr>
                           ))}
@@ -1410,7 +1418,12 @@ export default function App() {
                                   <span className="driver-number">
                                     {entry.number}
                                   </span>
-                                  <strong>{entry.driver}</strong>
+                                  <strong>
+                                    <TeamDriver
+                                      driverName={entry.driver}
+                                      teams={portal.portal?.teams ?? []}
+                                    />
+                                  </strong>
                                   <span className="podium-time">
                                     {entry.time}
                                   </span>
