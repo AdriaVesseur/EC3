@@ -17,7 +17,7 @@ import {
 import { api } from "./api";
 import { Badge, Button, EmptyState, Modal } from "./components";
 import type { Package } from "./types";
-import { TeamDriver } from "./TeamDriver";
+import { resolveTeam, TeamDriver } from "./TeamDriver";
 import {
   httpsUrl,
   isJsonTimingUrl,
@@ -88,7 +88,8 @@ const findMatchingPackage = (
         const overlap = keyTokens.filter((part) =>
           candidateTokens.has(part),
         ).length;
-        return overlap && overlap >= Math.min(keyTokens.length, candidateParts.length) * 0.6
+        return overlap &&
+          overlap >= Math.min(keyTokens.length, candidateParts.length) * 0.6
           ? 1
           : 0;
       }),
@@ -96,7 +97,10 @@ const findMatchingPackage = (
   };
   return packages
     .filter((item) => item.type === type)
-    .map((item) => ({ item, score: Math.max(score(item.id), score(item.name)) }))
+    .map((item) => ({
+      item,
+      score: Math.max(score(item.id), score(item.name)),
+    }))
     .filter((result) => result.score > 0)
     .sort((left, right) => right.score - left.score)[0]?.item;
 };
@@ -147,7 +151,7 @@ function TimingDriverTable({
                 <th>Pos</th>
                 <th>No.</th>
                 <th>Driver</th>
-                <th>Car</th>
+                <th>Team</th>
                 <th>Laps</th>
                 <th>Best</th>
                 {offline ? <th>Last seen</th> : <th>Last</th>}
@@ -165,7 +169,10 @@ function TimingDriverTable({
                       teams={teams}
                     />
                   </td>
-                  <td>{driver.car || "—"}</td>
+                  <td className="live-timing-team">
+                    {resolveTeam(driver.name, driver.team, teams)?.name ??
+                      driver.team}
+                  </td>
                   <td>{driver.laps}</td>
                   <td>{lapTime(driver.bestLapSeconds)}</td>
                   <td>
@@ -544,7 +551,8 @@ export function ServersPage({
               "track",
               info?.track ?? "",
             );
-            const trackName = trackPackage?.name ?? displayTrackName(info?.track);
+            const trackName =
+              trackPackage?.name ?? displayTrackName(info?.track);
             const selectedCarInfo = availableCars.find(
               (car) => car.id === selectedCar,
             );
@@ -566,7 +574,11 @@ export function ServersPage({
                   onClick={() => setSelectedServerId(entry.server.id)}
                 >
                   <img
-                    src={trackPackage?.image || entry.server.image || "/images/race-action.jpg"}
+                    src={
+                      trackPackage?.image ||
+                      entry.server.image ||
+                      "/images/race-action.jpg"
+                    }
                     alt=""
                     loading="lazy"
                     decoding="async"
@@ -634,9 +646,7 @@ export function ServersPage({
                             CIRCUIT
                           </span>
                           <span className="server-detail-option-copy">
-                            <strong>
-                              {trackName}
-                            </strong>
+                            <strong>{trackName}</strong>
                             <span>{session || "Server session"}</span>
                           </span>
                           {trackPackage && (
@@ -670,7 +680,10 @@ export function ServersPage({
                                 </h3>
                               </span>
                               <span className="server-car-picker-current">
-                                <img src={packagePhoto(selectedCarPackage)} alt="" />
+                                <img
+                                  src={packagePhoto(selectedCarPackage)}
+                                  alt=""
+                                />
                                 {selectedCarPackage?.icon && (
                                   <img
                                     className="server-car-picker-selected-logo"
@@ -679,10 +692,19 @@ export function ServersPage({
                                   />
                                 )}
                                 <span>
-                                  <strong>{selectedCarInfo?.name ?? "Select a car"}</strong>
-                                  <small>{availableCars.length} available</small>
+                                  <strong>
+                                    {selectedCarInfo?.name ?? "Select a car"}
+                                  </strong>
+                                  <small>
+                                    {availableCars.length} available
+                                  </small>
                                 </span>
-                                <span className="server-car-picker-chevron" aria-hidden="true">⌄</span>
+                                <span
+                                  className="server-car-picker-chevron"
+                                  aria-hidden="true"
+                                >
+                                  ⌄
+                                </span>
                               </span>
                             </summary>
                             <div className="server-car-picker-menu">
@@ -705,19 +727,29 @@ export function ServersPage({
                                         ...current,
                                         [entry.server.id]: car.id,
                                       }));
-                                      const details = event.currentTarget.closest("details");
+                                      const details =
+                                        event.currentTarget.closest("details");
                                       if (details) details.open = false;
                                     }}
                                   >
-                                    <img src={packagePhoto(carPackage)} alt="" />
+                                    <img
+                                      src={packagePhoto(carPackage)}
+                                      alt=""
+                                    />
                                     <span>
                                       <strong>{car.name}</strong>
                                       <small>{car.id}</small>
                                     </span>
                                     {carPackage?.icon && (
-                                      <img className="server-car-picker-logo" src={carPackage.icon} alt="" />
+                                      <img
+                                        className="server-car-picker-logo"
+                                        src={carPackage.icon}
+                                        alt=""
+                                      />
                                     )}
-                                    {selectedCar === car.id && <Check size={16} aria-hidden="true" />}
+                                    {selectedCar === car.id && (
+                                      <Check size={16} aria-hidden="true" />
+                                    )}
                                   </button>
                                 );
                               })}

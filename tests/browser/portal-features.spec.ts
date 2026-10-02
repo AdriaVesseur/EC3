@@ -144,7 +144,7 @@ async function mockFeatures(
         session: "Practice",
         track: "kyalami",
         driverCount: 1,
-        offlineDriverCount: 1,
+        offlineDriverCount: 2,
         updatedAt: checkedAt,
         drivers: [
           {
@@ -181,6 +181,23 @@ async function mockFeatures(
             inPits: true,
             ping: 38,
             split: "01:12.200",
+            lastSeen: checkedAt,
+          },
+          {
+            position: 2,
+            number: "27",
+            name: "No Team Driver",
+            carId: "porsche_cup",
+            car: "Porsche CUP",
+            team: "",
+            skin: "27_plain",
+            tyres: "M",
+            laps: 12,
+            bestLapSeconds: 109.123,
+            lastLapSeconds: 110.456,
+            inPits: false,
+            ping: 52,
+            split: "00:14.200",
             lastSeen: checkedAt,
           },
         ],
@@ -682,6 +699,12 @@ test("JSON live timing APIs render connected and offline leaderboards instead of
   await expect(
     connectedTable.getByRole("row", { name: /Carlos Leiva/ }),
   ).toBeVisible();
+  await expect(
+    connectedTable.getByRole("columnheader", { name: "Team" }),
+  ).toBeVisible();
+  await expect(
+    connectedTable.getByRole("columnheader", { name: "Car" }),
+  ).toHaveCount(0);
   await expect(connectedTable.locator(".team-driver")).toContainText(
     "EC3 Racing",
   );
@@ -698,7 +721,24 @@ test("JSON live timing APIs render connected and offline leaderboards instead of
   await expect(
     offlineTable.getByRole("row", { name: /Samuel Fernández/ }),
   ).toBeVisible();
-  await expect(offlineTable.locator(".team-driver")).toContainText("Team 16");
+  await expect(
+    offlineTable
+      .getByRole("row", { name: /Samuel Fernández/ })
+      .locator(".team-driver"),
+  ).toContainText("Team 16");
+  const unteamedRow = offlineTable.getByRole("row", { name: /No Team Driver/ });
+  await expect(unteamedRow).toBeVisible();
+  await expect(unteamedRow.locator("td").nth(3)).toHaveText("");
+  const driverTextX = async (row: typeof unteamedRow) =>
+    row
+      .locator(".team-driver > span")
+      .nth(2)
+      .evaluate((element) => element.getBoundingClientRect().x);
+  const teamedTextX = await driverTextX(
+    offlineTable.getByRole("row", { name: /Samuel Fernández/ }),
+  );
+  const unteamedTextX = await driverTextX(unteamedRow);
+  expect(Math.abs(teamedTextX - unteamedTextX)).toBeLessThan(1);
   await expect(page.getByText("Connected drivers")).toBeVisible();
   await expect(page.getByText("1:47.488")).toBeVisible();
   await expect(page.getByText("Offline drivers")).toBeVisible();

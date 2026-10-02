@@ -1021,7 +1021,7 @@ main {
   height: 21px;
   flex: 0 0 2px;
   border-radius: 1px;
-  background: var(--team-color);
+  background: var(--team-color, transparent);
 }
 .driver-points {
   color: var(--ec3-primary);

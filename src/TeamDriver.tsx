@@ -8,7 +8,11 @@ const normalizeName = (value: string) =>
     .toLocaleLowerCase()
     .replace(/[^\p{L}\p{N}]/gu, "");
 
-function findTeam(driverName: string, teamName: string, teams: Team[]) {
+export function resolveTeam(
+  driverName: string,
+  teamName: string,
+  teams: Team[],
+) {
   const timingName = normalizeName(teamName);
   if (timingName) {
     const directMatch = teams.find((team) =>
@@ -35,28 +39,31 @@ export function TeamDriver({
   teamName?: string;
   teams: Team[];
 }) {
-  const team = findTeam(driverName, teamName, teams);
-  if (!team) return <>{driverName}</>;
+  const team = resolveTeam(driverName, teamName, teams);
 
   return (
     <span
       className="team-driver"
-      style={{ "--team-color": team.color } as CSSProperties}
-      title={`${driverName} · ${team.name}`}
+      style={
+        team ? ({ "--team-color": team.color } as CSSProperties) : undefined
+      }
+      title={team ? `${driverName} · ${team.name}` : undefined}
     >
       <span className="team-driver-mark" aria-hidden="true">
-        <img
-          src={team.logo}
-          alt=""
-          loading="lazy"
-          onError={(event) => {
-            event.currentTarget.hidden = true;
-          }}
-        />
+        {team ? (
+          <img
+            src={team.logo}
+            alt=""
+            loading="lazy"
+            onError={(event) => {
+              event.currentTarget.hidden = true;
+            }}
+          />
+        ) : null}
       </span>
       <span className="team-driver-accent" aria-hidden="true" />
       <span>{driverName}</span>
-      <span className="sr-only">, {team.name}</span>
+      {team ? <span className="sr-only">, {team.name}</span> : null}
     </span>
   );
 }
