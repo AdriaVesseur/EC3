@@ -1,3 +1,13 @@
 {
-  "teams": []
+  "teams": [
+    {
+      "id": "ec3-racing",
+      "name": "EC3 Racing",
+      "color": "#E52E46",
+      "logo": "https://raw.githubusercontent.com/AdriaVesseur/EC3/main/content-repository/images/teams/ec3-racing.png",
+      "driverNames": ["Samuel Fernández"],
+      "liveTimingNames": ["Nombre del equipo que devuelve el live timing"]
+    }
+  ]
 }
+```
