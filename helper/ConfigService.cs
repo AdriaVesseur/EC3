@@ -15,14 +15,17 @@ public sealed class ConfigService
     }
 
     public ConfigService()
+        : this(
+            Environment.GetEnvironmentVariable("EC3_DATA") ?? BrandIdentity.DataRoot,
+            Environment.GetEnvironmentVariable("EC3_DATA") is null ? BrandIdentity.LegacyDataRoot : null
+        ) { }
+
+    public ConfigService(string dataRoot, string? legacyDataRoot = null)
     {
-        DataRoot =
-            Environment.GetEnvironmentVariable("EC3_DATA")
-            ?? Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                "Eurocup3"
-            );
+        DataRoot = dataRoot;
         Directory.CreateDirectory(DataRoot);
+        if (!File.Exists(ConfigPath) && legacyDataRoot is not null)
+            ImportLegacySettings(legacyDataRoot);
         Value = File.Exists(ConfigPath)
             ? JsonSerializer.Deserialize<Settings>(File.ReadAllText(ConfigPath), Json.Options)!
             : new();
@@ -37,6 +40,34 @@ public sealed class ConfigService
                 "INVALID_CONFIG",
                 "Allowed origins must be exact HTTPS origins (HTTP only on loopback)."
             );
+    }
+
+    void ImportLegacySettings(string legacyDataRoot)
+    {
+        var legacyPath = Path.Combine(legacyDataRoot, "settings.json");
+        if (!File.Exists(legacyPath))
+            return;
+        var imported = JsonSerializer.Deserialize<Settings>(File.ReadAllText(legacyPath), Json.Options)
+            ?? throw new AppFault("INVALID_CONFIG", "The previous app settings could not be read.");
+        imported.AllowedOrigins = imported.AllowedOrigins
+            .Where(x => x is not ("http://127.0.0.1:32145" or "http://127.0.0.1:32148"))
+            .Append(BrandIdentity.ApiOrigin)
+            .Distinct(StringComparer.Ordinal)
+            .ToArray();
+        // Import settings only. Each brand starts its own WebView, logs and API session.
+        // Move without overwrite prevents replacing a profile if two launches overlap.
+        var temporaryPath = Path.Combine(DataRoot, $"settings-import-{Guid.NewGuid():N}.tmp");
+        try
+        {
+            File.WriteAllText(temporaryPath, JsonSerializer.Serialize(imported, Json.Options));
+            File.Move(temporaryPath, ConfigPath, overwrite: false);
+        }
+        catch (IOException) when (File.Exists(ConfigPath)) { }
+        finally
+        {
+            if (File.Exists(temporaryPath))
+                File.Delete(temporaryPath);
+        }
     }
 
     public void SavePath(string path)
@@ -67,7 +98,7 @@ public sealed class Settings
     public string[] AllowedOrigins
     {
         get; set;
-    } = ["http://127.0.0.1:32145", "https://adriavesseur.github.io"];
+    } = [BrandIdentity.ApiOrigin, "https://adriavesseur.github.io"];
     public string? AssettoPath
     {
         get; set;

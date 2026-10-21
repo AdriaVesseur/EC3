@@ -79,6 +79,32 @@ public sealed class InstallationService(
         var dir = Paths.Under(root, ".ec3/transactions");
         if (!Directory.Exists(dir))
             return;
+        using var lease = AcquireContentLease(root);
+        RecoverCore(root, dir);
+    }
+
+    static FileStream AcquireContentLease(string root)
+    {
+        var path = Paths.Under(root, ".ec3/content-operation.lock");
+        Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+        Paths.NoLinks(path);
+        try
+        {
+            // File leases survive async thread changes and are released automatically on exit.
+            // Both brands share receipts and must never recover one another's live transaction.
+            return new FileStream(path, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
+        }
+        catch (IOException ex) when ((ex.HResult & 0xffff) is 32 or 33)
+        {
+            throw new AppFault(
+                "OTHER_LAUNCHER_BUSY",
+                "Another launcher is updating this Assetto Corsa folder. Wait for it to finish, then retry."
+            );
+        }
+    }
+
+    static void RecoverCore(string root, string dir)
+    {
         foreach (var file in Directory.GetFiles(dir, "*.json"))
         {
             Paths.NoLinks(file);
@@ -150,6 +176,7 @@ public sealed class InstallationService(
             await commitLock.WaitAsync(ct);
             try
             {
+                using var lease = AcquireContentLease(root);
                 job.State = "installing";
                 Paths.NoLinks(target);
                 if (Directory.Exists(target))
@@ -210,7 +237,7 @@ public sealed class InstallationService(
                 }
                 catch
                 {
-                    Recover(root);
+                    RecoverCore(root, Path.GetDirectoryName(journal)!);
                     throw;
                 }
                 logger.LogInformation(

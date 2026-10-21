@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ArrowUpRight, Download, RefreshCw, X } from "lucide-react";
 import { api } from "./api";
+import { brand, brandStorageKey } from "./brand";
 import "./app-update.css";
 
 export type AppUpdateInfo = {
@@ -23,7 +24,7 @@ export type AppUpdateState = {
   check: () => Promise<void>;
 };
 
-const dismissedKey = "ec3-app-update-dismissed-versions";
+const dismissedKey = brandStorageKey("app-update-dismissed-versions");
 const checkInterval = 30 * 60 * 1000;
 const isGitHubLink = (value: unknown) => {
   if (typeof value !== "string") return false;
@@ -207,7 +208,7 @@ export function AppUpdateNotice({
     <section className="app-update-notice" aria-label="Windows app update">
       <div className="app-update-copy">
         <p className="app-update-title" role="status" aria-atomic="true">
-          Eurocup 3 app {update.version} is available
+          {brand.name} app {update.version} is available
         </p>
         <p>
           You have {update.currentVersion}. Download and run the installer to

@@ -4,7 +4,7 @@
   --ec3-surface: #191b20;
   --ec3-surface-raised: #23262d;
   --ec3-border: #34373f;
-  --ec3-primary: #cf2d40;
+  --ec3-primary: #00d6d6;
   --ec3-secondary: #e0e2e8;
   --ec3-text: #f2f3f6;
   --ec3-muted: #a5a8b2;
@@ -118,7 +118,7 @@ body {
   border-color: #555963;
 }
 .my-content-card.is-selected {
-  border-color: #cb3a4d;
+  border-color: var(--ec3-primary);
 }
 .my-content-card-cover {
   position: relative;
@@ -513,11 +513,11 @@ h3 {
 }
 .primary-nav .nav-item.selected {
   color: #fff;
-  background: linear-gradient(0deg, rgb(207 45 64 / 7%), transparent 65%);
+  background: linear-gradient(0deg, rgb(var(--brand-accent-rgb) / 7%), transparent 65%);
 }
 .primary-nav .nav-item.selected::after {
   border-radius: 2px 2px 0 0;
-  background: #e24859;
+  background: var(--ec3-primary);
 }
 .install-app-link {
   color: #bfc2cc;
@@ -566,7 +566,7 @@ h3 {
   font-size: 28px;
 }
 .season-stamp > svg:first-child {
-  color: #e57582;
+  color: var(--ec3-primary);
 }
 .global-search {
   border-color: #353841;
@@ -582,8 +582,8 @@ h3 {
   border-color: #4c505b;
 }
 .global-search:focus-within {
-  border-color: #d56875;
-  box-shadow: 0 0 0 3px rgb(207 45 64 / 10%);
+  border-color: var(--ec3-primary);
+  box-shadow: 0 0 0 3px rgb(var(--brand-accent-rgb) / 10%);
 }
 .global-search input::placeholder,
 .search input::placeholder {
@@ -604,7 +604,7 @@ h3 {
   color: var(--ec3-text);
 }
 .search:focus-within > svg {
-  color: #e57582;
+  color: var(--ec3-primary);
 }
 
 /* Controls use one material, with a stronger finish for the primary action. */
@@ -638,41 +638,41 @@ h3 {
   box-shadow: inset 0 1px 3px rgb(6 7 11 / 18%);
 }
 .button.primary {
-  border-color: #df4557;
-  background: linear-gradient(180deg, #d63749, #bd2d3e);
-  color: #fff;
+  border-color: var(--ec3-primary);
+  background: linear-gradient(180deg, var(--brand-button-top), var(--brand-button-bottom));
+  color: var(--brand-button-ink);
   box-shadow:
     inset 0 1px 0 rgb(255 255 255 / 12%),
-    0 2px 5px rgb(46 7 17 / 20%);
+    0 2px 5px rgb(var(--brand-accent-rgb) / 12%);
 }
 .button.primary:hover:not(:disabled) {
-  border-color: #e56573;
-  background: linear-gradient(180deg, #d63749, #c32b3c);
-  color: #fff;
+  border-color: var(--brand-button-hover-top);
+  background: linear-gradient(180deg, var(--brand-button-hover-top), var(--brand-button-hover-bottom));
+  color: var(--brand-button-ink);
   transform: none;
   box-shadow:
     inset 0 1px 0 rgb(255 255 255 / 17%),
-    0 3px 8px rgb(46 7 17 / 23%);
+    0 3px 8px rgb(var(--brand-accent-rgb) / 15%);
 }
 .button.primary:active:not(:disabled) {
   transform: translateY(1px);
-  background: #bd2d3e;
-  box-shadow: inset 0 1px 3px rgb(61 10 18 / 22%);
+  background: var(--brand-button-bottom);
+  box-shadow: inset 0 1px 3px rgb(0 75 75 / 22%);
 }
 .button:disabled {
   opacity: 0.5;
   box-shadow: none;
 }
 .button.primary:disabled {
-  border-color: #66363e;
-  background: #572d36;
-  color: #cda5aa;
+  border-color: #28676a;
+  background: #25484a;
+  color: #9fc5c6;
   opacity: 0.8;
 }
 button:focus-visible,
 a:focus-visible,
 input:focus-visible {
-  outline: 2px solid #f09ca6;
+  outline: 2px solid var(--ec3-primary);
   outline-offset: 3px;
 }
 .race-ready-verify {
@@ -701,7 +701,7 @@ input:focus-visible {
 .latest-content-open:hover {
   color: #fff;
   text-underline-offset: 4px;
-  text-decoration-color: #e57582;
+  text-decoration-color: var(--ec3-primary);
 }
 .filter-tabs button,
 .content-tabs a {
@@ -714,7 +714,7 @@ input:focus-visible {
 .filter-tabs button.active,
 .content-tabs a[aria-current="page"] {
   color: #f2f3f6;
-  border-bottom-color: #e24859;
+  border-bottom-color: var(--ec3-primary);
 }
 .filter-tabs button > span {
   border-radius: 3px;
@@ -925,7 +925,7 @@ input:focus-visible {
   color: var(--ec3-quiet);
 }
 .race-ready-guidance {
-  border-left-color: #e05b6b;
+  border-left-color: var(--ec3-primary);
   border-radius: 0 6px 6px 0;
   background: #24262e;
 }
@@ -944,7 +944,7 @@ input:focus-visible {
 }
 .progress > div {
   border-radius: inherit;
-  background: linear-gradient(90deg, #b8273a, #e04b5b);
+  background: linear-gradient(90deg, var(--brand-button-bottom), var(--brand-button-top));
   transition: transform 300ms var(--ec3-ease);
 }
 .race-ready-card .progress > div {
@@ -1044,7 +1044,7 @@ input:focus-visible {
 }
 .track-line {
   border-color: #727887;
-  border-right-color: #dc6674;
+  border-right-color: var(--ec3-primary);
 }
 
 /* Data surfaces share the same rhythm; rank and result values carry emphasis. */
@@ -1079,7 +1079,7 @@ input:focus-visible {
   font-weight: 500;
 }
 .text-button:hover {
-  text-decoration-color: #d37785;
+  text-decoration-color: var(--ec3-primary);
 }
 .text-button > span,
 .version-cell small {
@@ -1482,7 +1482,7 @@ dialog::backdrop {
   color: #e2e8f3;
 }
 .skip {
-  border: 1px solid #e48e9b;
+  border: 1px solid var(--ec3-primary);
   border-radius: 6px;
   background: #24272f;
   color: #f5f6fa;

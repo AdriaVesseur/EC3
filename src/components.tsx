@@ -92,11 +92,14 @@ export function Modal({
   className?: string;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
+  const opener = useRef<HTMLElement | null>(null);
   useEffect(() => {
-    const previous = document.activeElement as HTMLElement;
-    ref.current?.showModal();
+    const dialog = ref.current;
+    opener.current ??= document.activeElement as HTMLElement;
+    dialog?.showModal();
     return () => {
-      previous?.focus();
+      if (dialog?.open) dialog.close();
+      opener.current?.focus();
     };
   }, []);
   return (

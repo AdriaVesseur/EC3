@@ -76,6 +76,7 @@ export type ChampionshipResults = {
 };
 export type Snapshot = {
   version: string;
+  brand?: string;
   assettoPath: string | null;
   cspVersion: string | null;
   testMode: boolean;

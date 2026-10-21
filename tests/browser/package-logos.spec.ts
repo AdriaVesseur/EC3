@@ -88,7 +88,7 @@ test("package photos and logos render in the grid and fall back when unavailable
     packageCount - 1,
   );
   await expect(
-    page.getByRole("link", { name: "Eurocup 3 home", exact: true }),
+    page.getByRole("link", { name: "Epic Simracing home", exact: true }),
   ).toBeVisible();
   await expect(page.locator(".brand")).not.toContainText("Content Hub");
   const image = page.locator(".content-card .package-artwork img");

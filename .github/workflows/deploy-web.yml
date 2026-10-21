@@ -22,8 +22,8 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          mkdir -p dist/helper
-          gh release download --repo "$GITHUB_REPOSITORY" --pattern Eurocup3-Helper-Setup.exe --dir dist/helper
+          mkdir -p dist/helper/mkbt
+          gh release download --repo "$GITHUB_REPOSITORY" --pattern MKBT-Content-Manager-Setup.exe --dir dist/helper/mkbt
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with: { path: dist }

@@ -7,7 +7,8 @@ namespace Eurocup3;
 
 public sealed class DesktopWindowHost : IDisposable
 {
-    const string AppUrl = "http://127.0.0.1:32145/?desktop=1";
+    static string AppUrl =>
+        $"{BrandIdentity.ApiOrigin}/?desktop=1&v={Uri.EscapeDataString(Program.Version)}";
     readonly ManualResetEventSlim ready = new();
     readonly TaskCompletionSource closed = new(TaskCreationOptions.RunContinuationsAsynchronously);
     readonly Thread thread;
@@ -15,7 +16,7 @@ public sealed class DesktopWindowHost : IDisposable
 
     DesktopWindowHost()
     {
-        thread = new Thread(Run) { Name = "Eurocup 3 desktop window" };
+        thread = new Thread(Run) { Name = $"{BrandIdentity.Id} desktop window" };
         thread.SetApartmentState(ApartmentState.STA);
         thread.Start();
         ready.Wait();
@@ -90,7 +91,7 @@ sealed class DesktopWindow : Form
 
     public DesktopWindow(string appUrl)
     {
-        Text = "Eurocup 3 Content Manager";
+        Text = BrandIdentity.Name;
         StartPosition = FormStartPosition.CenterScreen;
         MinimumSize = new Size(900, 620);
         Size = new Size(1480, 940);
@@ -123,13 +124,8 @@ sealed class DesktopWindow : Form
     {
         try
         {
-            var userData = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                "Eurocup3",
-                "WebView2"
-            );
             var environment = await CoreWebView2Environment.CreateAsync(
-                userDataFolder: userData
+                userDataFolder: BrandIdentity.WebViewDataRoot
             );
             await browser.EnsureCoreWebView2Async(environment);
             browser.CoreWebView2.Settings.AreDefaultContextMenusEnabled = false;
@@ -141,7 +137,7 @@ sealed class DesktopWindow : Form
                 if (
                     uri.Scheme == Uri.UriSchemeHttp
                     && uri.Host == "127.0.0.1"
-                    && uri.Port == 32145
+                    && uri.Port == BrandIdentity.ApiPort
                 )
                     return;
                 args.Cancel = true;
@@ -165,7 +161,7 @@ sealed class DesktopWindow : Form
                 Padding = new Padding(40),
                 Text =
                     "No se pudo iniciar el componente de escritorio de Microsoft Edge.\n\n"
-                    + "Instala Microsoft Edge WebView2 Runtime y vuelve a abrir Eurocup 3.\n\n"
+                    + $"Instala Microsoft Edge WebView2 Runtime y vuelve a abrir {BrandIdentity.Name}.\n\n"
                     + ex.Message,
             };
             Controls.Add(notice);

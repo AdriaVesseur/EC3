@@ -54,14 +54,16 @@ export function TeamDriver({
           <img
             src={team.logo}
             alt=""
+            data-logo-fit={team.id === "var" ? "cover" : "contain"}
+            data-logo-spacing={team.id === "srl" ? "tight" : undefined}
             loading="lazy"
             onError={(event) => {
               event.currentTarget.hidden = true;
             }}
           />
         ) : null}
+        <span className="team-driver-accent" />
       </span>
-      <span className="team-driver-accent" aria-hidden="true" />
       <span>{driverName}</span>
       {team ? <span className="sr-only">, {team.name}</span> : null}
     </span>

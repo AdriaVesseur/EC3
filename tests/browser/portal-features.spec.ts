@@ -732,7 +732,7 @@ test("JSON live timing APIs render connected and offline leaderboards instead of
   await expect(driverMark).toHaveCSS("border-top-width", "0px");
   await expect(driverMark).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
   await expect(
-    connectedTable.locator(".team-driver-mark + .team-driver-accent"),
+    connectedTable.locator(".team-driver-mark .team-driver-accent"),
   ).toHaveCount(1);
   await expect(
     offlineTable.getByRole("row", { name: /Samuel Fernández/ }),
@@ -747,8 +747,7 @@ test("JSON live timing APIs render connected and offline leaderboards instead of
   await expect(unteamedRow.locator("td").nth(3)).toHaveText("");
   const driverTextX = async (row: typeof unteamedRow) =>
     row
-      .locator(".team-driver > span")
-      .nth(2)
+      .locator(".team-driver > span:not(.team-driver-mark):not(.sr-only)")
       .evaluate((element) => element.getBoundingClientRect().x);
   const teamedTextX = await driverTextX(
     offlineTable.getByRole("row", { name: /Samuel Fernández/ }),
@@ -773,16 +772,25 @@ test("team marks appear consistently in home standings, Championship and race Re
   page,
 }) => {
   const logo = "https://assets.example.test/ec3-team.svg";
+  const wideLogo = "https://assets.example.test/srl-team.svg";
   await mockFeatures(page, {
     portal: () => ({
       ...portalResponse(),
       teams: [
         {
-          id: "ec3-racing",
+          id: "var",
           name: "EC3 Racing",
           color: "#e52e46",
           logo,
           driverNames: ["Fixture Driver"],
+          liveTimingNames: [],
+        },
+        {
+          id: "srl",
+          name: "SRL Fixture Team",
+          color: "#fe2700",
+          logo: wideLogo,
+          driverNames: ["Second Fixture Driver"],
           liveTimingNames: [],
         },
       ],
@@ -857,6 +865,13 @@ test("team marks appear consistently in home standings, Championship and race Re
                     car: "EC3 Fixture Car",
                     time: "1:51.250",
                   },
+                  {
+                    position: 4,
+                    number: "10",
+                    driver: "Fourth Fixture Driver",
+                    car: "EC3 Fixture Car",
+                    time: "1:52.000",
+                  },
                 ],
               },
               {
@@ -897,6 +912,12 @@ test("team marks appear consistently in home standings, Championship and race Re
       body: '<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80"><rect width="80" height="80" fill="#fff"/></svg>',
     }),
   );
+  await page.route(wideLogo, (route) =>
+    route.fulfill({
+      contentType: "image/svg+xml",
+      body: '<svg xmlns="http://www.w3.org/2000/svg" width="500" height="92"><rect width="500" height="92" fill="#fff"/></svg>',
+    }),
+  );
   await page.goto("/");
   await expect(page.locator(".standings-preview .team-driver")).toContainText(
     "EC3 Racing",
@@ -906,8 +927,29 @@ test("team marks appear consistently in home standings, Championship and race Re
   const previewDriverBox = await previewRow
     .locator(".team-driver")
     .boundingBox();
+  const logoBox = await previewRow
+    .locator(".team-driver-mark img")
+    .boundingBox();
+  const accentBox = await previewRow
+    .locator(".team-driver-accent")
+    .boundingBox();
+  const nameBox = await previewRow
+    .locator(".team-driver > span:nth-child(2)")
+    .boundingBox();
   expect(previewRowBox).not.toBeNull();
   expect(previewDriverBox).not.toBeNull();
+  expect(logoBox).not.toBeNull();
+  expect(accentBox).not.toBeNull();
+  expect(nameBox).not.toBeNull();
+  const logoToLineGap = accentBox!.x - (logoBox!.x + logoBox!.width);
+  const lineToNameGap = nameBox!.x - (accentBox!.x + accentBox!.width);
+  expect(logoToLineGap).toBe(8);
+  expect(lineToNameGap).toBe(6);
+  expect(accentBox!.height - logoBox!.height).toBeCloseTo(9.1, 1);
+  await expect(previewRow.locator(".team-driver-mark img")).toHaveAttribute(
+    "data-logo-fit",
+    "cover",
+  );
   expect(
     Math.abs(
       previewDriverBox!.y +
@@ -965,31 +1007,101 @@ test("team marks appear consistently in home standings, Championship and race Re
     .getByRole("navigation", { name: "Main navigation" })
     .getByRole("link", { name: "Results", exact: true })
     .click();
-  const fullResults = page.locator(".race-full-results");
-  await expect(fullResults).not.toHaveAttribute("open", "");
-  await fullResults.getByText("Full results").click();
-  await expect(fullResults).toHaveAttribute("open", "");
+  const firstRace = page.locator(".race-result-card").first();
+  const fullResults = firstRace.locator(".race-full-results");
+  const topTwentyToggle = fullResults
+    .locator(".race-session-results")
+    .first()
+    .locator(".top-twenty-trigger");
+  await expect(topTwentyToggle).toContainText("Top 20");
+  await expect(topTwentyToggle).toHaveAttribute("aria-expanded", "false");
+  await expect(
+    fullResults
+      .locator(".race-session-results")
+      .first()
+      .locator(".podium-row:not(.podium-columns):visible"),
+  ).toHaveCount(3);
+  const srlLogo = fullResults
+    .locator(".team-driver")
+    .filter({ hasText: "Second Fixture Driver" })
+    .locator(".team-driver-mark img")
+    .first();
+  await expect(srlLogo).toHaveAttribute("data-logo-fit", "contain");
+  await expect(srlLogo).toHaveAttribute("data-logo-spacing", "tight");
+  await expect(srlLogo).toHaveCSS("width", "48px");
+  await expect(srlLogo.locator("..")).toHaveCSS("width", "58px");
+  const srlDriver = srlLogo.locator("xpath=../..");
+  const srlLogoBox = await srlLogo.boundingBox();
+  const srlAccentBox = await srlDriver
+    .locator(".team-driver-accent")
+    .boundingBox();
+  const srlNameBox = await srlDriver
+    .locator(":scope > span:nth-child(2)")
+    .boundingBox();
+  expect(srlLogoBox).not.toBeNull();
+  expect(srlAccentBox).not.toBeNull();
+  expect(srlNameBox).not.toBeNull();
+  expect(srlAccentBox!.x - (srlLogoBox!.x + srlLogoBox!.width)).toBeCloseTo(
+    2,
+    0,
+  );
+  expect(srlNameBox!.x - (srlAccentBox!.x + srlAccentBox!.width)).toBe(6);
   await expect(page.locator(".podium-row .team-driver").first()).toContainText(
     "EC3 Racing",
   );
-  await expect(page.locator(".race-session-results h4")).toHaveText([
-    "Carrera 1",
-    "Carrera 2",
-  ]);
+  await expect(
+    page.locator(".race-session-results h4 > span:first-child"),
+  ).toHaveText(["Carrera 1", "Carrera 2"]);
   await expect(
     page.locator(".race-result-heading .eyebrow").first(),
   ).toContainText("Carrera 1 / Carrera 2");
-  await expect(fullResults.locator(".race-results-count")).toHaveText(
-    "6 entries",
-  );
+  await expect(
+    fullResults.locator(".race-session-results h4 > span:first-child"),
+  ).toHaveText(["Carrera 1", "Carrera 2"]);
+  await expect(
+    fullResults.locator(".race-session-results h4").first(),
+  ).toContainText("4 / 20 available");
   const resultRows = fullResults.locator(".podium-row:not(.podium-columns)");
-  await expect(resultRows).toHaveCount(6);
+  await expect(resultRows).toHaveCount(7);
+  await expect(fullResults.locator(".podium-columns").first()).toContainText(
+    "Team",
+  );
+  await expect(fullResults.getByText("Car", { exact: true })).toHaveCount(0);
+  await expect(resultRows.nth(0).locator(".result-team")).toHaveText(
+    "EC3 Racing",
+  );
+  await expect(resultRows.nth(1).locator(".result-team")).toHaveText(
+    "SRL Fixture Team",
+  );
+  await expect(resultRows.nth(2).locator(".result-team")).toBeEmpty();
   await expect(resultRows.nth(0).locator(".podium-time")).toHaveText(
     "1:50.000",
   );
   await expect(resultRows.nth(1).locator(".podium-time")).toHaveText("+0.500");
   await expect(resultRows.nth(2).locator(".podium-time")).toHaveText("+1.250");
-  await expect(resultRows.nth(4).locator(".podium-time")).toHaveText("+0.625");
+  await expect(resultRows.nth(5).locator(".podium-time")).toHaveText("+0.625");
+  await topTwentyToggle.click();
+  await expect(topTwentyToggle).toHaveAttribute("aria-expanded", "true");
+  await expect(
+    fullResults
+      .locator(".race-session-results")
+      .first()
+      .locator(".podium-row:not(.podium-columns):visible"),
+  ).toHaveCount(4);
+  await expect(
+    fullResults.getByText("Fourth Fixture Driver", { exact: true }),
+  ).toBeVisible();
+  const secondSessionTopTwentyToggle = fullResults
+    .locator(".race-session-results")
+    .nth(1)
+    .locator(".top-twenty-trigger");
+  await secondSessionTopTwentyToggle.click();
+  await expect(
+    fullResults
+      .locator(".race-session-results")
+      .nth(1)
+      .locator(".results-unavailable-note"),
+  ).toHaveText("Solo se han publicado los 3 primeros de esta carrera.");
   const sessionOne = page.locator(".race-session-results").nth(0);
   const sessionTwo = page.locator(".race-session-results").nth(1);
   const sessionOneBox = await sessionOne.boundingBox();
@@ -999,7 +1111,7 @@ test("team marks appear consistently in home standings, Championship and race Re
   expect(sessionOneBox!.x).toBeLessThan(sessionTwoBox!.x);
   await expect(
     page.locator(".podium-row:not(.podium-columns)").first(),
-  ).toContainText("EC3 Fixture Car");
+  ).toContainText("EC3 Racing");
   const podiumRow = page.locator(".podium-row:not(.podium-columns)").first();
   const podiumRowBox = await podiumRow.boundingBox();
   const podiumDriverBox = await podiumRow.locator(".team-driver").boundingBox();
@@ -1012,6 +1124,85 @@ test("team marks appear consistently in home standings, Championship and race Re
         (podiumRowBox!.y + podiumRowBox!.height / 2),
     ),
   ).toBeLessThan(2);
+});
+
+test("cached race results stay visible while fresh data loads", async ({
+  page,
+}) => {
+  const sourceUrl = "https://www.makrobeasts.com/championships/cache-fixture";
+  const cached = {
+    sourceUrl,
+    updatedAt: checkedAt,
+    standings: [],
+    races: [
+      {
+        id: "cached-race",
+        round: "R1",
+        name: "Cached race",
+        venue: "Fixture circuit",
+        url: sourceUrl,
+        sessions: [
+          {
+            name: "Carrera",
+            results: [
+              {
+                position: 1,
+                number: "7",
+                driver: "Cached driver",
+                car: "Fixture car",
+                time: "1:50.000",
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  };
+  await page.addInitScript(
+    ({ key, value }) => localStorage.setItem(key, JSON.stringify(value)),
+    { key: "epic:championship-results:v1", value: cached },
+  );
+  await page.route(`${api}/status`, async (route) => {
+    const response = await route.fetch();
+    const snapshot = await response.json();
+    snapshot.catalog ??= {
+      manifest: {
+        championship: sourceUrl,
+        season: "2026",
+        build: "1.0.0",
+        demo: false,
+        content: [],
+      },
+      championship: {
+        minimumHelperVersion: "1.0.0",
+        resultsUrl: sourceUrl,
+        requiredContent: [],
+        events: [],
+      },
+      fetchedAt: checkedAt,
+    };
+    snapshot.catalog.championship.resultsUrl = sourceUrl;
+    await route.fulfill({ response, json: snapshot });
+  });
+  let refreshStarted = false;
+  await page.route(`${api}/results**`, async (route) => {
+    refreshStarted = true;
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+    await route.fulfill({
+      json: { ...cached, updatedAt: "2026-10-02T08:00:00Z" },
+    });
+  });
+  await page.goto("/#results");
+  await expect(page.getByText("Cached race", { exact: true })).toBeVisible();
+  await expect.poll(() => refreshStarted).toBe(true);
+  const fullResultsToggle = page
+    .locator(".race-result-card")
+    .first()
+    .getByRole("button", { name: /Top 20/ })
+    .first();
+  await expect(fullResultsToggle).toBeVisible();
+  await fullResultsToggle.click();
+  await expect(page.getByText("Cached driver", { exact: true })).toBeVisible();
 });
 
 test("missing Content Manager disables Join and a failed refresh labels preserved server data as last known", async ({
@@ -1086,7 +1277,7 @@ test("app update dismissal persists for that release and a newer version creates
   await mockFeatures(page, { update: () => publishedUpdate(version) });
   await page.goto("/?desktop=1");
   const notice = page.getByRole("region", { name: "Windows app update" });
-  await expect(notice).toContainText("Eurocup 3 app 1.4.0 is available");
+  await expect(notice).toContainText("Epic Simracing app 1.4.0 is available");
   await expect(notice).toContainText(
     "You have 1.3.0. Download and run the installer",
   );
@@ -1108,7 +1299,7 @@ test("app update dismissal persists for that release and a newer version creates
   await page
     .getByRole("button", { name: "Check for app updates", exact: true })
     .click();
-  await expect(notice).toContainText("Eurocup 3 app 1.5.0 is available");
+  await expect(notice).toContainText("Epic Simracing app 1.5.0 is available");
   await expect(notice).toContainText("You have 1.3.0.");
   await expect(
     notice.getByRole("link", { name: "Download update" }),

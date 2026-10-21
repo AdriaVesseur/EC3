@@ -1,7 +1,14 @@
-import { useCallback, useEffect, useState, type CSSProperties } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+} from "react";
 import {
   ArrowRight,
   ArrowUpRight,
+  CalendarDays,
   Check,
   CheckCheck,
   ChevronRight,
@@ -19,14 +26,20 @@ import {
   Search,
   Settings,
   ShieldCheck,
-  Unplug,
   Trophy,
   X,
   AlertTriangle,
   ExternalLink,
   Server,
 } from "lucide-react";
-import { api, connect, bytes, active } from "./api";
+import {
+  api,
+  connect,
+  bytes,
+  active,
+  HelperBrandMismatch,
+  verifyHelperBrand,
+} from "./api";
 import {
   Badge,
   Button,
@@ -40,17 +53,29 @@ import type { ChampionshipResults, Content, Package, Snapshot } from "./types";
 import { StandingsPreview } from "./StandingsPreview";
 import { ContentCard } from "./ContentCard";
 import { ServersPage } from "./ServersPage";
+import { RacesPage } from "./RacesPage";
+import { MKBTChampionshipPage } from "./MKBTChampionshipPage";
+import { useActiveChampionships } from "./useActiveChampionships";
 import { SponsorsFooter } from "./SponsorsFooter";
 import { usePortal } from "./usePortal";
 import { portalErrorMessage } from "./portal-types";
 import { resolveTeam, TeamDriver } from "./TeamDriver";
 import { AppUpdateNotice, useAppUpdate } from "./AppUpdateNotice";
+import { brand, brandStorageKey } from "./brand";
+import { BrandLogo } from "./BrandLogo";
 type Page =
-  "home" | "content" | "championship" | "results" | "servers" | "settings";
+  | "home"
+  | "races"
+  | "content"
+  | "championship"
+  | "results"
+  | "servers"
+  | "settings";
 const pages = [
   ["home", "Home", Home],
+  ["races", "Races", CalendarDays],
   ["content", "Content library", Layers],
-  ["championship", "Championship", Flag],
+  ["championship", brand.id === "mkbt" ? "Standings" : "Championship", Flag],
   ["results", "Results", Trophy],
   ["servers", "Servers", Server],
   ["settings", "Settings", Settings],
@@ -65,6 +90,27 @@ const getContentTab = () =>
   location.hash.slice(1).split("?")[0] === "downloads"
     ? "downloads"
     : "library";
+const resultsCacheKey = brandStorageKey("championship-results:v1");
+const readCachedResults = (): ChampionshipResults | null => {
+  try {
+    const value = JSON.parse(localStorage.getItem(resultsCacheKey) ?? "null");
+    return value &&
+      typeof value.sourceUrl === "string" &&
+      Array.isArray(value.standings) &&
+      Array.isArray(value.races)
+      ? (value as ChampionshipResults)
+      : null;
+  } catch {
+    return null;
+  }
+};
+const cacheResults = (results: ChampionshipResults) => {
+  try {
+    localStorage.setItem(resultsCacheKey, JSON.stringify(results));
+  } catch {
+    // The app still works when browser storage is unavailable or full.
+  }
+};
 
 const raceTimeSeconds = (value: string) => {
   const parts = value.split(":").map(Number);
@@ -117,11 +163,24 @@ export default function App() {
     [detailTab, setDetailTab] = useState("overview");
   const appUpdate = useAppUpdate(connected);
   const portal = usePortal(connected);
-  const [results, setResults] = useState<ChampionshipResults | null>(null),
+  const activeChampionships = useActiveChampionships(
+    connected,
+    brand.id === "mkbt" && ["home", "championship", "results"].includes(page),
+  );
+  const [results, setResults] = useState<ChampionshipResults | null>(
+      readCachedResults,
+    ),
     [resultsLoading, setResultsLoading] = useState(false),
     [resultsError, setResultsError] = useState("");
+  const [expandedTopTwentySessions, setExpandedTopTwentySessions] = useState<
+    Set<string>
+  >(() => new Set());
+  const refreshInFlight = useRef(false);
+  const startupRefreshAttempted = useRef(false);
+  const contentBusy = snapshot?.jobs.some((job) => active(job.state)) ?? false;
   const poll = useCallback(async () => {
     const data = await api<Snapshot>("/status");
+    verifyHelperBrand(data.brand);
     setSnapshot(data);
     setConnected(true);
     return data;
@@ -132,8 +191,9 @@ export default function App() {
       await connect();
       await poll();
       setError("");
-    } catch {
+    } catch (e) {
       setConnected(false);
+      if (e instanceof HelperBrandMismatch) setError(e.message);
     } finally {
       setConnecting(false);
     }
@@ -161,7 +221,9 @@ export default function App() {
           try {
             await connect();
             await poll();
-          } catch {
+          } catch (e) {
+            if (!cancelled && e instanceof HelperBrandMismatch)
+              setError(e.message);
             /* Retry on the next heartbeat. */
           }
         }
@@ -179,13 +241,19 @@ export default function App() {
     const t = setTimeout(() => setToast(""), 6000);
     return () => clearTimeout(t);
   }, [toast]);
-  async function run(path: string, body: unknown = {}, message = "") {
+  async function run<T = unknown>(
+    path: string,
+    body: unknown = {},
+    message: string | ((result: T) => string) = "",
+  ) {
     setPending(true);
     setError("");
     try {
-      await api(path, body);
+      const result = await api<T>(path, body);
       await poll();
-      if (message) setToast(message);
+      const notification =
+        typeof message === "function" ? message(result) : message;
+      if (notification) setToast(notification);
     } catch (e) {
       setError(
         e instanceof Error ? e.message : "Operation failed. Please retry.",
@@ -195,26 +263,50 @@ export default function App() {
     }
   }
   async function refresh() {
-    await run(
-      "/refresh",
-      {},
-      "Catalog refreshed. File verification is running.",
-    );
+    // State updates are asynchronous; the ref also prevents two clicks in one render.
+    if (refreshInFlight.current || pending || contentBusy) return;
+    refreshInFlight.current = true;
+    try {
+      await run<{ refreshed: boolean }>("/refresh", {}, (result) =>
+        result.refreshed === false
+          ? "Content operations are still running. The current catalog remains available."
+          : "Catalog refreshed. File verification is running.",
+      );
+    } finally {
+      refreshInFlight.current = false;
+    }
   }
   useEffect(() => {
+    if (!connected) {
+      startupRefreshAttempted.current = false;
+      return;
+    }
     if (
-      connected &&
       snapshot &&
       !snapshot.catalog &&
+      !snapshot.catalogError &&
       !pending &&
-      !snapshot.catalogError
-    )
+      !contentBusy &&
+      !startupRefreshAttempted.current
+    ) {
+      // Wait for an existing queue, then try once. A real failure stays visible
+      // until the user retries rather than starting an automatic request loop.
+      startupRefreshAttempted.current = true;
       void refresh();
-  }, [connected, snapshot?.catalog]);
+    }
+  }, [
+    connected,
+    !!snapshot,
+    snapshot?.catalog,
+    snapshot?.catalogError,
+    pending,
+    contentBusy,
+  ]);
   const resultsSource = snapshot?.catalog?.championship.resultsUrl;
   const hasCatalog = !!snapshot?.catalog;
   useEffect(() => {
     if (
+      brand.id === "mkbt" ||
       !connected ||
       (page !== "home" && page !== "championship" && page !== "results")
     )
@@ -226,14 +318,24 @@ export default function App() {
       return;
     }
     let cancelled = false;
-    setResults((previous) =>
-      !resultsSource || previous?.sourceUrl === resultsSource ? previous : null,
-    );
+    setResults((previous) => {
+      if (!resultsSource || previous?.sourceUrl === resultsSource)
+        return previous;
+      try {
+        localStorage.removeItem(resultsCacheKey);
+      } catch {
+        // Ignore unavailable browser storage.
+      }
+      return null;
+    });
     setResultsLoading(true);
     setResultsError("");
     api<ChampionshipResults>("/results")
       .then((data) => {
-        if (!cancelled) setResults(data);
+        if (!cancelled) {
+          setResults(data);
+          cacheResults(data);
+        }
       })
       .catch((e) => {
         if (!cancelled)
@@ -314,8 +416,11 @@ export default function App() {
       </a>
       <header className="app-navigation">
         <div className="app-navigation-inner">
-          <a href="#home" className="brand" aria-label="Eurocup 3 home">
-            <img src="./images/logo-dark.png" alt="" />
+          <a href="#home" className="brand" aria-label={`${brand.name} home`}>
+            <BrandLogo />
+            {brand.id === "mkbt" && (
+              <span className="brand-wordmark">MKBT</span>
+            )}
           </a>
           <span className="brand-divider" aria-hidden="true" />
           <nav className="primary-nav" aria-label="Main navigation">
@@ -335,7 +440,7 @@ export default function App() {
           {!isDesktopApp && (
             <a
               className="install-app-link"
-              href="./helper/Eurocup3-Helper-Setup.exe"
+              href={`./helper/${brand.id}/${brand.installerName}`}
             >
               <Download size={15} aria-hidden="true" />
               Install app
@@ -347,7 +452,7 @@ export default function App() {
         <div className="page-utility" role="region" aria-label="Page utilities">
           <div className="utility-bar">
             <div className="breadcrumbs">
-              <span>Eurocup 3</span>
+              <span>{brand.name}</span>
               <span aria-hidden="true">/</span>
               <strong>{pageLabel}</strong>
             </div>
@@ -388,39 +493,56 @@ export default function App() {
             </div>
           )}
         </div>
-        <main id="main" tabIndex={-1} aria-label="Eurocup 3 portal">
-          <div className="page-heading">
+        <main id="main" tabIndex={-1} aria-label={`${brand.name} portal`}>
+          <div
+            className="page-heading"
+            style={page === "races" ? { display: "none" } : undefined}
+          >
             <div>
-              <p className="eyebrow">EUROCUP 3 / ASSETTO CORSA</p>
+              <p className="eyebrow">
+                {page === "races"
+                  ? "MKBT RACING / ASSETTO CORSA"
+                  : `${brand.name.toUpperCase()} / ASSETTO CORSA`}
+              </p>
               <h1>
                 {page === "home"
                   ? "Content hub."
-                  : page === "content"
-                    ? contentTab === "downloads"
-                      ? "Downloads."
-                      : "Content library."
-                    : page === "championship"
-                      ? "One grid. One standard."
-                      : page === "results"
-                        ? "The championship ledger."
-                        : page === "servers"
-                          ? "Race servers."
-                          : "Your workspace."}
+                  : page === "races"
+                    ? "Find your next race."
+                    : page === "content"
+                      ? contentTab === "downloads"
+                        ? "Downloads."
+                        : "Content library."
+                      : page === "championship"
+                        ? brand.id === "mkbt"
+                          ? "Driver standings."
+                          : "One grid. One standard."
+                        : page === "results"
+                          ? brand.id === "mkbt"
+                            ? "Race results."
+                            : "The championship ledger."
+                          : page === "servers"
+                            ? "Race servers."
+                            : "Your workspace."}
               </h1>
               <p className="subtitle">
                 {page === "home"
                   ? "Everything you need to race."
-                  : page === "content"
-                    ? contentTab === "downloads"
-                      ? "Track every transfer and file check."
-                      : "Every official package, in one place."
-                    : page === "championship"
-                      ? "Prepare your championship or install a single event."
-                      : page === "results"
-                        ? "Official race results from MakroBeasts."
-                        : page === "servers"
-                          ? "Join the grid and follow the session live."
-                          : "Connection, support and application preferences."}
+                  : page === "races"
+                    ? "Browse MKBT races, explore the grid and find your entry."
+                    : page === "content"
+                      ? contentTab === "downloads"
+                        ? "Track every transfer and file check."
+                        : "Every official package, in one place."
+                      : page === "championship"
+                        ? brand.id === "mkbt"
+                          ? "Official classifications across active MKBT championships."
+                          : "Prepare your championship or install a single event."
+                        : page === "results"
+                          ? "Official race results from MakroBeasts."
+                          : page === "servers"
+                            ? "Join the grid and follow the session live."
+                            : "Connection, support and application preferences."}
               </p>
             </div>
             <div className="build-label">
@@ -436,6 +558,7 @@ export default function App() {
           <AppUpdateNotice {...appUpdate} />
           {connected &&
             page !== "servers" &&
+            page !== "races" &&
             (portal.error || !!portal.portal?.errors.length) && (
               <div className="alert" role="status">
                 <AlertTriangle size={20} aria-hidden="true" />
@@ -464,7 +587,7 @@ export default function App() {
           )}
           {!connected && (
             <div className="connection-banner">
-              <Unplug size={24} />
+              <BrandLogo className="connection-brand-logo" label={brand.name} />
               <div>
                 <strong>
                   {connecting
@@ -482,9 +605,9 @@ export default function App() {
               </Button>
               <a
                 className="button primary"
-                href="./helper/Eurocup3-Helper-Setup.exe"
+                href={`./helper/${brand.id}/${brand.installerName}`}
               >
-                Install EC3 Helper
+                Install {brand.name} Helper
                 <ArrowUpRight size={16} />
               </a>
             </div>
@@ -508,13 +631,13 @@ export default function App() {
                   <img
                     className="featured-package-image"
                     src="./images/home-zallara-barcelona.jpg"
-                    alt="Eurocup 3 Zallara Z320 racing at Barcelona"
+                    alt="Zallara Z320 racing at Barcelona"
                     fetchPriority="high"
                   />
                   <div className="featured-package-shade" />
                   <div className="featured-package-label">
-                    <PackageIcon size={17} aria-hidden="true" />
-                    <span>EUROCUP 3 CORE PACKAGE</span>
+                    <BrandLogo className="featured-brand-logo" />
+                    <span>{brand.name.toUpperCase()} CORE PACKAGE</span>
                     {cat?.manifest.demo && (
                       <span className="demo-chip">Demo catalog</span>
                     )}
@@ -709,9 +832,7 @@ export default function App() {
                     variant="primary"
                     className="race-ready-download"
                     disabled={
-                      connecting ||
-                      pending ||
-                      (connected && hasRequiredPackages && ongoing.length > 0)
+                      connecting || pending || (connected && contentBusy)
                     }
                     onClick={() => {
                       if (!connected) return reconnect();
@@ -910,7 +1031,7 @@ export default function App() {
                         : "Connect the helper to load your official content library."}
                       <Button
                         onClick={refresh}
-                        disabled={!connected || pending}
+                        disabled={!connected || pending || contentBusy}
                       >
                         Refresh catalog
                       </Button>
@@ -919,14 +1040,33 @@ export default function App() {
                 </section>
                 <StandingsPreview
                   results={
-                    !cat || results?.sourceUrl === resultsSource
-                      ? results
-                      : null
+                    brand.id === "mkbt"
+                      ? activeChampionships.results
+                      : !cat || results?.sourceUrl === resultsSource
+                        ? results
+                        : null
                   }
-                  loading={resultsLoading}
-                  error={resultsError}
+                  loading={
+                    brand.id === "mkbt"
+                      ? activeChampionships.loading ||
+                        activeChampionships.catalogLoading
+                      : resultsLoading
+                  }
+                  error={
+                    brand.id === "mkbt"
+                      ? activeChampionships.error ||
+                        activeChampionships.catalogError
+                      : resultsError
+                  }
+                  championshipName={
+                    brand.id === "mkbt"
+                      ? activeChampionships.selected?.name
+                      : undefined
+                  }
                   connected={connected}
-                  configured={!cat || !!resultsSource}
+                  configured={
+                    brand.id === "mkbt" ? true : !cat || !!resultsSource
+                  }
                   teams={portal.portal?.teams ?? []}
                 />
               </div>
@@ -1037,6 +1177,11 @@ export default function App() {
               teams={portal.portal?.teams ?? []}
             />
           )}
+          <RacesPage
+            connected={connected}
+            active={page === "races"}
+            teams={portal.portal?.teams ?? []}
+          />
           {page === "content" && contentTab === "downloads" && (
             <>
               <div className="download-summary">
@@ -1160,7 +1305,16 @@ export default function App() {
               )}
             </>
           )}
-          {page === "championship" && (
+          {brand.id === "mkbt" &&
+            (page === "championship" || page === "results") && (
+              <MKBTChampionshipPage
+                mode={page === "championship" ? "standings" : "results"}
+                resource={activeChampionships}
+                teams={portal.portal?.teams ?? []}
+                connected={connected}
+              />
+            )}
+          {page === "championship" && brand.id === "epic" && (
             <>
               <section className="results-section">
                 <div className="section-heading">
@@ -1220,9 +1374,7 @@ export default function App() {
                     Connecting to MakroBeasts…
                   </EmptyState>
                 )}
-                {!resultsLoading &&
-                  !resultsError &&
-                  results &&
+                {results &&
                   (results.standings.length ? (
                     <div className="results-table-wrap">
                       <table className="results-table championship-standings-table">
@@ -1389,7 +1541,7 @@ export default function App() {
               )}
             </>
           )}
-          {page === "results" && (
+          {page === "results" && brand.id === "epic" && (
             <>
               <section className="settings-section results-source-card">
                 <div className="section-heading">
@@ -1403,11 +1555,11 @@ export default function App() {
                       setResultsLoading(true);
                       setResultsError("");
                       try {
-                        setResults(
-                          await api<ChampionshipResults>(
-                            "/results?refresh=true",
-                          ),
+                        const data = await api<ChampionshipResults>(
+                          "/results?refresh=true",
                         );
+                        setResults(data);
+                        cacheResults(data);
                       } catch (e) {
                         setResultsError(
                           e instanceof Error
@@ -1458,7 +1610,7 @@ export default function App() {
                     : "Refresh the catalog to load the championship results source."}
                 </EmptyState>
               )}
-              {!resultsLoading && !resultsError && results && (
+              {results && (
                 <section className="results-section">
                   <div className="section-heading">
                     <div>
@@ -1495,28 +1647,8 @@ export default function App() {
                               <h3>{race.name}</h3>
                               {race.venue && <p>{race.venue}</p>}
                             </div>
-                            <a
-                              className="text-link"
-                              href={race.url}
-                              target="_blank"
-                              rel="noreferrer"
-                              aria-label={`Open ${race.name} results on MakroBeasts`}
-                            >
-                              Official page <ExternalLink size={14} />
-                            </a>
                           </div>
-                          <details className="race-full-results">
-                            <summary>
-                              <span>Full results</span>
-                              <span className="race-results-count">
-                                {race.sessions.reduce(
-                                  (total, session) =>
-                                    total + session.results.length,
-                                  0,
-                                )}{" "}
-                                entries
-                              </span>
-                            </summary>
+                          <div className="race-full-results">
                             <div className="race-sessions-grid">
                               {[...race.sessions]
                                 .sort((a, b) =>
@@ -1530,53 +1662,178 @@ export default function App() {
                                     key={session.name}
                                     aria-label={`${race.name} · ${session.name}`}
                                   >
-                                    <h4>
-                                      {formatRaceSessionName(session.name)}
-                                    </h4>
-                                    <div
-                                      className="podium-row podium-columns"
-                                      aria-hidden="true"
-                                    >
-                                      <span>Pos</span>
-                                      <span>#</span>
-                                      <span>Driver</span>
-                                      <span>Car</span>
-                                      <span>Time / gap</span>
-                                    </div>
-                                    <div className="podium-list">
-                                      {session.results.map((entry, index) => (
-                                        <div
-                                          className={`podium-row podium-${entry.position}`}
-                                          key={`${entry.position}-${entry.driver}`}
-                                        >
-                                          <span className="podium-place">
-                                            {entry.position}
-                                          </span>
-                                          <span className="driver-number">
-                                            {entry.number}
-                                          </span>
-                                          <strong>
-                                            <TeamDriver
-                                              driverName={entry.driver}
-                                              teams={portal.portal?.teams ?? []}
+                                    {(() => {
+                                      const sessionKey = `${race.id}:${session.name}`;
+                                      const expanded =
+                                        expandedTopTwentySessions.has(
+                                          sessionKey,
+                                        );
+                                      const visibleResults =
+                                        session.results.slice(0, 20);
+                                      return (
+                                        <>
+                                          <h4>
+                                            <span>
+                                              {formatRaceSessionName(
+                                                session.name,
+                                              )}
+                                            </span>
+                                            <span className="race-results-count">
+                                              {Math.min(
+                                                session.results.length,
+                                                20,
+                                              )}{" "}
+                                              / 20
+                                              {session.results.length < 20
+                                                ? " available"
+                                                : " drivers"}
+                                            </span>
+                                          </h4>
+                                          <div
+                                            className="podium-row podium-columns"
+                                            aria-hidden="true"
+                                          >
+                                            <span>Pos</span>
+                                            <span>#</span>
+                                            <span>Driver</span>
+                                            <span>Team</span>
+                                            <span>Time / gap</span>
+                                          </div>
+                                          <div className="podium-list">
+                                            {session.results
+                                              .slice(0, 3)
+                                              .map((entry, index) => (
+                                                <div
+                                                  className={`podium-row podium-${entry.position}`}
+                                                  key={`${entry.position}-${entry.driver}`}
+                                                >
+                                                  <span className="podium-place">
+                                                    {entry.position}
+                                                  </span>
+                                                  <span className="driver-number">
+                                                    {entry.number}
+                                                  </span>
+                                                  <strong>
+                                                    <TeamDriver
+                                                      driverName={entry.driver}
+                                                      teams={
+                                                        portal.portal?.teams ??
+                                                        []
+                                                      }
+                                                    />
+                                                  </strong>
+                                                  <span className="result-team">
+                                                    {resolveTeam(
+                                                      entry.driver,
+                                                      "",
+                                                      portal.portal?.teams ??
+                                                        [],
+                                                    )?.name ?? ""}
+                                                  </span>
+                                                  <span className="podium-time">
+                                                    {formatRaceResultTime(
+                                                      session.results,
+                                                      index,
+                                                    )}
+                                                  </span>
+                                                </div>
+                                              ))}
+                                          </div>
+                                          <button
+                                            type="button"
+                                            className="top-twenty-trigger"
+                                            aria-expanded={expanded}
+                                            aria-controls={`race-results-${encodeURIComponent(sessionKey)}`}
+                                            onClick={() =>
+                                              setExpandedTopTwentySessions(
+                                                (current) => {
+                                                  const next = new Set(current);
+                                                  if (next.has(sessionKey))
+                                                    next.delete(sessionKey);
+                                                  else next.add(sessionKey);
+                                                  return next;
+                                                },
+                                              )
+                                            }
+                                          >
+                                            <span>Top 20</span>
+                                            <span className="race-results-count">
+                                              {visibleResults.length} / 20
+                                              {visibleResults.length < 20
+                                                ? " available"
+                                                : " drivers"}
+                                            </span>
+                                            <ChevronRight
+                                              className={
+                                                expanded ? "expanded" : ""
+                                              }
+                                              size={14}
+                                              aria-hidden="true"
                                             />
-                                          </strong>
-                                          <span className="result-car">
-                                            {entry.car || "—"}
-                                          </span>
-                                          <span className="podium-time">
-                                            {formatRaceResultTime(
-                                              session.results,
-                                              index,
+                                          </button>
+                                          <div
+                                            className="podium-list podium-additional-results"
+                                            id={`race-results-${encodeURIComponent(sessionKey)}`}
+                                            hidden={!expanded}
+                                          >
+                                            {visibleResults.length <= 3 ? (
+                                              <p className="results-unavailable-note">
+                                                Solo se han publicado los 3
+                                                primeros de esta carrera.
+                                              </p>
+                                            ) : (
+                                              visibleResults
+                                                .slice(3)
+                                                .map((entry, index) => {
+                                                  const resultIndex = index + 3;
+                                                  return (
+                                                    <div
+                                                      className={`podium-row podium-${entry.position}`}
+                                                      key={`${entry.position}-${entry.driver}`}
+                                                    >
+                                                      <span className="podium-place">
+                                                        {entry.position}
+                                                      </span>
+                                                      <span className="driver-number">
+                                                        {entry.number}
+                                                      </span>
+                                                      <strong>
+                                                        <TeamDriver
+                                                          driverName={
+                                                            entry.driver
+                                                          }
+                                                          teams={
+                                                            portal.portal
+                                                              ?.teams ?? []
+                                                          }
+                                                        />
+                                                      </strong>
+                                                      <span className="result-team">
+                                                        {resolveTeam(
+                                                          entry.driver,
+                                                          "",
+                                                          portal.portal
+                                                            ?.teams ?? [],
+                                                        )?.name ?? ""}
+                                                      </span>
+                                                      <span className="podium-time">
+                                                        {formatRaceResultTime(
+                                                          session.results,
+                                                          resultIndex,
+                                                        )}
+                                                      </span>
+                                                    </div>
+                                                  );
+                                                })
                                             )}
-                                          </span>
-                                        </div>
-                                      ))}
-                                    </div>
+                                          </div>
+                                        </>
+                                      );
+                                    })()}
                                   </section>
                                 ))}
                             </div>
-                          </details>
+                          </div>
                         </article>
                       ))}
                     </div>
@@ -1588,7 +1845,7 @@ export default function App() {
                   )}
                 </section>
               )}
-              {resultsLoading && (
+              {resultsLoading && !results && (
                 <EmptyState title="Loading official results">
                   Connecting to MakroBeasts…
                 </EmptyState>
@@ -1708,7 +1965,7 @@ export default function App() {
                 <dl className="details-grid">
                   <div>
                     <dt>Connection</dt>
-                    <dd>127.0.0.1:32145</dd>
+                    <dd>127.0.0.1:{brand.apiPort}</dd>
                   </div>
                   <div>
                     <dt>Installed version</dt>
@@ -1835,7 +2092,9 @@ export default function App() {
       )}
       {selected && (
         <Modal title={selected.name} onClose={() => setSelected(null)}>
-          <p className="eyebrow">EUROCUP 3 · OFFICIAL CONTENT</p>
+          <p className="eyebrow">
+            {brand.name.toUpperCase()} · OFFICIAL CONTENT
+          </p>
           <dl className="details-grid">
             <div>
               <dt>Latest version</dt>

@@ -1,28 +1,52 @@
+#ifndef AppBrand
+  #define AppBrand "MKBT"
+#endif
+
+#if AppBrand == "Epic"
+  #define BrandName "Epic Simracing Content Manager"
+  #define BrandPublisher "Epic Simracing"
+  #define BrandSlug "epic"
+  #define BrandAppId "{{E7776544-F67A-40A1-93BC-925AB78D3B74}"
+  #define BrandAppUserModelId "EpicSimracing.ContentManager"
+  #define BrandExe "EpicSimracing.ContentManager.exe"
+  #define BrandSetup "EpicSimracing-Content-Manager-Setup"
+#elif AppBrand == "MKBT"
+  #define BrandName "MKBT Content Manager"
+  #define BrandPublisher "MakroBeasts"
+  #define BrandSlug "mkbt"
+  #define BrandAppId "{{AAE7531D-FB8F-4F7A-BBDC-8D41122CF795}"
+  #define BrandAppUserModelId "MKBT.ContentManager"
+  #define BrandExe "MKBT.ContentManager.exe"
+  #define BrandSetup "MKBT-Content-Manager-Setup"
+#else
+  #error AppBrand must be MKBT or Epic
+#endif
+
 [Setup]
-AppId={{C6CA9810-EC30-4FB2-86DB-40608F30F240}
-AppName=Eurocup 3 Content Manager
-AppVersion=1.3.38
-AppPublisher=Eurocup 3
-DefaultDirName={localappdata}\Programs\Eurocup3
-DefaultGroupName=Eurocup 3
+AppId={#BrandAppId}
+AppName={#BrandName}
+AppVersion=1.8.0
+AppPublisher={#BrandPublisher}
+DefaultDirName={localappdata}\Programs\{#BrandName}
+DefaultGroupName={#BrandName}
 PrivilegesRequired=lowest
-OutputDir=..\release
-OutputBaseFilename=Eurocup3-Helper-Setup
+OutputDir=..\release\{#BrandSlug}
+OutputBaseFilename={#BrandSetup}
 Compression=lzma2
 SolidCompression=yes
 WizardStyle=modern
-SetupIconFile=..\helper\Assets\ec3.ico
-UninstallDisplayIcon={app}\Eurocup3.Helper.exe
+SetupIconFile=..\public\brands\{#BrandSlug}\app.ico
+UninstallDisplayIcon={app}\{#BrandExe}
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 CloseApplications=yes
 
 [Files]
-Source: "..\artifacts\helper\*"; Excludes: "Eurocup3.Helper.exe.WebView2\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "..\artifacts\helper\{#BrandSlug}\*"; Excludes: "*.WebView2\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
-Name: "{group}\Eurocup 3 Content Manager"; Filename: "{app}\Eurocup3.Helper.exe"; WorkingDir: "{app}"; IconFilename: "{app}\Eurocup3.Helper.exe"; IconIndex: 0
-Name: "{autodesktop}\Eurocup 3 Content Manager"; Filename: "{app}\Eurocup3.Helper.exe"; WorkingDir: "{app}"; IconFilename: "{app}\Eurocup3.Helper.exe"; IconIndex: 0
+Name: "{group}\{#BrandName}"; Filename: "{app}\{#BrandExe}"; WorkingDir: "{app}"; IconFilename: "{app}\{#BrandExe}"; IconIndex: 0; AppUserModelID: "{#BrandAppUserModelId}"
+Name: "{autodesktop}\{#BrandName}"; Filename: "{app}\{#BrandExe}"; WorkingDir: "{app}"; IconFilename: "{app}\{#BrandExe}"; IconIndex: 0; AppUserModelID: "{#BrandAppUserModelId}"
 
 [Run]
-Filename: "{app}\Eurocup3.Helper.exe"; Description: "Open Eurocup 3 Content Manager"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\{#BrandExe}"; Description: "Open {#BrandName}"; Flags: nowait postinstall skipifsilent

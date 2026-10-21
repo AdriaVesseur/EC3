@@ -45,7 +45,7 @@ public sealed class AppReleaseAsset
 
 public sealed class AppUpdateService
 {
-    public const string InstallerName = "Eurocup3-Helper-Setup.exe";
+    public const string InstallerName = BrandIdentity.InstallerName;
     const int PageSize = 100;
     const int MaximumPages = 20;
     const int MaximumPageBytes = 8 * 1024 * 1024;
@@ -113,7 +113,7 @@ public sealed class AppUpdateService
                     HttpMethod.Get,
                     $"https://api.github.com/repos/{repository}/releases?per_page={PageSize}&page={page}"
                 );
-                request.Headers.UserAgent.ParseAdd("Eurocup3-Helper/" + currentVersion);
+                request.Headers.UserAgent.ParseAdd($"{BrandIdentity.AppUserModelId}/{currentVersion}");
                 request.Headers.Accept.ParseAdd("application/vnd.github+json");
                 request.Headers.Add("X-GitHub-Api-Version", "2026-03-10");
                 pages.TryGetValue(page, out var previous);

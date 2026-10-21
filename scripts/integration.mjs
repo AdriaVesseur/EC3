@@ -13,7 +13,8 @@ fs.mkdirSync(game, { recursive: true });
 fs.writeFileSync(path.join(game, "acs.exe"), "NOT EXECUTABLE");
 const { manifest, championship, archives } = fixtures();
 let mode = "normal",
-  downloadCount = 0;
+  downloadCount = 0,
+  catalogReadCount = 0;
 const payload = strToU8("EC3 SAFE INTEGRATION FIXTURE\n".repeat(12000));
 const car = manifest.content[0];
 const originalArchive = zipSync({ "ec3-demo.txt": payload }, { level: 0 });
@@ -39,12 +40,30 @@ fs.writeFileSync(
 );
 const server = http.createServer((req, res) => {
   if (req.url === "/manifest.json") {
+    catalogReadCount++;
     res.setHeader("Content-Type", "application/json");
     const publicManifest = {
       ...manifest,
       content: manifest.content.map(
-        ({ id, name, type, version, required, download, description, changelog }) =>
-          ({ id, name, type, version, required, download, description, changelog }),
+        ({
+          id,
+          name,
+          type,
+          version,
+          required,
+          download,
+          description,
+          changelog,
+        }) => ({
+          id,
+          name,
+          type,
+          version,
+          required,
+          download,
+          description,
+          changelog,
+        }),
       ),
     };
     res.end(JSON.stringify(publicManifest));
@@ -56,22 +75,24 @@ const server = http.createServer((req, res) => {
     return;
   }
   if (req.url?.startsWith("/generated/")) {
-    const pkg = manifest.content.find((p) =>
-      req.url === `/generated/${p.id}-${p.version}.json`,
+    const pkg = manifest.content.find(
+      (p) => req.url === `/generated/${p.id}-${p.version}.json`,
     );
     if (!pkg) {
       res.writeHead(404).end();
       return;
     }
     res.setHeader("Content-Type", "application/json");
-    res.end(JSON.stringify({
-      id: pkg.id,
-      version: pkg.version,
-      installPath: pkg.installPath,
-      size: pkg.size,
-      sha256: pkg.sha256,
-      files: pkg.files,
-    }));
+    res.end(
+      JSON.stringify({
+        id: pkg.id,
+        version: pkg.version,
+        installPath: pkg.installPath,
+        size: pkg.size,
+        sha256: pkg.sha256,
+        files: pkg.files,
+      }),
+    );
     return;
   }
   let zip = archives.get(req.url.slice(1));
@@ -203,7 +224,13 @@ try {
     (await raw("/session", {}, { "X-EC3-Client": "" })).status === 403,
     "reject simple cross-site requests",
   );
-  await api("/refresh", {});
+  const initialRefresh = await api("/refresh", {});
+  check(
+    initialRefresh.refreshed === true &&
+      initialRefresh.catalog.manifest.content.length ===
+        manifest.content.length,
+    "idle refresh reports a newly loaded catalog",
+  );
   await settled();
   check(
     !(await status()).raceReady.ready,
@@ -249,6 +276,39 @@ try {
   check(
     (await status()).jobs.find((j) => j.id === job.id).bytes === paused,
     "pause stops writing downloaded bytes",
+  );
+  const beforeRefresh = await status();
+  const beforeCatalogReads = catalogReadCount;
+  const beforeDownloadCount = downloadCount;
+  const refreshResponses = await Promise.all([
+    raw("/refresh", {}),
+    raw("/refresh", {}),
+  ]);
+  check(
+    refreshResponses.every((response) => response.ok),
+    "concurrent refresh requests succeed while the transfer is paused",
+  );
+  const deferredRefreshes = await Promise.all(
+    refreshResponses.map((response) => response.json()),
+  );
+  check(
+    deferredRefreshes.every(
+      (response) =>
+        response.refreshed === false &&
+        response.catalog.fetchedAt === beforeRefresh.catalog.fetchedAt,
+    ),
+    "busy refresh reports that it retained the existing catalog",
+  );
+  const afterRefresh = await status();
+  check(
+    catalogReadCount === beforeCatalogReads &&
+      downloadCount === beforeDownloadCount &&
+      afterRefresh.catalog.fetchedAt === beforeRefresh.catalog.fetchedAt &&
+      JSON.stringify(afterRefresh.jobs) ===
+        JSON.stringify(beforeRefresh.jobs) &&
+      JSON.stringify(afterRefresh.content) ===
+        JSON.stringify(beforeRefresh.content),
+    "busy refresh preserves the queue and integrity state without network or verification work",
   );
   await api(`/jobs/${job.id}/resume`, {});
   await until(
@@ -305,7 +365,13 @@ try {
   const previousVersion = car.version;
   const downloadsBeforeVersionChange = downloadCount;
   car.version = "2.3.2";
-  await api("/refresh", {});
+  const versionRefresh = await api("/refresh", {});
+  check(
+    versionRefresh.refreshed === true &&
+      versionRefresh.catalog.manifest.content.find((pkg) => pkg.id === car.id)
+        .version === car.version,
+    "idle refresh still loads new catalog versions after the queue finishes",
+  );
   s = await settled();
   check(
     s.content.find((p) => p.package.id === car.id).state === "outdated" &&

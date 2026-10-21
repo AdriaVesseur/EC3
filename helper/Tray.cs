@@ -15,7 +15,7 @@ public static class Tray
             System.Windows.Forms.Application.EnableVisualStyles();
             using var menu = new System.Windows.Forms.ContextMenuStrip();
             menu.Items.Add(
-                "Open Eurocup 3 Content Manager",
+                $"Open {BrandIdentity.Name}",
                 null,
                 (_, _) => showWindow()
             );
@@ -34,7 +34,7 @@ public static class Tray
             using var icon = new System.Windows.Forms.NotifyIcon
             {
                 Icon = applicationIcon,
-                Text = "Eurocup 3 Content Manager",
+                Text = BrandIdentity.Name,
                 ContextMenuStrip = menu,
                 Visible = true,
             };

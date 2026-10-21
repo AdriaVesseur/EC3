@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Net;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text.Json;
 
@@ -7,16 +8,20 @@ namespace Eurocup3;
 
 public static class Program
 {
-    public const string Version = "1.3.38";
+    public const string Version = "1.8.0";
+
+    [DllImport("shell32.dll", CharSet = CharSet.Unicode)]
+    static extern int SetCurrentProcessExplicitAppUserModelID(string appId);
 
     public static async Task Main(string[] args)
     {
+        SetCurrentProcessExplicitAppUserModelID(BrandIdentity.AppUserModelId);
         using var showWindow = new EventWaitHandle(
             false,
             EventResetMode.AutoReset,
-            "Local\\Eurocup3.ContentManager.ShowWindow"
+            BrandIdentity.ShowWindowEvent
         );
-        using var singleton = new Mutex(true, "Local\\Eurocup3.ContentManager", out bool first);
+        using var singleton = new Mutex(true, BrandIdentity.MutexName, out bool first);
         if (!first && Environment.GetEnvironmentVariable("EC3_TEST_MODE") != "1")
         {
             showWindow.Set();
@@ -38,7 +43,7 @@ public static class Program
             Environment.GetEnvironmentVariable("EC3_TEST_MODE") == "1"
             && int.TryParse(Environment.GetEnvironmentVariable("EC3_TEST_API_PORT"), out var testPort)
                 ? testPort
-                : 32145;
+                : BrandIdentity.ApiPort;
         string apiOrigin = $"http://127.0.0.1:{apiPort}";
         builder.WebHost.UseUrls(apiOrigin);
         builder.WebHost.ConfigureKestrel(o => o.Limits.MaxRequestBodySize = 16384);
@@ -47,6 +52,9 @@ public static class Program
         builder.Services.AddSingleton<AssettoDetectionService>();
         builder.Services.AddSingleton<ManifestService>();
         builder.Services.AddSingleton<ResultsService>();
+        builder.Services.AddSingleton<ChampionshipsService>();
+        builder.Services.AddSingleton<RacesService>();
+        builder.Services.AddSingleton<RaceDetailsService>();
         builder.Services.AddSingleton<DownloadService>();
         builder.Services.AddSingleton<ExtractionService>();
         builder.Services.AddSingleton<InstallationService>();
@@ -146,7 +154,7 @@ public static class Program
         );
         app.UseDefaultFiles();
         app.UseStaticFiles();
-        app.MapPost("/api/session", () => new { token, version = Version });
+        app.MapPost("/api/session", () => new { token, version = Version, brand = BrandIdentity.Id });
         app.MapGet(
             "/api/status",
             (AssettoDetectionService d, ContentService c, ManifestService m) =>
@@ -169,6 +177,7 @@ public static class Program
                 return new
                 {
                     version = Version,
+                    brand = BrandIdentity.Id,
                     assettoPath = d.Find(),
                     cspVersion = d.CspVersion(),
                     testMode = config.TestMode,
@@ -190,6 +199,41 @@ public static class Program
             "/api/results",
             async (bool? refresh, ManifestService m, ResultsService r, CancellationToken ct) =>
                 await r.Get(m.Current?.Championship ?? await m.ReadChampionship(ct), refresh == true, ct)
+        );
+        app.MapGet(
+            "/api/championships",
+            async (bool? refresh, ChampionshipsService championships, CancellationToken ct) =>
+                await championships.Get(refresh == true, ct)
+        );
+        app.MapGet(
+            "/api/championships/{id}/details",
+            async (string id, bool? refresh, ChampionshipsService championships, CancellationToken ct) =>
+                await championships.GetDetails(id, refresh == true, ct)
+        );
+        app.MapGet(
+            "/api/championships/{id}/results",
+            async (string id, bool? refresh, ChampionshipsService championships, CancellationToken ct) =>
+                await championships.GetResults(id, refresh == true, ct)
+        );
+        app.MapGet(
+            "/api/championships/{id}/results/{resultId}",
+            async (string id, string resultId, bool? refresh, ChampionshipsService championships, CancellationToken ct) =>
+                await championships.GetResult(id, resultId, refresh == true, ct)
+        );
+        app.MapGet(
+            "/api/races",
+            async (bool? refresh, RacesService races, CancellationToken ct) =>
+                await races.Get(refresh == true, ct)
+        );
+        app.MapGet(
+            "/api/races/{id}/details",
+            async (string id, bool? refresh, RaceDetailsService details, CancellationToken ct) =>
+                await details.Get(id, refresh == true, ct)
+        );
+        app.MapGet(
+            "/api/races/{id}/results/{resultId}",
+            async (string id, string resultId, bool? refresh, RaceDetailsService details, CancellationToken ct) =>
+                await details.GetResult(id, resultId, refresh == true, ct)
         );
         app.MapGet(
             "/api/portal",
@@ -229,7 +273,7 @@ public static class Program
                 try
                 {
                     if (c.Busy)
-                        throw new AppFault("BUSY", "Wait for the current queue before refreshing.");
+                        return Results.Ok(new { catalog = m.Require(), refreshed = false });
                     var catalog = await m.Refresh();
                     c.Reset();
                     if (d.Find() != null)
@@ -237,7 +281,7 @@ public static class Program
                         InstallationService.Recover(d.Require());
                         c.Enqueue(catalog.Manifest.Content.Select(p => p.Id).ToArray(), "verify");
                     }
-                    return catalog;
+                    return Results.Ok(new { catalog, refreshed = true });
                 }
                 finally
                 {
@@ -272,7 +316,20 @@ public static class Program
         }
         app.MapPost(
             "/api/jobs/{id}/{action}",
-            (string id, string action, ContentService c) => c.Control(id, action)
+            async (string id, string action, ContentService c) =>
+            {
+                if (action != "retry")
+                    return c.Control(id, action);
+                await operations.WaitAsync();
+                try
+                {
+                    return c.Control(id, action);
+                }
+                finally
+                {
+                    operations.Release();
+                }
+            }
         );
         app.MapPost(
             "/api/select-folder",
@@ -347,7 +404,16 @@ public static class Program
         app.MapFallbackToFile("index.html");
         var detector = app.Services.GetRequiredService<AssettoDetectionService>();
         if (detector.Find() is string root)
-            InstallationService.Recover(root);
+        {
+            try
+            {
+                InstallationService.Recover(root);
+            }
+            catch (AppFault ex) when (ex.Code == "OTHER_LAUNCHER_BUSY")
+            {
+                app.Logger.LogWarning("Startup recovery postponed because another launcher is updating the game folder");
+            }
+        }
         var periodic = Task.Run(async () =>
         {
             using var timer = new PeriodicTimer(TimeSpan.FromMinutes(5));

@@ -1,0 +1,89 @@
+.championship-overview {
+  min-width: 0;
+}
+.championship-overview-description {
+  margin: 24px 0 0;
+  max-width: 75ch;
+  font-size: 12px;
+  line-height: 1.85;
+  color: var(--ec3-muted);
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+.championship-overview-section {
+  margin-top: 28px;
+  min-width: 0;
+}
+.championship-overview-calendar {
+  display: grid;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--ec3-border);
+  border-radius: 5px;
+  overflow: hidden;
+}
+.championship-overview-calendar > li {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px 12px;
+  padding: 16px;
+  min-width: 0;
+}
+.championship-overview-calendar > li + li {
+  border-top: 1px solid var(--ec3-border);
+}
+.championship-overview-calendar > li > svg {
+  color: var(--ec3-muted);
+}
+.championship-overview-calendar > li > div {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.championship-overview-calendar strong {
+  color: var(--ec3-text);
+  font-size: 12px;
+  line-height: 1.6;
+}
+.championship-overview-calendar span,
+.championship-overview-calendar time {
+  color: var(--ec3-muted);
+  font-size: 11px;
+  line-height: 1.7;
+}
+.championship-overview-calendar small {
+  color: var(--ec3-text);
+  font-size: 10px;
+  line-height: 1.5;
+}
+.championship-overview-round-date {
+  grid-column: 2;
+}
+.championship-overview .race-info-tools {
+  flex-wrap: wrap;
+}
+.championship-overview .race-catalog-search {
+  min-width: 0;
+  width: 100%;
+}
+.championship-overview .race-catalog-search input {
+  min-width: 0;
+}
+.championship-overview button:focus-visible,
+.championship-overview input:focus-visible,
+.championship-overview [tabindex="0"]:focus-visible {
+  outline: 2px solid var(--ec3-primary);
+  outline-offset: 3px;
+}
+@media (min-width: 600px) {
+  .championship-overview-calendar > li {
+    grid-template-columns: 20px minmax(0, 1fr) minmax(160px, 0.75fr);
+  }
+  .championship-overview-round-date {
+    grid-column: 3;
+    text-align: right;
+  }
+}

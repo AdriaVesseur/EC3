@@ -3,99 +3,123 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Text.RegularExpressions;
+using System.Collections.Concurrent;
 
 namespace Eurocup3;
 
 public sealed class ResultsService
 {
-    static readonly HttpClient Http = new(new HttpClientHandler { AllowAutoRedirect = false })
+    static readonly HttpClient DefaultHttp = new(new HttpClientHandler { AllowAutoRedirect = false, AutomaticDecompression = DecompressionMethods.All })
     {
         Timeout = TimeSpan.FromSeconds(20),
         DefaultRequestHeaders = { UserAgent = { ProductInfoHeaderValue.Parse("Eurocup3-Helper/1.2.0") } },
     };
     readonly SemaphoreSlim gate = new(1, 1);
     readonly SemaphoreSlim teamRosterGate = new(6, 6);
-    readonly Dictionary<string, (DateTimeOffset CachedAt, string[] Drivers)> teamRosterCache = new(StringComparer.OrdinalIgnoreCase);
-    ChampionshipResults? cached;
+    readonly HttpClient http;
+    readonly ConcurrentDictionary<string, (DateTimeOffset CachedAt, string[] Drivers)> teamRosterCache = new(StringComparer.OrdinalIgnoreCase);
+    readonly ConcurrentDictionary<string, ChampionshipResults> cache = new(StringComparer.Ordinal);
+
+    public ResultsService() : this(DefaultHttp) { }
+    public ResultsService(HttpClient http) => this.http = http;
 
     public async Task<ChampionshipResults> Get(Championship championship, bool force = false, CancellationToken ct = default)
     {
         if (string.IsNullOrWhiteSpace(championship.ResultsUrl))
             throw new AppFault("RESULTS_NOT_CONFIGURED", "No results source is configured for this championship yet.");
         ValidateSourceUrl(championship.ResultsUrl);
-        if (!force && cached is { } current && current.SourceUrl == championship.ResultsUrl
+        var source = championship.ResultsUrl;
+        if (!force && cache.TryGetValue(source, out var current)
             && DateTimeOffset.UtcNow - current.UpdatedAt < TimeSpan.FromMinutes(5))
             return current;
 
         await gate.WaitAsync(ct);
         try
         {
-            if (!force && cached is { } latest && latest.SourceUrl == championship.ResultsUrl
+            if (!force && cache.TryGetValue(source, out var latest)
                 && DateTimeOffset.UtcNow - latest.UpdatedAt < TimeSpan.FromMinutes(5))
                 return latest;
-            using var pageResponse = await Http.GetAsync(championship.ResultsUrl, ct);
-            pageResponse.EnsureSuccessStatusCode();
-            var html = await pageResponse.Content.ReadAsStringAsync(ct);
-            if (html.Length > 8 * 1024 * 1024)
-                throw new AppFault("RESULTS_UNAVAILABLE", "The results page exceeds the allowed size.");
+            using var timeout = CancellationTokenSource.CreateLinkedTokenSource(ct);
+            timeout.CancelAfter(TimeSpan.FromSeconds(30));
+            var requestToken = timeout.Token;
+            var html = await Fetch(source, 8 * 1024 * 1024, requestToken);
 
             var championshipId = Regex.Match(html, @"data-champ=""(?<id>[0-9a-f-]{36})""", RegexOptions.IgnoreCase)
                 .Groups["id"].Value;
-            if (!Guid.TryParse(championshipId, out _))
+            var standings = RaceDetailsService.ParseStandings(html);
+            var eventIds = Regex.Matches(html, @"data-event=""(?<id>[0-9a-f-]{36})""", RegexOptions.IgnoreCase)
+                .Select(m => m.Groups["id"].Value)
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .Take(60)
+                .ToArray();
+            // A new official competition has empty standings and no podium IDs yet.
+            if (!Guid.TryParse(championshipId, out _) && (eventIds.Length > 0
+                || !Regex.IsMatch(html, @"\bid=[""']tab-pane-results[""']", RegexOptions.IgnoreCase)
+                || !Regex.IsMatch(html, @"\bid=[""']standings-pane-pilots[""']", RegexOptions.IgnoreCase)))
                 throw new AppFault("RESULTS_UNAVAILABLE", "The configured page does not expose a supported championship.");
+            var origin = new Uri(championship.ResultsUrl).GetLeftPart(UriPartial.Authority);
+            var standingsTask = AddTeamsWithTimeout();
+            var raceTasks = eventIds.Select(LoadRace).ToArray();
+            await Task.WhenAll(raceTasks.Cast<Task>().Append(standingsTask));
+            standings = await standingsTask;
+            var races = raceTasks
+                .Select(task => task.Result)
+                .Where(race => race is not null)
+                .Cast<ChampionshipRaceResult>()
+                .ToArray();
 
-            var standings = ParseStandings(html);
-            using (var teamTimeout = CancellationTokenSource.CreateLinkedTokenSource(ct))
+            ct.ThrowIfCancellationRequested();
+            var loaded = new ChampionshipResults(source, DateTimeOffset.UtcNow, standings, races);
+            cache[source] = loaded;
+            while (cache.Count > 40) cache.TryRemove(cache.OrderBy(pair => pair.Value.UpdatedAt).First().Key, out _);
+            return loaded;
+
+            async Task<ChampionshipStanding[]> AddTeamsWithTimeout()
             {
+                using var teamTimeout = CancellationTokenSource.CreateLinkedTokenSource(requestToken);
                 teamTimeout.CancelAfter(TimeSpan.FromSeconds(12));
                 try
                 {
-                    standings = await AddCompetitionTeams(
+                    return await AddCompetitionTeams(
                         html,
                         new Uri(championship.ResultsUrl),
                         standings,
                         teamTimeout.Token
                     );
                 }
-                catch (OperationCanceledException) when (!ct.IsCancellationRequested) { }
+                catch (OperationCanceledException) when (!ct.IsCancellationRequested)
+                {
+                    return standings;
+                }
             }
-            var eventIds = Regex.Matches(html, @"data-event=""(?<id>[0-9a-f-]{36})""", RegexOptions.IgnoreCase)
-                .Select(m => m.Groups["id"].Value)
-                .Distinct(StringComparer.OrdinalIgnoreCase)
-                .ToArray();
-            var origin = new Uri(championship.ResultsUrl).GetLeftPart(UriPartial.Authority);
-            var races = new List<ChampionshipRaceResult>();
-            for (var i = 0; i < eventIds.Length; i++)
+
+            async Task<ChampionshipRaceResult?> LoadRace(string eventId, int index)
             {
-                ct.ThrowIfCancellationRequested();
-                var eventId = eventIds[i];
-                var meta = ParseEventMeta(html, eventId, i + 1);
+                requestToken.ThrowIfCancellationRequested();
+                var meta = ParseEventMeta(html, eventId, index + 1);
                 var apiUrl = $"{origin}/api/championships/{championshipId}/events/{eventId}/podium";
                 try
                 {
-                    using var response = await Http.GetAsync(apiUrl, ct);
-                    response.EnsureSuccessStatusCode();
-                    await using var stream = await response.Content.ReadAsStreamAsync(ct);
-                    using var json = await JsonDocument.ParseAsync(stream, cancellationToken: ct);
+                    var jsonText = await Fetch(apiUrl, 2 * 1024 * 1024, requestToken);
+                    using var json = JsonDocument.Parse(jsonText);
                     var sessions = ParseSessions(json.RootElement);
-                    if (sessions.Length > 0)
-                    {
-                        var path = new Uri(championship.ResultsUrl).AbsolutePath.TrimEnd('/');
-                        races.Add(new(eventId, meta.Round, meta.Name, meta.Venue,
-                            origin + path + "/events/" + eventId + "/results", sessions));
-                    }
+                    if (sessions.Length == 0)
+                        return null;
+                    var path = new Uri(championship.ResultsUrl).AbsolutePath.TrimEnd('/');
+                    return new(eventId, meta.Round, meta.Name, meta.Venue,
+                        origin + path + "/events/" + eventId + "/results", sessions);
                 }
-                catch (HttpRequestException) when (!ct.IsCancellationRequested) { }
+                catch (Exception ex) when (!ct.IsCancellationRequested && (ex is HttpRequestException or JsonException))
+                {
+                    return null;
+                }
             }
-
-            cached = new(championship.ResultsUrl, DateTimeOffset.UtcNow, standings, races.ToArray());
-            return cached;
         }
         catch (AppFault)
         {
             throw;
         }
-        catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException or JsonException or InvalidOperationException)
+        catch (Exception ex) when (!ct.IsCancellationRequested && (ex is HttpRequestException or OperationCanceledException or JsonException or InvalidOperationException or IOException))
         {
             throw new AppFault("RESULTS_UNAVAILABLE", "Could not load championship results from MakroBeasts. " + ex.Message);
         }
@@ -110,8 +134,10 @@ public sealed class ResultsService
         if (!Uri.TryCreate(value, UriKind.Absolute, out var uri)
             || uri.Scheme != Uri.UriSchemeHttps
             || uri.UserInfo.Length != 0
+            || !uri.IsDefaultPort
             || uri.Host is not ("makrobeasts.com" or "www.makrobeasts.com")
-            || !uri.AbsolutePath.StartsWith("/championships/", StringComparison.Ordinal))
+            || !Regex.IsMatch(uri.AbsolutePath, @"^/championships/[a-z0-9][a-z0-9-]{0,150}$", RegexOptions.CultureInvariant)
+            || uri.Query.Length != 0 || uri.Fragment is not ("" or "#results"))
             throw new AppFault("INVALID_RESULTS_SOURCE", "Results source must be a MakroBeasts championship page over HTTPS.");
     }
 
@@ -189,7 +215,7 @@ public sealed class ResultsService
     )
     {
         var teams = ParseCompetitionTeams(html);
-        if (teams.Length == 0 || standings.Length == 0)
+        if (teams.Length == 0 || standings.Length == 0 || standings.All(standing => standing.TeamNames is { Length: > 0 }))
             return standings;
         var driversByTeam = await Task.WhenAll(teams.Select(async team =>
         {
@@ -199,7 +225,7 @@ public sealed class ResultsService
 
         return standings.Select(standing => standing with
         {
-            TeamNames = driversByTeam
+            TeamNames = standing.TeamNames is { Length: > 0 } ? standing.TeamNames : driversByTeam
                 .Where(team => team.Drivers.Contains(Normalize(standing.Driver)))
                 .Select(team => team.Name)
                 .Distinct(StringComparer.OrdinalIgnoreCase)
@@ -223,7 +249,7 @@ public sealed class ResultsService
                 return cachedRoster.Drivers;
 
             var teamUri = new Uri(championshipUri.GetLeftPart(UriPartial.Authority) + path);
-            using var response = await Http.GetAsync(teamUri, ct);
+            using var response = await http.GetAsync(teamUri, ct);
             if (!response.IsSuccessStatusCode || response.Content.Headers.ContentLength > 2 * 1024 * 1024)
                 return [];
             var teamHtml = await response.Content.ReadAsStringAsync(ct);
@@ -231,6 +257,7 @@ public sealed class ResultsService
                 return [];
             var drivers = ParseTeamDrivers(teamHtml);
             teamRosterCache[path] = (DateTimeOffset.UtcNow, drivers);
+            while (teamRosterCache.Count > 120) teamRosterCache.TryRemove(teamRosterCache.Keys.First(), out _);
             return drivers;
         }
         catch (HttpRequestException) when (!ct.IsCancellationRequested)
@@ -245,6 +272,25 @@ public sealed class ResultsService
         {
             teamRosterGate.Release();
         }
+    }
+
+    async Task<string> Fetch(string url, int limit, CancellationToken ct)
+    {
+        using var response = await http.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, ct);
+        response.EnsureSuccessStatusCode();
+        if (response.Content.Headers.ContentLength > limit)
+            throw new AppFault("RESULTS_UNAVAILABLE", "The results source exceeds the allowed size.");
+        await using var stream = await response.Content.ReadAsStreamAsync(ct);
+        using var buffer = new MemoryStream();
+        byte[] chunk = new byte[16384];
+        int count;
+        while ((count = await stream.ReadAsync(chunk, ct)) > 0)
+        {
+            if (buffer.Length + count > limit)
+                throw new AppFault("RESULTS_UNAVAILABLE", "The results source exceeds the allowed size.");
+            buffer.Write(chunk, 0, count);
+        }
+        return System.Text.Encoding.UTF8.GetString(buffer.GetBuffer(), 0, (int)buffer.Length);
     }
 
     public static (string Round, string Name, string Venue) ParseEventMeta(string html, string eventId, int fallbackRound)

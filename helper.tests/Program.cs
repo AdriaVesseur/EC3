@@ -56,7 +56,11 @@ Package P(string id, Dependency[]? deps = null) =>
     );
 try
 {
+    BrandTests.Run(Assert, work);
     PortalTests.Run(Assert, Reject);
+    await RacesTests.Run(Assert, Reject);
+    await RaceDetailsTests.Run(Assert, Reject);
+    await ChampionshipsTests.Run(Assert, Reject);
     await AppUpdateTests.Run(Assert, RejectAsync);
     Assert(Versions.Valid("1.0.0+build-test"), "hyphens in build metadata");
     Assert(Versions.Compare("2.10.0", "2.9.0") > 0, "numeric version comparison");

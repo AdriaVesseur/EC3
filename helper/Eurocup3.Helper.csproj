@@ -6,13 +6,26 @@
     <Nullable>enable</Nullable>
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
     <OutputType>WinExe</OutputType>
-    <ApplicationIcon>Assets\ec3.ico</ApplicationIcon>
-    <Version>1.3.38</Version>
+    <AppBrand Condition="'$(AppBrand)' == ''">MKBT</AppBrand>
+    <BrandName Condition="'$(AppBrand)' == 'MKBT'">MKBT Content Manager</BrandName>
+    <BrandName Condition="'$(AppBrand)' == 'Epic'">Epic Simracing Content Manager</BrandName>
+    <BrandSlug Condition="'$(AppBrand)' == 'MKBT'">mkbt</BrandSlug>
+    <BrandSlug Condition="'$(AppBrand)' == 'Epic'">epic</BrandSlug>
+    <DefineConstants Condition="'$(AppBrand)' == 'Epic'">$(DefineConstants);APP_BRAND_EPIC</DefineConstants>
+    <AssemblyName Condition="'$(BrandedExecutable)' == 'true' and '$(AppBrand)' == 'MKBT'">MKBT.ContentManager</AssemblyName>
+    <AssemblyName Condition="'$(BrandedExecutable)' == 'true' and '$(AppBrand)' == 'Epic'">EpicSimracing.ContentManager</AssemblyName>
+    <AssemblyTitle>$(BrandName)</AssemblyTitle>
+    <Product>$(BrandName)</Product>
+    <ApplicationIcon>..\public\brands\$(BrandSlug)\app.ico</ApplicationIcon>
+    <Version>1.8.0</Version>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>NETSDK1138</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2903.40" />
-    <EmbeddedResource Include="Assets\ec3.ico" LogicalName="Eurocup3.Assets.ec3.ico" />
+    <EmbeddedResource Include="..\public\brands\$(BrandSlug)\app.ico" LogicalName="Eurocup3.Assets.app.ico" />
   </ItemGroup>
+  <Target Name="ValidateAppBrand" BeforeTargets="PrepareForBuild">
+    <Error Condition="'$(AppBrand)' != 'MKBT' and '$(AppBrand)' != 'Epic'" Text="AppBrand must be MKBT or Epic." />
+  </Target>
 </Project>

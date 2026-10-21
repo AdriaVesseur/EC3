@@ -224,6 +224,13 @@ test("championship shows standings and results shows race classifications", asyn
                       car: "Porsche Cup",
                       time: "26:28.162",
                     },
+                    {
+                      position: 4,
+                      number: "31",
+                      driver: "Taylor Example",
+                      car: "Porsche Cup",
+                      time: "26:34.402",
+                    },
                   ],
                 },
               ],
@@ -257,9 +264,24 @@ test("championship shows standings and results shows race classifications", asyn
     await expect(
       page.getByRole("heading", { name: "Race results" }),
     ).toBeVisible();
-    await page.getByText("Full results", { exact: true }).click();
     await expect(
       page.getByText("Sofia Example", { exact: true }),
+    ).toBeVisible();
+    await expect(page.getByText("Alex Example", { exact: true })).toBeVisible();
+    await expect(page.getByText("Sam Example", { exact: true })).toBeVisible();
+    await expect(
+      page.getByText("Taylor Example", { exact: true }),
+    ).toBeHidden();
+    const topTwenty = page.getByRole("button", { name: /^Top 20/ }).first();
+    await expect(topTwenty).toHaveAttribute("aria-expanded", "false");
+    const panelId = await topTwenty.getAttribute("aria-controls");
+    expect(panelId).toBeTruthy();
+    const expandedResults = page.locator(`[id="${panelId}"]`);
+    await topTwenty.click();
+    await expect(topTwenty).toHaveAttribute("aria-expanded", "true");
+    await expect(expandedResults).toBeVisible();
+    await expect(
+      expandedResults.getByText("Taylor Example", { exact: true }),
     ).toBeVisible();
     await expect(
       page.getByRole("heading", { name: "Driver standings" }),
@@ -382,7 +404,7 @@ test("offline state never reports race ready and provides installation action", 
   await page.goto("/");
   await expect(page.getByText("Offline", { exact: true })).toBeVisible();
   await expect(
-    page.getByRole("link", { name: "Install EC3 Helper" }),
+    page.getByRole("link", { name: "Install Epic Simracing Helper" }),
   ).toBeVisible();
   await expect(
     page.getByRole("button", { name: "Reconnect helper" }),

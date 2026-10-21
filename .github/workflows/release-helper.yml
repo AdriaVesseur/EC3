@@ -16,6 +16,15 @@ concurrency:
 jobs:
   package:
     runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { brand: MKBT, slug: mkbt }
+          - { brand: Epic, slug: epic }
+    outputs:
+      version: ${{ steps.release.outputs.version }}
+      tag: ${{ steps.release.outputs.tag }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-dotnet@v4
@@ -62,36 +71,50 @@ jobs:
           Add-Content -LiteralPath $env:GITHUB_OUTPUT -Value "tag=$tag"
       - run: npm ci
       - run: npm test
-      - run: npm run helper:test
-      - name: Build self-contained Windows installer
+      - run: dotnet run --project helper.tests/Eurocup3.Helper.Tests.csproj -c Release -p:AppBrand=${{ matrix.brand }}
+      - name: Build self-contained ${{ matrix.brand }} Windows installer
         shell: pwsh
         run: |
           if (-not (Test-Path -LiteralPath 'C:\Program Files (x86)\Inno Setup 6\ISCC.exe')) {
             throw 'The Windows runner must provide Inno Setup 6.'
           }
-          ./scripts/package-helper.ps1
+          ./scripts/package-helper.ps1 -Brand ${{ matrix.brand }}
       - name: Save installer and checksums for review
         uses: actions/upload-artifact@v4
         with:
-          name: Eurocup3-app-${{ steps.release.outputs.version }}
+          name: content-manager-${{ matrix.slug }}-v${{ steps.release.outputs.version }}
           path: |
-            release/Eurocup3-Helper-Setup.exe
-            release/SHA256SUMS.txt
+            release/${{ matrix.slug }}/*-Content-Manager-Setup.exe
+            release/${{ matrix.slug }}/SHA256SUMS.txt
           if-no-files-found: error
           retention-days: 14
-      - name: Create draft release for signing and review
+  draft-release:
+    needs: package
+    runs-on: windows-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: content-manager-*-v${{ needs.package.outputs.version }}
+          path: release-artifacts
+      - name: Create draft release with both separate installers for signing and review
         env:
           GH_TOKEN: ${{ github.token }}
-          RELEASE_TAG: ${{ steps.release.outputs.tag }}
-          RELEASE_VERSION: ${{ steps.release.outputs.version }}
+          RELEASE_TAG: ${{ needs.package.outputs.tag }}
+          RELEASE_VERSION: ${{ needs.package.outputs.version }}
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
+          $installerPaths = @(Get-ChildItem -Path release-artifacts -Recurse -Filter '*-Content-Manager-Setup.exe' | ForEach-Object FullName)
+          if ($installerPaths.Count -ne 2) { throw 'Both MKBT and Epic installers are required.' }
+          $checksumPath = Join-Path $PWD 'release-artifacts/SHA256SUMS.txt'
+          $checksums = @(Get-ChildItem -Path release-artifacts -Recurse -Filter SHA256SUMS.txt | Get-Content)
+          if ($checksums.Count -ne 2) { throw 'Both installer checksums are required.' }
+          Set-Content -LiteralPath $checksumPath -Value $checksums
           $draft = gh release view $env:RELEASE_TAG --repo $env:GITHUB_REPOSITORY --json isDraft --jq '.isDraft' 2>$null
           if ($LASTEXITCODE -eq 0) {
             if ($draft -ne 'true') { throw 'Refusing to replace assets of an already published app release.' }
-            gh release upload $env:RELEASE_TAG release/Eurocup3-Helper-Setup.exe release/SHA256SUMS.txt --repo $env:GITHUB_REPOSITORY --clobber
+            gh release upload $env:RELEASE_TAG @installerPaths $checksumPath --repo $env:GITHUB_REPOSITORY --clobber
           } else {
-            gh release create $env:RELEASE_TAG release/Eurocup3-Helper-Setup.exe release/SHA256SUMS.txt --repo $env:GITHUB_REPOSITORY --target $env:GITHUB_SHA --draft --generate-notes --title "Eurocup 3 app $env:RELEASE_VERSION"
+            gh release create $env:RELEASE_TAG @installerPaths $checksumPath --repo $env:GITHUB_REPOSITORY --target $env:GITHUB_SHA --draft --generate-notes --title "Content Manager apps $env:RELEASE_VERSION"
           }
           if ($LASTEXITCODE -ne 0) { throw 'Could not prepare the draft app release.' }

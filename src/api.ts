@@ -1,6 +1,14 @@
+import { brand } from "./brand";
 let token = "";
 const endpoint =
-  import.meta.env.VITE_EC3_API_URL ?? "http://127.0.0.1:32145/api";
+  import.meta.env.VITE_EC3_API_URL ?? `http://127.0.0.1:${brand.apiPort}/api`;
+export class HelperBrandMismatch extends Error {}
+export function verifyHelperBrand(id?: string) {
+  if (id !== undefined && id !== brand.id) {
+    token = "";
+    throw new HelperBrandMismatch(`The running helper belongs to another launcher. Open ${brand.appName} from its own Windows shortcut.`);
+  }
+}
 export async function api<T>(
   path: string,
   body?: unknown,
@@ -59,7 +67,8 @@ export async function apiImage(
   return response.blob();
 }
 export async function connect() {
-  const session = await api<{ token: string }>("/session", {});
+  const session = await api<{ token: string; brand?: string }>("/session", {});
+  verifyHelperBrand(session.brand);
   token = session.token;
 }
 export const bytes = (n: number) =>

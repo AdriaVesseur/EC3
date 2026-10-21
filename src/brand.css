@@ -1,0 +1,80 @@
+/* Build-time identities share layout and behavior, while keeping their own palette. */
+:root {
+  --brand-accent: #00d6d6;
+  --brand-accent-rgb: 0 214 214;
+  --brand-button-top: #36e5e5;
+  --brand-button-bottom: #00baba;
+  --brand-button-hover-top: #82ffff;
+  --brand-button-hover-bottom: #26dada;
+  --brand-button-ink: #062021;
+}
+html[data-brand="mkbt"] {
+  --brand-accent: #9ab5d8;
+  --brand-accent-rgb: 154 181 216;
+  --brand-button-top: #b3c9e5;
+  --brand-button-bottom: #91aed2;
+  --brand-button-hover-top: #d1e0f3;
+  --brand-button-hover-bottom: #adc6e5;
+  --brand-button-ink: #101b2b;
+}
+html[data-brand] {
+  --ec3-primary: var(--brand-accent);
+}
+.brand-logo {
+  display: inline-block;
+  position: relative;
+  flex: 0 0 auto;
+  width: 110px;
+  vertical-align: middle;
+}
+.brand-logo img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.brand-logo.featured-brand-logo {
+  width: 58px;
+}
+/* The official PNG has a large transparent canvas. Crop only its layout box,
+   retaining the original image and the complete mark without stretching it. */
+html[data-brand="mkbt"] .brand-logo {
+  width: 34px;
+  aspect-ratio: 1985 / 2966;
+  overflow: hidden;
+}
+html[data-brand="mkbt"] .brand-logo img {
+  position: absolute;
+  width: 201.5126%;
+  max-width: none;
+  height: 134.8618%;
+  inset-inline-start: -55.0126%;
+  top: -17.9366%;
+}
+html[data-brand="mkbt"] .app-navigation .brand {
+  gap: 9px;
+}
+.app-navigation .brand > .brand-logo {
+  padding: 0;
+  border: 0;
+}
+.app-navigation .brand > .brand-wordmark {
+  padding: 0;
+  border: 0;
+  font-size: 20px;
+  letter-spacing: 0.04em;
+  color: var(--ec3-text);
+}
+html[data-brand="mkbt"] .brand-logo.featured-brand-logo {
+  width: 20px;
+}
+html[data-brand="mkbt"] .brand-logo.connection-brand-logo {
+  width: 34px;
+}
+@media (max-width: 480px) {
+  html[data-brand="mkbt"] .app-navigation .brand-logo {
+    width: 25px;
+  }
+  .app-navigation .brand > .brand-wordmark {
+    font-size: 16px;
+  }
+}

@@ -10,6 +10,7 @@ export function StandingsPreview({
   connected,
   configured,
   teams,
+  championshipName,
 }: {
   results: ChampionshipResults | null;
   loading: boolean;
@@ -17,6 +18,7 @@ export function StandingsPreview({
   connected: boolean;
   configured: boolean;
   teams: Team[];
+  championshipName?: string;
 }) {
   const rows =
     results?.standings
@@ -32,6 +34,9 @@ export function StandingsPreview({
         <div>
           <span className="eyebrow">LIVE FROM MAKROBEASTS</span>
           <h2 id="home-standings-title">Top 5 drivers</h2>
+          {championshipName && (
+            <p className="standings-preview-updated">{championshipName}</p>
+          )}
         </div>
         {loading ? (
           <LoaderCircle size={22} className="spin" aria-hidden="true" />
